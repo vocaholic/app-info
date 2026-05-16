@@ -1,830 +1,1194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UX Research Terminology Listening Trainer</title>
-    <style>
-        :root {
-            --primary: #4a3aff;
-            --secondary: #6c757d;
-            --background: #f4f6fa;
-            --card-bg: #ffffff;
-            --text: #1c1d22;
-            --success: #2ec4b6;
-            --error: #e63946;
-            --neutral: #8e94a5;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1a1814" />
+<title>Listening Lab — Startup Jargon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #4a463f;
+    --ink-mute: #8a857a;
+    --paper: #faf7f0;
+    --paper-warm: #f3eede;
+    --paper-card: #ffffff;
+    --rule: #e5dec9;
+    --accent: #2a5f4e;
+    --accent-soft: #d8e8e1;
+    --level1: #2d6a4f;
+    --level1-soft: #d9ebdf;
+    --level2: #b88a1a;
+    --level2-soft: #f6ecd2;
+    --level3: #b8451a;
+    --level3-soft: #fbe6dc;
+    --wrong: #b8451a;
+    --right-soft: #d9ebdf;
+    --wrong-soft: #fbe6dc;
+    --timer: #b8451a;
+    --vi-bg: #1a1814;
+    --vi-ink: #faf7f0;
+    --vi-mute: #b8b0a0;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter Tight', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior: none; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage { display: none; min-height: 100vh; }
+  .stage.active { display: flex; flex-direction: column; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+  /* ===== Intro ===== */
+  .intro-wrap {
+    padding: 28px 20px 100px;
+    flex: 1;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-mute);
+    padding-bottom: 12px; margin-bottom: 22px;
+    border-bottom: 1px solid var(--ink);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+  }
+  .eyebrow span:last-child { color: var(--accent); }
+  .title {
+    font-family: var(--serif); font-weight: 500;
+    font-size: 30px; line-height: 1.02;
+    letter-spacing: -0.025em; margin-bottom: 14px;
+  }
+  .title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .deck {
+    font-family: var(--serif); font-style: italic;
+    font-size: 15px; color: var(--ink-soft); margin-bottom: 24px;
+  }
 
-        .container {
-            width: 100%;
-            max-width: 580px;
-            text-align: center;
-        }
+  .stages-overview {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .stage-card {
+    padding: 14px 16px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+  .stage-card-num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 3px;
+  }
+  .stage-card-title {
+    font-family: var(--serif); font-size: 17px; font-weight: 500;
+    letter-spacing: -0.01em; margin-bottom: 3px;
+  }
+  .stage-card-body { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
 
-        .phase-indicator {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+  .rules-callout {
+    padding: 12px 14px; background: var(--paper-warm);
+    border-left: 3px solid var(--ink); border-radius: 0 4px 4px 0;
+    font-size: 13px; color: var(--ink-soft); margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .rules-callout strong { color: var(--ink); font-weight: 600; }
 
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background-color: #e2e8f0;
-            border-radius: 3px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            position: relative;
-        }
+  .button-stack {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .primary-btn, .secondary-btn {
+    width: 100%; padding: 16px 20px;
+    font-family: var(--sans); font-size: 15px; font-weight: 600;
+    border-radius: 4px; cursor: pointer;
+    transition: background 0.12s ease;
+    border: none; -webkit-appearance: none;
+  }
+  .primary-btn { background: var(--ink); color: var(--paper); }
+  .primary-btn:active { background: var(--accent); }
+  .secondary-btn {
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--rule); font-weight: 500; font-size: 14px;
+  }
+  .secondary-btn:active { background: var(--paper-warm); color: var(--ink); }
 
-        .progress {
-            height: 100%;
-            background-color: var(--primary);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+  .voice-warning {
+    display: none; padding: 11px 14px; background: var(--accent-soft);
+    border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0;
+    font-size: 12.5px; color: var(--ink); margin-bottom: 20px; line-height: 1.5;
+  }
+  .voice-warning.show { display: block; }
 
-        .timer-bar {
-            width: 100%;
-            height: 4px;
-            background-color: #dee2e6;
-            margin-bottom: 15px;
-            border-radius: 2px;
-            overflow: hidden;
-            display: none;
-        }
+  /* ===== Test (Part 1) ===== */
+  .test-wrap {
+    padding: 14px 16px 24px;
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .test-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute);
+    gap: 8px;
+  }
+  .test-header-left { flex: 1; min-width: 0; }
+  .test-header strong { color: var(--ink); }
+  .skip-link {
+    background: transparent; border: 1px solid var(--rule);
+    color: var(--ink-soft); padding: 6px 10px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; border-radius: 2px;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .skip-link:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-        .timer-fill {
-            height: 100%;
-            background-color: var(--error);
-            width: 100%;
-        }
+  /* Streak strip */
+  .streak-strip {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    padding: 10px 12px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .word-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px; font-family: var(--mono); font-size: 10px;
+    color: var(--ink-soft); border: 1px solid var(--rule);
+    border-radius: 999px; background: var(--paper);
+  }
+  .word-chip.active {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .word-chip.graduated {
+    background: var(--level1-soft); color: var(--level1);
+    border-color: var(--level1); opacity: 0.65;
+  }
+  .word-chip .streak-num {
+    font-weight: 700; font-size: 9px;
+  }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.04);
-            margin-bottom: 24px;
-            position: relative;
-        }
+  .testcard {
+    background: var(--paper-card); border: 1px solid var(--ink);
+    border-radius: 8px; padding: 22px 18px;
+    box-shadow: 0 1px 0 var(--rule), 0 4px 12px rgba(26,24,20,0.04);
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .testcard.flip-in { animation: flipIn 0.3s ease; }
+  @keyframes flipIn {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 
-        .top-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+  .play-area {
+    text-align: center; padding-bottom: 14px;
+  }
+  .play-prompt {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px;
+  }
+  .big-play-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 14px 28px; font-family: var(--sans); font-size: 15px;
+    font-weight: 600; border-radius: 4px;
+    -webkit-appearance: none; cursor: pointer;
+  }
+  .big-play-btn:active { background: var(--accent); }
+  .big-play-btn:disabled { opacity: 0.4; background: var(--ink-mute); }
+  .big-play-btn.playing { background: var(--accent); }
+  .big-play-btn .play-dot {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--paper);
+  }
+  .big-play-btn.playing .play-dot {
+    animation: pulse 0.9s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
 
-        .skip-btn {
-            background: #f1f3f9;
-            color: var(--primary);
-            border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+  /* Timer bar */
+  .timer-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+  }
+  .timer-bar-wrap {
+    flex: 1; height: 4px; background: var(--rule);
+    border-radius: 2px; overflow: hidden;
+  }
+  .timer-bar-fill {
+    height: 100%; background: var(--timer);
+    width: 100%; transition: width 0.1s linear;
+    transform-origin: left;
+  }
+  .timer-bar-fill.running { animation: timerDrain 5s linear forwards; }
+  .timer-bar-fill.paused { animation-play-state: paused; }
+  @keyframes timerDrain {
+    0% { width: 100%; }
+    100% { width: 0%; }
+  }
+  .timer-seconds {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--timer); font-weight: 600;
+    letter-spacing: 0.05em; min-width: 24px; text-align: right;
+  }
+  .timer-row.idle .timer-bar-fill { background: var(--rule); width: 100%; }
+  .timer-row.idle .timer-seconds { color: var(--ink-mute); }
 
-        .skip-btn:hover {
-            background: #e4e8f4;
-        }
+  .options-prompt {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin: 14px 0 8px;
+  }
+  .options { display: flex; flex-direction: column; gap: 7px; }
+  .option-btn {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 6px; padding: 12px 14px;
+    font-family: var(--sans); font-size: 14.5px; line-height: 1.4;
+    color: var(--ink); text-align: left; cursor: pointer;
+    transition: background 0.1s ease; min-height: 48px;
+    display: flex; align-items: center; gap: 10px;
+    -webkit-appearance: none;
+    width: 100%;
+  }
+  .option-btn:active:not(:disabled) {
+    background: var(--paper-warm); border-color: var(--ink);
+  }
+  .option-btn .opt-letter {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    background: var(--paper-warm); border-radius: 50%;
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    color: var(--ink-soft); flex-shrink: 0;
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.idk-top {
+    color: var(--ink-soft); border-style: dashed;
+  }
+  .option-btn.idk-top .opt-letter {
+    background: var(--paper); color: var(--ink-mute);
+  }
+  .option-btn.correct {
+    background: var(--level1-soft); border-color: var(--level1); color: var(--level1);
+    font-weight: 500;
+  }
+  .option-btn.incorrect {
+    background: var(--level3-soft); border-color: var(--level3); color: var(--level3);
+  }
+  .option-btn.reveal-correct {
+    background: var(--level1-soft); border-color: var(--level1); color: var(--level1);
+  }
+  .option-btn.faded { opacity: 0.35; }
 
-        .audio-container {
-            margin: 15px 0 25px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
+  .feedback {
+    display: none; margin-top: 14px; padding: 11px 14px;
+    border-radius: 4px; font-family: var(--serif); font-size: 14.5px;
+    line-height: 1.45;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: var(--level1-soft); color: var(--level1); }
+  .feedback.timeout { background: var(--level2-soft); color: var(--level2); }
+  .feedback.wrong { background: var(--level3-soft); color: var(--level3); }
+  .feedback strong { font-weight: 600; }
 
-        .audio-row {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            width: 100%;
-        }
+  /* ===== Listening (Part 2) ===== */
+  .listening-wrap {
+    padding: 28px 18px 100px;
+    flex: 1;
+  }
+  .listening-controls {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; margin-bottom: 20px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .listening-controls-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .speed-buttons { display: flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; }
+  .speed-btn {
+    background: var(--paper); border: none; border-right: 1px solid var(--ink);
+    padding: 7px 12px; font-family: var(--mono); font-size: 11px;
+    font-weight: 500; color: var(--ink); cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .speed-btn:last-child { border-right: none; }
+  .speed-btn:active { background: var(--paper-warm); }
+  .speed-btn.active { background: var(--ink); color: var(--paper); }
 
-        .audio-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            width: 85px;
-            height: 85px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 2.2rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 20px rgba(74, 58, 255, 0.25);
-            transition: all 0.2s ease;
-        }
+  .sentence-card {
+    border-bottom: 1px solid var(--rule); padding: 22px 0;
+  }
+  .sentence-card:first-of-type { border-top: 1px solid var(--rule); }
+  .sentence-num {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin-bottom: 10px;
+  }
+  .sentence-num strong { color: var(--ink); font-weight: 700; }
 
-        .audio-btn:hover {
-            transform: scale(1.05);
-        }
+  .chunk-strip {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 12px; padding: 12px 14px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px;
+  }
+  .chunk-strip-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .chunk-strip-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .play-all {
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 7px 12px; font-family: var(--sans); font-size: 12px;
+    font-weight: 600; cursor: pointer; border-radius: 2px;
+    display: inline-flex; align-items: center; gap: 6px;
+    -webkit-appearance: none;
+  }
+  .play-all:active:not(:disabled) { background: var(--accent); }
+  .play-all:disabled { opacity: 0.35; cursor: not-allowed; }
+  .play-all .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper); }
+  .play-all.playing .dot { animation: pulse 0.9s ease-in-out infinite; }
 
-        .audio-btn.wide {
-            width: auto;
-            height: auto;
-            border-radius: 30px;
-            font-size: 1rem;
-            padding: 14px 22px;
-            font-weight: bold;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
+  .chunk-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .chunk-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--paper); border: 1px solid var(--ink);
+    color: var(--ink); padding: 6px 10px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .chunk-btn:active:not(:disabled) { background: var(--ink); color: var(--paper); }
+  .chunk-btn:disabled {
+    opacity: 0.4; cursor: not-allowed;
+    background: var(--paper-warm); border-color: var(--rule); color: var(--ink-mute);
+  }
+  .chunk-btn.playing {
+    background: var(--accent); border-color: var(--accent); color: var(--paper);
+    opacity: 1;
+  }
+  .chunk-btn .chunk-num { font-weight: 700; opacity: 0.7; }
+  .chunk-btn .check { display: none; color: var(--accent); }
+  .chunk-btn.used .check { display: inline-block; }
+  .chunk-btn.used.playing .check { color: var(--paper); }
 
-        .hint-text {
-            font-size: 0.9rem;
-            color: var(--neutral);
-        }
+  .btn-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 4px; margin-bottom: 10px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--paper-card); border: 1px solid var(--ink);
+    color: var(--ink); padding: 7px 12px;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .btn:active { background: var(--ink); color: var(--paper); }
+  .btn.active { background: var(--ink); color: var(--paper); }
+  .btn:disabled {
+    background: var(--paper-warm); border-color: var(--rule);
+    color: var(--ink-mute); cursor: not-allowed;
+    border-style: dashed;
+  }
+  .btn:disabled:active { background: var(--paper-warm); color: var(--ink-mute); }
+  .btn .lock-icon { font-size: 10px; }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+  .reveal { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .reveal.open { max-height: 800px; }
+  .transcript {
+    font-family: var(--serif); font-size: 16px; line-height: 1.45;
+    padding: 11px 14px; background: var(--paper-card);
+    border-left: 3px solid var(--ink); border-radius: 0 4px 4px 0;
+    margin-top: 4px;
+  }
+  .vietnamese {
+    font-family: var(--sans); font-size: 14px; line-height: 1.55;
+    color: var(--vi-ink); padding: 12px 14px; background: var(--vi-bg);
+    border-radius: 4px; margin-top: 8px; position: relative;
+    padding-right: 36px;
+  }
+  .vietnamese::before {
+    content: 'VI'; position: absolute; top: 11px; right: 12px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em;
+    color: var(--vi-mute);
+  }
+  .input-label {
+    display: block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 6px 0 6px;
+  }
+  textarea.answer {
+    width: 100%; min-height: 72px; resize: vertical;
+    font-family: var(--serif); font-size: 15.5px; line-height: 1.5;
+    padding: 10px 12px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px; outline: none;
+    -webkit-appearance: none;
+  }
+  textarea.answer:focus { border-color: var(--ink); }
+  textarea.answer::placeholder { color: var(--ink-mute); font-style: italic; font-size: 14px; }
+  textarea.answer:disabled { background: var(--paper-warm); }
 
-        .option-btn {
-            background-color: var(--card-bg);
-            border: 2px solid #e2e8f0;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 1rem;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-            color: var(--text);
-            font-weight: 500;
-        }
+  .result-box {
+    margin-top: 10px; padding: 11px 14px;
+    background: var(--paper-card); border-radius: 4px;
+    border-left: 3px solid var(--accent); display: none;
+  }
+  .result-box.show { display: block; }
+  .result-box.poor { border-left-color: var(--wrong); }
+  .result-score {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px;
+  }
+  .result-score strong { color: var(--ink); font-size: 13px; }
+  .result-diff { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; }
+  .word-right { background: var(--right-soft); padding: 1px 3px; border-radius: 2px; }
+  .word-missing { background: var(--wrong-soft); color: var(--wrong); padding: 1px 3px; border-radius: 2px; }
 
-        .option-btn:hover:not([disabled]) {
-            border-color: var(--primary);
-            background-color: #fafaff;
-        }
+  .submit-area {
+    margin-top: 32px; padding: 24px 18px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 4px; text-align: center;
+  }
+  .submit-area h2 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px;
+    margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .submit-area p { color: var(--vi-mute); font-size: 13px; margin-bottom: 16px; }
+  .submit-btn {
+    background: var(--paper); color: var(--ink); border: none;
+    padding: 12px 24px; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .submit-btn:active { background: var(--accent-soft); }
+  .summary { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(250,247,240,0.2); }
+  .summary.show { display: block; }
+  .summary-score {
+    font-family: var(--serif); font-size: 44px; font-weight: 500;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .summary-score sup { font-size: 18px; color: var(--vi-mute); }
+  .summary-final-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--vi-mute);
+  }
 
-        .option-btn.correct {
-            background-color: #ecfdf5;
-            border-color: var(--success);
-            color: #065f46;
-            font-weight: bold;
-        }
-
-        .option-btn.incorrect {
-            background-color: #fef2f2;
-            border-color: var(--error);
-            color: #991b1b;
-            opacity: 0.8;
-        }
-
-        .option-btn.dont-know {
-            background-color: #f8fafc;
-            border-style: dashed;
-            color: var(--neutral);
-            text-align: center;
-        }
-
-        .option-btn.dont-know:hover:not([disabled]) {
-            background-color: #f1f5f9;
-            border-color: var(--neutral);
-        }
-
-        .action-btn {
-            background-color: var(--text);
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            font-weight: bold;
-            transition: opacity 0.2s;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .action-btn:hover {
-            opacity: 0.9;
-        }
-
-        .action-btn.secondary-toggle {
-            background-color: #f1f3f9;
-            color: var(--text);
-            border: 2px solid #e2e8f0;
-            margin-bottom: 10px;
-        }
-
-        .feedback {
-            margin-top: 20px;
-            min-height: 90px;
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }
-
-        .reveal-box {
-            display: none;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 15px;
-            text-align: left;
-            border: 1px solid #e2e8f0;
-        }
-
-        .reveal-title {
-            font-size: 1.6rem;
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .reveal-sub {
-            color: var(--neutral);
-            font-size: 1rem;
-            margin-bottom: 15px;
-            font-family: monospace;
-        }
-
-        .streak-dots {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
-        
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #e2e8f0;
-            transition: background-color 0.2s;
-        }
-        
-        .dot.active {
-            background-color: var(--success);
-        }
-
-        .mode-badge {
-            display: inline-block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-        }
-
-        .mode-main { background-color: #e0e7ff; color: #3730a3; }
-        .mode-dictation { background-color: #d1fae5; color: #065f46; }
-
-        .screen { display: none; }
-        .screen.active { display: block; }
-    </style>
+  /* Pause overlay between cards (gives user a moment to register feedback) */
+  .next-floater {
+    display: none; margin-top: 14px;
+  }
+  .next-floater.show { display: block; }
+  .next-btn {
+    width: 100%; background: var(--ink); color: var(--paper); border: none;
+    padding: 12px 16px; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; border-radius: 4px;
+    -webkit-appearance: none;
+  }
+  .next-btn:active { background: var(--accent); }
+</style>
 </head>
 <body>
 
-<div class="container">
-    
-    <div id="quiz-header" style="display: none;">
-        <div class="phase-indicator" id="phase-title">Part 1: Tech Terminology Comprehension</div>
-        <div class="progress-bar"><div class="progress" id="progress-bar-inner"></div></div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #6c757d; font-size: 0.95rem;">
-            <span id="progress-text">Terms Mastered: 0 / 0</span>
-            <span id="queue-count">Remaining: 0</span>
-        </div>
+<!-- ===== Stage 0: Intro ===== -->
+<section class="stage active" id="stage-intro">
+  <div class="intro-wrap">
+    <div class="eyebrow">
+      <span>Listening Lab</span>
+      <span>Startup Jargon</span>
+    </div>
+    <h1 class="title">Mobile drill, <em>then dictation.</em></h1>
+    <p class="deck">Twelve heavyweight words from the startup-jargon corpus. First a speed drill — five correct in a row to graduate each word. Then dictation on six real sentences.</p>
+
+    <div class="stages-overview">
+      <div class="stage-card">
+        <div class="stage-card-num">Part 01 · Speed Drill</div>
+        <div class="stage-card-title">5 seconds per answer</div>
+        <div class="stage-card-body">Each word plays, you pick its Vietnamese meaning before the timer runs out. Words you get right on first try graduate immediately. Words you miss come back until you nail them 5 times in a row.</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-card-num">Part 02 · Dictation</div>
+        <div class="stage-card-title">One chance per chunk</div>
+        <div class="stage-card-body">Six sentences. Each chunk plays once. "Play all" reads the whole sentence naturally. Type, submit, get scored.</div>
+      </div>
     </div>
 
-    <div id="landing-screen" class="screen active">
-        <div class="card">
-            <h1 style="color: var(--primary); margin-bottom: 10px;">UX Research Listening System</h1>
-            <p style="font-size: 1.1rem; line-height: 1.6; color: #6c757d; margin-bottom: 25px;">
-                Master advanced English industry jargon for UI/UX Research entirely by sound. <br><br>
-                <strong>Part 1:</strong> The hardest terms appear first, shuffled randomly within difficulty tiers. Clear each word 5 continuous times under 5 seconds to pass. Click Skip at any time to skip to sentences.<br><br>
-                <strong>Part 2:</strong> Listen to 10 context-driven case study sentences.
-            </p>
-            <button class="action-btn" style="background-color: var(--primary);" onclick="unlockAndStartApplication()">Start Training Session</button>
-        </div>
+    <div class="rules-callout">
+      <strong>Mastery rule:</strong> if you get a word right on its very first appearance, it graduates immediately — no further drilling. If you miss it (wrong answer, "I don't know", or timeout), it joins the drill pool and you need <strong>5 correct in a row</strong> to graduate it. The English spelling stays hidden until you miss a word.
     </div>
 
-    <div id="game-card" class="screen">
-        <div class="timer-bar" id="timer-bar-container"><div class="timer-fill" id="timer-bar-fill"></div></div>
-        <div class="card">
-            
-            <div class="top-action-row">
-                <div id="mode-badge" class="mode-badge mode-main">Main Round</div>
-                <div class="streak-dots" id="streak-container">
-                    <div class="dot" id="dot1"></div>
-                    <div class="dot" id="dot2"></div>
-                    <div class="dot" id="dot3"></div>
-                    <div class="dot" id="dot4"></div>
-                    <div class="dot" id="dot5"></div>
-                </div>
-                <button id="skip-to-p2-btn" class="skip-btn" onclick="jumpToPartTwoDirectly()">Skip to Part 2 →</button>
-            </div>
-            
-            <div class="audio-container" id="audio-interface-block">
-                </div>
-
-            <div id="mc-options-area" class="options-grid"></div>
-
-            <div id="dictation-reveal-area" style="display: none;">
-                <button id="toggle-reveal-btn" class="action-btn secondary-toggle" onclick="toggleTextRevealBox()">Show Sentence Text</button>
-                <div id="hidden-reveal-box" class="reveal-box"></div>
-            </div>
-
-            <button id="next-step-btn" class="action-btn" style="display: none; margin: 10px auto 0 auto;" onclick="advanceGameWorkflow()">Next Item →</button>
-        </div>
-
-        <div class="feedback" id="feedback-display"></div>
+    <div id="voice-warning" class="voice-warning">
+      Your browser is using a default voice. For best pronunciation, use Chrome or Edge.
     </div>
 
-    <div id="phase-transition-screen" class="screen">
-        <div class="card">
-            <h2>¡Part 1 Complete! 🎉</h2>
-            <p style="font-size: 1.15rem; line-height: 1.6; color: #6c757d;">Phenomenal parsing speed. You tracked and cleared all high-difficulty UX Research vocabulary. Let's move on to Part 2.</p>
-            <button class="action-btn" onclick="beginPartTwoDictationWorkflow()">Start Part 2: 10 Case Study Sentences →</button>
-        </div>
+    <div class="button-stack">
+      <button class="primary-btn" id="start-from-drill">Begin Part 01 →</button>
+      <button class="secondary-btn" id="skip-to-listening">Skip to Part 02 (Dictation)</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Stage 1: Drill ===== -->
+<section class="stage" id="stage-drill">
+  <div class="test-wrap">
+    <div class="test-header">
+      <div class="test-header-left">
+        <strong id="drill-graduated">0</strong> / <strong id="drill-total">0</strong> graduated · <span id="drill-attempts">0</span> attempts
+      </div>
+      <button class="skip-link" id="skip-from-drill">Skip →</button>
     </div>
 
-    <div id="completion-screen" class="screen">
-        <div class="card">
-            <h2>Session Concluded 🏆</h2>
-            <p style="font-size: 1.2rem; line-height: 1.6; color: #6c757d;">You have processed all components! Advanced vocabulary loops were filtered by core parsing metrics and 10 full structural paradigms were contextually decoded.</p>
-            <button class="action-btn" style="background-color: var(--primary);" onclick="restartEntireApplicationState()">Run Session Again</button>
+    <div class="streak-strip" id="streak-strip"></div>
+
+    <div class="testcard" id="drill-card">
+      <div class="play-area">
+        <div class="play-prompt">Listen — 5 seconds to answer</div>
+        <button class="big-play-btn" id="drill-play-btn">
+          <span class="play-dot"></span>
+          <span>Play word</span>
+        </button>
+        <div class="timer-row idle" id="timer-row">
+          <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-fill"></div></div>
+          <span class="timer-seconds" id="timer-seconds">5s</span>
         </div>
+      </div>
+      <div class="options-prompt">Choose its meaning</div>
+      <div class="options" id="drill-options"></div>
+      <div class="feedback" id="drill-feedback"></div>
+      <div class="next-floater" id="drill-next-floater">
+        <button class="next-btn" id="drill-next-btn">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Stage 2: Listening / Dictation ===== -->
+<section class="stage" id="stage-listening">
+  <div class="listening-wrap">
+    <div class="eyebrow">
+      <span>Part 02 · Dictation</span>
+      <span>Startup Jargon · 6 sentences</span>
+    </div>
+    <h1 class="title">One chance. <em>Listen well.</em></h1>
+    <p class="deck">Six sentences from the corpus you just drilled. Each chunk plays only once. "Play all" reads the full sentence at natural pace.</p>
+
+    <div class="listening-controls">
+      <span class="listening-controls-label">Speed</span>
+      <div class="speed-buttons" role="group">
+        <button class="speed-btn" data-rate="0.7">0.7×</button>
+        <button class="speed-btn active" data-rate="0.85">0.85×</button>
+        <button class="speed-btn" data-rate="1.0">1.0×</button>
+        <button class="speed-btn" data-rate="1.15">1.15×</button>
+      </div>
     </div>
 
-</div>
+    <main id="sentences"></main>
+
+    <section class="submit-area">
+      <h2>Submit your dictation</h2>
+      <p>You'll get word-by-word feedback for each sentence.</p>
+      <button class="submit-btn" id="submit-btn">Score my dictation</button>
+      <div class="summary" id="summary">
+        <div class="summary-score" id="summary-score">—<sup>%</sup></div>
+        <div class="summary-final-label">Overall accuracy</div>
+      </div>
+    </section>
+  </div>
+</section>
 
 <script>
-    const dictionary = {
-        "heuristics": { difficulty: 10, meaning: "Recognized usability principles used to inspect interfaces.", ipa: "/hjuˈrɪs.tɪks/", sentence: "We evaluated the checkout flow based on Nielsen's heuristics." },
-        "triangulation": { difficulty: 9, meaning: "Using multiple data collection methods to validate user research findings.", ipa: "/traɪˌæŋ.ɡjəˈleɪ.ʃən/", sentence: "By cross-referencing logs and interviews, we achieved data triangulation." },
-        "ethnography": { difficulty: 9, meaning: "Observing users naturally within their real-world environment.", ipa: "/eθˈnɒɡ.rə.fi/", sentence: "Field ethnography revealed hidden pain points in the legacy workflow." },
-        "card-sorting": { difficulty: 8, meaning: "A method where users categorize topics to help structure information architecture.", ipa: "/kɑːd ˈsɔː.tɪŋ/", sentence: "Card-sorting exercises informed the redesign of our global navigation menu." },
-        "cognitive-bias": { difficulty: 8, meaning: "Systematic errors in user thinking that alter behaviors and survey responses.", ipa: "/ˈkɒɡ.nɪ.tɪv ˈbaɪ.əs/", sentence: "Leading questions in a user interview trigger strong cognitive bias." },
-        "telemetry": { difficulty: 7, meaning: "Automated remote measurement and collection of digital behavioral metrics.", ipa: "/təˈlem.ə.tri/", sentence: "In-app telemetry tracked drop-off rates across the onboarding steps." },
-        "usability": { difficulty: 6, meaning: "The ease of use and learnability of a human-made digital object.", ipa: "/ˌjuː.zəˈbɪl.ə.ti/", sentence: "The prototype failed our core usability metrics for task completion." },
-        "persona": { difficulty: 5, meaning: "A semi-fictional archetype representing a major user segment.", ipa: "/pəˈsəʊ.nə/", sentence: "Our primary persona maps closely to enterprise administrators." },
-        "friction": { difficulty: 4, meaning: "Any variable that slows down or prevents users from reaching a goal.", ipa: "/ˈfrɪk.ʃən/", sentence: "Requiring password resets at checkout causes extreme interface friction." },
-        "prototype": { difficulty: 3, meaning: "An interactive model constructed to test usability theories quickly.", ipa: "/ˈprəʊ.tə.taɪp/", sentence: "We built a high-fidelity prototype to test the new sorting filters." }
+/* ============================================================
+   WORD BANK — 12 heaviest words from the 6 dictation sentences
+   ============================================================ */
+const WORDS = [
+  { word: "idiosyncratic", vi: "đặc trưng riêng kỳ quặc, không giống ai",
+    distractors: ["tiêu chuẩn hoá, đồng nhất khắp nơi", "phổ biến, ai cũng có thể nhận ra", "đơn giản và dễ hiểu", "linh hoạt, có thể thay đổi"] },
+  { word: "macroeconomic", vi: "thuộc về kinh tế vĩ mô, quy mô tổng thể",
+    distractors: ["thuộc về kinh tế vi mô, quy mô cá nhân", "thuộc về tâm lý người tiêu dùng", "thuộc về kỹ thuật sản xuất", "thuộc về chính trị quốc tế"] },
+  { word: "monopolistic", vi: "có tính độc quyền, kiểm soát toàn bộ thị trường",
+    distractors: ["có nhiều đối thủ cạnh tranh gay gắt", "phân tán giữa nhiều nhà cung cấp nhỏ", "mở cho mọi người tham gia tự do", "được nhà nước quản lý chặt"] },
+  { word: "infrastructures", vi: "các hạ tầng cốt lõi để hệ thống vận hành",
+    distractors: ["các ứng dụng cuối phục vụ người dùng", "các giao diện hiển thị trên màn hình", "các báo cáo phân tích định kỳ", "các quy trình nội bộ doanh nghiệp"] },
+  { word: "bifurcation", vi: "sự phân tách thành hai nhánh rõ rệt",
+    distractors: ["sự hợp nhất thành một khối duy nhất", "sự đa dạng hoá thành nhiều nhánh", "sự lặp lại theo chu kỳ", "sự cân bằng giữa các yếu tố"] },
+  { word: "orchestration", vi: "việc điều phối nhiều thành phần hoạt động cùng nhau",
+    distractors: ["việc giám sát hiệu năng hệ thống", "việc tối ưu chi phí vận hành", "việc tự động hoá một tác vụ đơn lẻ", "việc bảo trì định kỳ"] },
+  { word: "asymptotic", vi: "tiệm cận, càng lúc càng gần một giới hạn nhưng không chạm",
+    distractors: ["tăng trưởng tuyến tính đều đặn", "dao động lên xuống ngẫu nhiên", "đạt đến giới hạn chính xác và dừng lại", "giảm dần về không một cách tuyệt đối"] },
+  { word: "sclerotic", vi: "xơ cứng, chậm chạp do thiếu linh hoạt",
+    distractors: ["năng động và phản ứng nhanh nhạy", "đang trong giai đoạn tăng trưởng mạnh", "vừa được tái cấu trúc thành công", "có quy mô vừa và nhỏ"] },
+  { word: "precarity", vi: "tình trạng bấp bênh, dễ sụp đổ",
+    distractors: ["tình trạng ổn định và an toàn lâu dài", "tình trạng tăng trưởng bền vững", "tình trạng được bảo hộ pháp lý mạnh", "tình trạng có nhiều lợi thế cạnh tranh"] },
+  { word: "ephemeral", vi: "tồn tại trong thời gian rất ngắn rồi biến mất",
+    distractors: ["bền vững, tồn tại lâu dài", "lặp lại định kỳ theo chu kỳ", "ổn định và không thay đổi", "có thể phục hồi sau khi mất đi"] },
+  { word: "solopreneurs", vi: "những người khởi nghiệp một mình, không đồng sáng lập",
+    distractors: ["những người đồng sáng lập có nhiều đối tác", "những nhà đầu tư mạo hiểm chuyên nghiệp", "những giám đốc điều hành doanh nghiệp lớn", "những nhân viên cấp cao trong tập đoàn"] },
+  { word: "exorbitant", vi: "cực kỳ đắt đỏ, vượt quá mức hợp lý",
+    distractors: ["rẻ và hợp túi tiền", "ở mức giá thị trường bình thường", "miễn phí, không tốn chi phí", "đang được trợ giá"] }
+];
+
+const IDK_LABEL = "Tôi không biết";
+
+/* 6 dictation sentences with chunks (≤4w) and Vietnamese translations */
+const PARAGRAPH = [
+  {
+    chunks: ["The comprehensive", "hyper-automation of", "idiosyncratic operational workflows", "permits nascent enterprises", "to remain", "phenomenally lean."],
+    vi: "Việc tự động hoá toàn diện và sâu rộng các quy trình vận hành đặc thù cho phép các doanh nghiệp non trẻ duy trì được sự tinh gọn đến mức phi thường."
+  },
+  {
+    chunks: ["Global venture capital", "allocations exhibit", "a profound structural", "bifurcation between", "foundational monopolistic", "infrastructures and", "ephemeral application layers."],
+    vi: "Việc phân bổ vốn đầu tư mạo hiểm toàn cầu thể hiện một sự phân tách cấu trúc sâu sắc — giữa các hạ tầng nền tảng mang tính độc quyền và các lớp ứng dụng phù du, ngắn hạn."
+  },
+  {
+    chunks: ["Solopreneurs achieve", "unprecedented scalability,", "generating multi-million", "dollar macroeconomic", "revenue streams via", "sophisticated agentic", "orchestration frameworks."],
+    vi: "Những người khởi nghiệp một mình đạt được khả năng mở rộng chưa từng có, tạo ra các dòng doanh thu hàng triệu đô ở quy mô kinh tế vĩ mô thông qua các khung điều phối tác nhân AI tinh vi."
+  },
+  {
+    chunks: ["Sclerotic enterprise software", "incumbents face", "immediate existential precarity", "from nimble,", "AI-native disruptive", "market entrants."],
+    vi: "Những tay chơi cũ xơ cứng trong ngành phần mềm doanh nghiệp đang đối mặt với nguy cơ tồn vong tức thì, đến từ các đối thủ mới linh hoạt, sinh ra từ AI và mang tính đột phá thị trường."
+  },
+  {
+    chunks: ["Asymmetric hardware", "allocation constraints", "and exorbitant compute costs", "render foundational", "model cultivation", "intensely capital-intensive."],
+    vi: "Những ràng buộc bất đối xứng về phân bổ phần cứng và chi phí tính toán cắt cổ khiến việc nuôi dưỡng các mô hình nền tảng trở nên đòi hỏi vốn cực kỳ lớn."
+  },
+  {
+    chunks: ["The marginal cost", "of software synthesis", "approaches an asymptotic", "zero due to", "hyper-advanced generative", "code engines."],
+    vi: "Chi phí biên của việc tổng hợp phần mềm đang tiệm cận về không, nhờ vào các động cơ sinh mã siêu tiên tiến."
+  }
+];
+PARAGRAPH.forEach(s => { s.en = s.chunks.join(' '); });
+
+/* ============================================================
+   TTS
+   ============================================================ */
+let englishVoice = null;
+let ttsRate = 0.9;
+let listeningRate = 0.85;
+let activeChunkBtn = null;
+let activePlayAllBtn = null;
+let playAllTimer = null;
+
+function pickVoice() {
+  if (!('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  const ranked = [/Google US English/i, /Microsoft.*(Aria|Jenny|Guy|Davis|Emma)/i, /Samantha/i, /en-US/i, /en-GB/i, /^en/i];
+  for (const p of ranked) {
+    const v = voices.find(x => p.test(x.name) || p.test(x.lang));
+    if (v) { englishVoice = v; return; }
+  }
+  englishVoice = voices.find(v => /^en/i.test(v.lang)) || null;
+  if (englishVoice && !/Google|Microsoft|Samantha|Apple/i.test(englishVoice.name)) {
+    document.getElementById('voice-warning').classList.add('show');
+  }
+}
+if ('speechSynthesis' in window) {
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+
+function speakOnce(text, rate) {
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window)) { resolve(); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = rate; u.pitch = 1;
+    if (englishVoice) u.voice = englishVoice;
+    u.onend = u.onerror = () => resolve();
+    window.speechSynthesis.speak(u);
+  });
+}
+function cancelAllPlayback() {
+  if (playAllTimer) { clearTimeout(playAllTimer); playAllTimer = null; }
+  window.speechSynthesis.cancel();
+  if (activeChunkBtn) { activeChunkBtn.classList.remove('playing'); activeChunkBtn = null; }
+  if (activePlayAllBtn) { activePlayAllBtn.classList.remove('playing'); activePlayAllBtn = null; }
+}
+function speakWordAt(text, btn, onDone) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = ttsRate; u.pitch = 1;
+  if (englishVoice) u.voice = englishVoice;
+  if (btn) {
+    btn.classList.add('playing');
+    u.onend = u.onerror = () => {
+      btn.classList.remove('playing');
+      if (onDone) onDone();
     };
+  } else if (onDone) {
+    u.onend = u.onerror = onDone;
+  }
+  window.speechSynthesis.speak(u);
+}
 
-    const dictationSentences = [
-        { phrase: "The prototype failed our core usability metrics.", translation: "The interactive model didn't pass the standard ease-of-use checks." },
-        { phrase: "We evaluated the checkout flow based on Nielsen's heuristics.", translation: "We inspected the payment screens using established design principles." },
-        { phrase: "Leading questions in a user interview trigger strong cognitive bias.", translation: "Phrasing questions poorly shifts user thinking and creates errors." },
-        { phrase: "By cross-referencing logs and interviews, we achieved data triangulation.", translation: "We mixed qualitative and quantitative tools to prove our findings." },
-        { phrase: "Card-sorting exercises informed the redesign of our global navigation menu.", translation: "Letting users group topics showed us how to structure the layout menu." },
-        { phrase: "Field ethnography revealed hidden pain points in the legacy workflow.", translation: "Observing users in their real workspace showed unexpected workflow problems." },
-        { phrase: "In-app telemetry tracked drop-off rates across the onboarding steps.", translation: "Automated remote data feeds logged exactly where users abandoned the process." },
-        { phrase: "Our primary persona maps closely to enterprise administrators.", translation: "The target design archetype mirrors our major corporate user base." },
-        { phrase: "Requiring password resets at checkout causes extreme interface friction.", translation: "Forcing users to fix account details creates a roadblock to buying items." },
-        { phrase: "We built a high-fidelity prototype to test the new sorting filters.", translation: "We made a realistic interactive mockup to test data organization components." }
-    ];
+/* ============================================================
+   Utilities
+   ============================================================ */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function buildOptions(wordObj) {
+  return shuffle([wordObj.vi, ...wordObj.distractors]);
+}
+function gotoStage(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
 
-    let activePool = [];       
-    let currentItem = null;    
-    let userHasAnswered = false;
-    let vocabMasteredCount = 0;
-    let totalVocabCount = 0;
+/* ============================================================
+   PART 01: DRILL with 5-second timer + 5-in-a-row mastery
+   ============================================================ */
+const TIMER_DURATION = 5000; // 5 seconds
+const STREAK_GOAL = 5;
 
-    let currentPhase = 1;      
-    let dictationIndex = 0;
-    let textRevealedState = false;
+let deck = []; // [{ ...word, streak: 0 }]
+let current = null;
+let totalAttempts = 0;
+let timerId = null;
+let timerStart = 0;
+let countdownIntervalId = null;
+let isAnswered = false; // true after picking an option or timeout
 
-    let countdownInterval = null;
-    let timeRemainingMs = 5000;
-    const totalTimeLimitMs = 5000;
+function startDrill() {
+  deck = WORDS.map(w => ({ ...w, streak: 0, seen: false }));
+  totalAttempts = 0;
+  gotoStage('stage-drill');
+  updateDrillHeader();
+  renderStreakStrip();
+  nextDrillCard();
+}
 
-    function cleanToken(rawWord) {
-        return rawWord.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-    }
+function updateDrillHeader() {
+  const graduated = deck.filter(d => d.streak >= STREAK_GOAL).length;
+  document.getElementById('drill-graduated').textContent = graduated;
+  document.getElementById('drill-total').textContent = deck.length;
+  document.getElementById('drill-attempts').textContent = totalAttempts;
+}
 
-    function buildPartOneVocabularyPool() {
-        const uniqueWords = new Set();
-        Object.keys(dictionary).forEach(key => uniqueWords.add(key));
+function renderStreakStrip() {
+  const strip = document.getElementById('streak-strip');
+  strip.innerHTML = '';
+  deck.forEach((d, idx) => {
+    const chip = document.createElement('span');
+    chip.className = 'word-chip';
+    if (d.streak >= STREAK_GOAL) chip.classList.add('graduated');
+    if (current && d.word === current.word && d.streak < STREAK_GOAL) chip.classList.add('active');
+    // Show only an anonymous slot number — never reveal the English word during the drill
+    const slotLabel = '#' + String(idx + 1).padStart(2, '0');
+    chip.innerHTML = `${slotLabel} <span class="streak-num">${d.streak}/${STREAK_GOAL}</span>`;
+    strip.appendChild(chip);
+  });
+}
 
-        activePool = Array.from(uniqueWords).map((wordKey, index) => {
-            return {
-                id: index,
-                word: wordKey,
-                difficulty: dictionary[wordKey].difficulty,
-                meaning: dictionary[wordKey].meaning,
-                ipa: dictionary[wordKey].ipa,
-                sentence: dictionary[wordKey].sentence,
-                streak: 0 
-            };
-        });
+function pickNextWord() {
+  const candidates = deck.filter(d => d.streak < STREAK_GOAL);
+  if (candidates.length === 0) return null;
+  // Avoid immediate repeat if alternatives exist
+  if (candidates.length > 1 && current) {
+    const others = candidates.filter(c => c.word !== current.word);
+    if (others.length > 0) return others[Math.floor(Math.random() * others.length)];
+  }
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
 
-        totalVocabCount = activePool.length;
-    }
+function nextDrillCard() {
+  current = pickNextWord();
+  if (!current) {
+    // All graduated → go to listening
+    gotoStage('stage-listening');
+    renderListening();
+    return;
+  }
+  isAnswered = false;
+  updateDrillHeader();
+  renderStreakStrip();
+  renderDrillOptions();
+  hideDrillFeedback();
+  document.getElementById('drill-next-floater').classList.remove('show');
+  resetTimerUI();
 
-    function switchScreenView(activeScreenId) {
-        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        document.getElementById(activeScreenId).classList.add('active');
-    }
+  const card = document.getElementById('drill-card');
+  card.classList.remove('flip-in');
+  void card.offsetWidth;
+  card.classList.add('flip-in');
 
-    // FIXED INITIALIZATION: Stripped cross-origin autoplays completely to unlock execution contexts safely
-    function unlockAndStartApplication() {
-        // Safe, isolated audio permission unlocking ping
-        try {
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-        } catch(e) { console.log(e); }
-        
-        document.getElementById("quiz-header").style.display = "block";
-        switchScreenView("game-card");
-        
-        loadNextPhase1Card();
-    }
-
-    function jumpToPartTwoDirectly() {
-        clearInterval(countdownInterval);
-        document.getElementById("timer-bar-container").style.display = "none";
-        beginPartTwoDictationWorkflow();
-    }
-
-    function pullConfusableDistractors(correctMeaning, count = 3) {
-        const allMeanings = Object.values(dictionary).map(v => v.meaning);
-        const filtered = allMeanings.filter(m => m !== correctMeaning);
-        return filtered.sort(() => 0.5 - Math.random()).slice(0, count);
-    }
-
-    function playEnglishTTS(textString, wordByWordMode = false) {
-        try {
-            window.speechSynthesis.cancel();
-            let targetText = textString.trim();
-
-            if (wordByWordMode) {
-                const words = targetText.split(/\s+/);
-                let cumulativeDelay = 0;
-                
-                words.forEach((w) => {
-                    let cleanWord = w.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                    if (cleanWord.length > 0) {
-                        setTimeout(() => {
-                            const utterance = new SpeechSynthesisUtterance(cleanWord);
-                            utterance.lang = 'en-US';
-                            utterance.rate = 0.75; 
-                            window.speechSynthesis.speak(utterance);
-                        }, cumulativeDelay);
-                        cumulativeDelay += 850; 
-                    }
-                });
-            } else {
-                const utterance = new SpeechSynthesisUtterance(targetText);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.85;
-                window.speechSynthesis.speak(utterance);
-            }
-        } catch(err) {
-            console.error("Audio API blocked:", err);
-        }
-    }
-
-    function triggerAudioPlayback() {
-        if (!currentItem) return;
-        if (currentPhase === 1) {
-            playEnglishTTS(currentItem.word, false);
-        } else {
-            playEnglishTTS(currentItem.phrase, false);
-        }
-    }
-
-    function startCountdownTimer() {
-        clearInterval(countdownInterval);
-        if (currentPhase !== 1) return;
-
-        timeRemainingMs = totalTimeLimitMs;
-        document.getElementById("timer-bar-container").style.display = "block";
-        const fillBar = document.getElementById("timer-bar-fill");
-        fillBar.style.width = "100%";
-
-        const intervalStepMs = 50;
-        countdownInterval = setInterval(() => {
-            if (userHasAnswered) {
-                clearInterval(countdownInterval);
-                return;
-            }
-
-            timeRemainingMs -= intervalStepMs;
-            const percentage = (timeRemainingMs / totalTimeLimitMs) * 100;
-            fillBar.style.width = `${percentage}%`;
-
-            if (timeRemainingMs <= 0) {
-                clearInterval(countdownInterval);
-                handleTimeOutFailure();
-            }
-        }, intervalStepMs);
-    }
-
-    function handleTimeOutFailure() {
-        userHasAnswered = true;
-        document.getElementById("timer-bar-container").style.display = "none";
-
-        document.querySelectorAll(".option-btn").forEach(btn => {
-            btn.disabled = true;
-            if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
-        });
-
-        const matchIdx = activePool.findIndex(item => item.id === currentItem.id);
-        activePool[matchIdx].streak = 0;
-        updateStreakDotsVisuals(0);
-
-        const revealTemplateHTML = `
-            <div class="reveal-title">${currentItem.word}</div>
-            <div class="reveal-sub">${currentItem.ipa} | Difficulty: ${currentItem.difficulty}/10</div>
-        `;
-
-        document.getElementById("feedback-display").innerHTML = `
-            <div style="text-align: left;">
-                ${revealTemplateHTML}
-                <strong style="color: var(--error)">Time out! (Over 5 seconds)</strong><br>
-                <span style="font-size:0.95rem; color:var(--neutral)">Meaning: <strong>${currentItem.meaning}</strong></span><br>
-                <small style="color:#6c757d">Continuous testing streak reset down to 0. Word shuffled back into tier pool.</small>
-            </div>
-        `;
-
-        document.getElementById("next-step-btn").style.display = "block";
-    }
-
-    function updateStreakDotsVisuals(streakValue) {
-        for (let i = 1; i <= 5; i++) {
-            const dot = document.getElementById(`dot${i}`);
-            if (i <= streakValue) dot.classList.add("active");
-            else dot.classList.remove("active");
-        }
-    }
-
-    function toggleTextRevealBox() {
-        const box = document.getElementById("hidden-reveal-box");
-        const btn = document.getElementById("toggle-reveal-btn");
-        textRevealedState = !textRevealedState;
-        
-        if (textRevealedState) {
-            box.style.display = "block";
-            btn.innerText = "Hide Sentence Text";
-        } else {
-            box.style.display = "none";
-            btn.innerText = "Show Sentence Text";
-        }
-    }
-
-    function loadNextPhase1Card() {
-        const unmastered = activePool.filter(item => item.streak < 5);
-        
-        if (unmastered.length > 0) {
-            const maxDifficulty = Math.max(...unmastered.map(item => item.difficulty));
-            const hardestAvailableTier = unmastered.filter(item => item.difficulty === maxDifficulty);
-            const randIndex = Math.floor(Math.random() * hardestAvailableTier.length);
-            currentItem = hardestAvailableTier[randIndex];
-            
-            runGlobalInterfacePainter();
-        } else {
-            switchScreenView("phase-transition-screen");
-        }
-    }
-
-    function runGlobalInterfacePainter() {
-        userHasAnswered = false;
-        document.getElementById("feedback-display").innerHTML = "";
-        document.getElementById("next-step-btn").style.display = "none";
-
-        const progressBarInner = document.getElementById("progress-bar-inner");
-        const progressText = document.getElementById("progress-text");
-        const queueCount = document.getElementById("queue-count");
-        const badge = document.getElementById("mode-badge");
-        const streakContainer = document.getElementById("streak-container");
-        const audioBox = document.getElementById("audio-interface-block");
-        const skipBtn = document.getElementById("skip-to-p2-btn");
-
-        if (currentPhase === 1) {
-            document.getElementById("phase-title").innerText = "Part 1: Tech Terminology Comprehension (5s Limit)";
-            document.getElementById("mc-options-area").style.display = "grid";
-            document.getElementById("dictation-reveal-area").style.display = "none";
-            skipBtn.style.display = "block";
-
-            audioBox.innerHTML = `
-                <button class="audio-btn" onclick="playEnglishTTS(currentItem.word, false)" aria-label="Play audio file">🔊</button>
-                <div class="hint-text">Click the speaker icon to play the term, then define it before time runs out!</div>
-            `;
-            
-            vocabMasteredCount = activePool.filter(item => item.streak >= 5).length;
-            progressBarInner.style.width = `${(vocabMasteredCount / totalVocabCount) * 100}%`;
-            progressText.innerText = `Terms Mastered: ${vocabMasteredCount} / ${totalVocabCount}`;
-            
-            const remainingUnmastered = activePool.filter(item => item.streak < 5).length;
-            queueCount.innerText = `Active Queue: ${remainingUnmastered}`;
-
-            badge.innerText = `Tier Diff: ${currentItem.difficulty}/10`;
-            badge.className = "mode-badge mode-main";
-            streakContainer.style.visibility = "visible";
-            
-            updateStreakDotsVisuals(currentItem.streak);
-
-            const options = pullConfusableDistractors(currentItem.meaning, 2);
-            options.push(currentItem.meaning);
-            options.sort(() => 0.5 - Math.random());
-            options.push("I don't know"); 
-
-            const container = document.getElementById("mc-options-area");
-            container.innerHTML = "";
-            options.forEach(opt => {
-                const btn = document.createElement("button");
-                btn.className = "option-btn";
-                if(opt === "I don't know") btn.classList.add("dont-know");
-                btn.innerText = opt;
-                btn.onclick = () => evaluateMultipleChoiceSelection(btn, opt);
-                container.appendChild(btn);
-            });
-
-            setTimeout(() => {
-                if (document.activeElement) document.activeElement.blur();
-            }, 50);
-
-            startCountdownTimer();
-
-        } else {
-            document.getElementById("quiz-header").style.display = "block";
-            document.getElementById("timer-bar-container").style.display = "none";
-            document.getElementById("phase-title").innerText = "Part 2: Case Study Listening Modulation";
-            document.getElementById("mc-options-area").style.display = "none";
-            document.getElementById("dictation-reveal-area").style.display = "block";
-            skipBtn.style.display = "none";
-
-            audioBox.innerHTML = `
-                <div class="audio-row">
-                    <button class="audio-btn wide" style="background-color: var(--secondary);" onclick="playEnglishTTS(currentItem.phrase, true)">⏹ Segmented Words</button>
-                    <button class="audio-btn wide" onclick="playEnglishTTS(currentItem.phrase, false)">💨 Natural Speed</button>
-                </div>
-                <div class="hint-text">Compare segmented processing speeds vs. linked blending shortcuts.</div>
-            `;
-            
-            badge.innerText = `Sentence ${dictationIndex + 1} of 10`;
-            badge.className = "mode-badge mode-dictation";
-            streakContainer.style.visibility = "hidden";
-
-            progressBarInner.style.width = `${(dictationIndex / 10) * 100}%`;
-            progressText.innerText = `Sentences Processed: ${dictationIndex} / 10`;
-            queueCount.innerText = `Remaining Targets: ${10 - dictationIndex}`;
-
-            textRevealedState = false;
-            document.getElementById("toggle-reveal-btn").innerText = "Show Sentence Text";
-            
-            const revealBox = document.getElementById("hidden-reveal-box");
-            revealBox.style.display = "none";
-            revealBox.innerHTML = `
-                <div class="reveal-title" style="color: var(--secondary)">Spoken Target Structure</div>
-                <div style="font-size:1.25rem; font-weight:bold; color:var(--text); margin-bottom:5px;">"${currentItem.phrase}"</div>
-                <div style="color: #6c757d; font-size:0.95rem;">Context Translation: ${currentItem.translation}</div>
-            `;
-
-            document.getElementById("next-step-btn").innerText = "Load Next Case Study →";
-            document.getElementById("next-step-btn").style.display = "block";
-            
-            setTimeout(() => {
-                if (document.activeElement) document.activeElement.blur();
-            }, 50);
-
-            dictationIndex++;
-            
-            // Auto trigger audio track safely on sentences block shift
-            setTimeout(triggerAudioPlayback, 400);
-        }
-    }
-
-    function evaluateMultipleChoiceSelection(clickedBtn, selectedText) {
-        if (userHasAnswered) return;
-        userHasAnswered = true;
-        
-        clearInterval(countdownInterval);
-        document.getElementById("timer-bar-container").style.display = "none";
-
-        document.querySelectorAll(".option-btn").forEach(btn => btn.disabled = true);
-        const feedbackArea = document.getElementById("feedback-display");
-        const matchLookupIndex = activePool.findIndex(item => item.id === currentItem.id);
-
-        const revealTemplateHTML = `
-            <div class="reveal-title">${currentItem.word}</div>
-            <div class="reveal-sub">${currentItem.ipa} | Difficulty Tier: ${currentItem.difficulty}/10</div>
-        `;
-
-        if (selectedText === currentItem.meaning) {
-            clickedBtn.classList.add("correct");
-            activePool[matchLookupIndex].streak += 1;
-            
-            updateStreakDotsVisuals(activePool[matchLookupIndex].streak);
-
-            if (activePool[matchLookupIndex].streak >= 5) {
-                feedbackArea.innerHTML = `
-                    <div style="text-align: left;">
-                        ${revealTemplateHTML}
-                        <strong style="color: var(--success)">¡Correct! Streak: 5/5.</strong> Vocabulary term fully mastered!<br>
-                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
-                    </div>
-                `;
-            } else {
-                feedbackArea.innerHTML = `
-                    <div style="text-align: left;">
-                        ${revealTemplateHTML}
-                        <strong style="color: var(--success)">¡Correct!</strong> Streak advanced to ${activePool[matchLookupIndex].streak}/5.<br>
-                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
-                    </div>
-                `;
-            }
-        } else {
-            clickedBtn.classList.add("incorrect");
-            document.querySelectorAll(".option-btn").forEach(btn => {
-                if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
-            });
-
-            activePool[matchLookupIndex].streak = 0;
-            updateStreakDotsVisuals(0);
-
-            let reason = selectedText === "I don't know" ? "Skipped via 'I don't know'." : "Wrong definition match.";
-
-            feedbackArea.innerHTML = `
-                <div style="text-align: left;">
-                    ${revealTemplateHTML}
-                    <strong style="color: var(--error)">Incorrect response.</strong> ${reason}<br>
-                    <span style="font-size:0.95rem; color:var(--neutral)">Definition: <strong>${currentItem.meaning}</strong></span><br>
-                    <small style="color:#6c757d">Testing streak criteria reset down to 0. Shuffled back into tier.</small>
-                </div>
-            `;
-        }
-
-        document.getElementById("next-step-btn").style.display = "block";
-    }
-
-    function beginPartTwoDictationWorkflow() {
-        currentPhase = 2;
-        dictationIndex = 0;
-        switchScreenView("game-card");
-        loadNextPhase2Card();
-    }
-
-    function loadNextPhase2Card() {
-        if (dictationIndex < dictationSentences.length) {
-            currentItem = dictationSentences[dictationIndex];
-            runGlobalInterfacePainter();
-        } else {
-            switchScreenView("completion-screen");
-            document.getElementById("quiz-header").style.display = "none";
-        }
-    }
-
-    function advanceGameWorkflow() {
-        if (currentPhase === 1) {
-            loadNextPhase1Card();
-        } else {
-            loadNextPhase2Card();
-        }
-    }
-
-    function restartEntireApplicationState() {
-        clearInterval(countdownInterval);
-        activePool = [];
-        vocabMasteredCount = 0;
-        dictationIndex = 0;
-        currentPhase = 1;
-
-        buildPartOneVocabularyPool();
-    }
-
-    document.addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            const nextBtn = document.getElementById("next-step-btn");
-            if (nextBtn.style.display === "block") {
-                nextBtn.click();
-            }
-        }
+  // Play the word, then start the timer when audio finishes
+  document.getElementById('drill-play-btn').disabled = true;
+  setTimeout(() => {
+    speakWordAt(current.word, document.getElementById('drill-play-btn'), () => {
+      if (!isAnswered) startTimer();
+      document.getElementById('drill-play-btn').disabled = false;
     });
+  }, 250);
+}
 
-    window.onload = () => {
-        restartEntireApplicationState();
-    };
+function renderDrillOptions() {
+  const optsEl = document.getElementById('drill-options');
+  optsEl.innerHTML = '';
+  const opts = buildOptions(current);
+  // Pinned IDK
+  const idkBtn = document.createElement('button');
+  idkBtn.className = 'option-btn idk-top';
+  idkBtn.innerHTML = `<span class="opt-letter">?</span><span>${escapeHtml(IDK_LABEL)}</span>`;
+  idkBtn.dataset.opt = IDK_LABEL;
+  idkBtn.addEventListener('click', () => handleDrillAnswer(IDK_LABEL, idkBtn));
+  optsEl.appendChild(idkBtn);
+  opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-letter">${String.fromCharCode(65 + i)}</span><span>${escapeHtml(opt)}</span>`;
+    btn.dataset.opt = opt;
+    btn.addEventListener('click', () => handleDrillAnswer(opt, btn));
+    optsEl.appendChild(btn);
+  });
+}
+
+function resetTimerUI() {
+  const fill = document.getElementById('timer-fill');
+  fill.classList.remove('running', 'paused');
+  fill.style.animation = 'none';
+  void fill.offsetWidth;
+  fill.style.animation = '';
+  document.getElementById('timer-seconds').textContent = '5s';
+  document.getElementById('timer-row').classList.add('idle');
+}
+
+function startTimer() {
+  resetTimerUI();
+  document.getElementById('timer-row').classList.remove('idle');
+  const fill = document.getElementById('timer-fill');
+  fill.classList.add('running');
+  timerStart = Date.now();
+  // Update the seconds display
+  countdownIntervalId = setInterval(() => {
+    const elapsed = Date.now() - timerStart;
+    const remaining = Math.max(0, TIMER_DURATION - elapsed);
+    const secs = Math.ceil(remaining / 1000);
+    document.getElementById('timer-seconds').textContent = secs + 's';
+  }, 100);
+  // Set the timeout to fire when timer ends
+  timerId = setTimeout(() => {
+    if (!isAnswered) handleDrillTimeout();
+  }, TIMER_DURATION);
+}
+
+function stopTimer() {
+  if (timerId) { clearTimeout(timerId); timerId = null; }
+  if (countdownIntervalId) { clearInterval(countdownIntervalId); countdownIntervalId = null; }
+  const fill = document.getElementById('timer-fill');
+  fill.classList.add('paused');
+}
+
+function handleDrillTimeout() {
+  if (isAnswered) return;
+  isAnswered = true;
+  stopTimer();
+  totalAttempts++;
+  current.seen = true;
+  current.streak = 0;
+
+  // Disable options and reveal correct
+  document.querySelectorAll('#drill-options .option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.opt === current.vi) b.classList.add('reveal-correct');
+    else b.classList.add('faded');
+  });
+  const fb = document.getElementById('drill-feedback');
+  fb.classList.add('show', 'timeout');
+  fb.innerHTML = '<strong>Out of time.</strong> The word is <em>' + escapeHtml(current.word) + '</em> — <em>' + escapeHtml(current.vi) + '</em>. You\'ll need 5 correct in a row to graduate it.';
+  updateDrillHeader();
+  renderStreakStrip();
+  showDrillNext();
+}
+
+function handleDrillAnswer(chosen, btnEl) {
+  if (isAnswered) return;
+  isAnswered = true;
+  stopTimer();
+  totalAttempts++;
+
+  const correct = chosen === current.vi;
+  const wasFirstEncounter = !current.seen;
+  current.seen = true;
+  document.querySelectorAll('#drill-options .option-btn').forEach(b => b.disabled = true);
+
+  if (correct) {
+    if (wasFirstEncounter) {
+      // First time seeing this word and got it right — graduate immediately, no further drilling
+      current.streak = STREAK_GOAL;
+    } else {
+      current.streak++;
+    }
+    document.querySelectorAll('#drill-options .option-btn').forEach(b => {
+      if (b === btnEl) b.classList.add('correct');
+      else b.classList.add('faded');
+    });
+    const fb = document.getElementById('drill-feedback');
+    fb.classList.add('show', 'right');
+    if (wasFirstEncounter) {
+      fb.innerHTML = '<strong>Graduated on first try.</strong> You already know this word — moving on.';
+    } else if (current.streak >= STREAK_GOAL) {
+      fb.innerHTML = '<strong>Graduated.</strong> Five in a row — this word is in your ear.';
+    } else {
+      fb.innerHTML = '<strong>Correct.</strong> Streak ' + current.streak + ' / ' + STREAK_GOAL + '.';
+    }
+  } else {
+    current.streak = 0;
+    document.querySelectorAll('#drill-options .option-btn').forEach(b => {
+      if (b === btnEl) b.classList.add('incorrect');
+      else if (b.dataset.opt === current.vi) b.classList.add('reveal-correct');
+      else b.classList.add('faded');
+    });
+    const fb = document.getElementById('drill-feedback');
+    fb.classList.add('show', 'wrong');
+    const label = chosen === IDK_LABEL ? "<strong>No worries.</strong>" : "<strong>Not this time.</strong>";
+    // Now the English spelling is shown after a wrong answer — the learner has earned the reveal
+    fb.innerHTML = label + ' The word is <em>' + escapeHtml(current.word) + '</em> — <em>' + escapeHtml(current.vi) + '</em>. You\'ll need 5 correct in a row to graduate it.';
+  }
+  updateDrillHeader();
+  renderStreakStrip();
+  showDrillNext();
+}
+
+function hideDrillFeedback() {
+  const fb = document.getElementById('drill-feedback');
+  fb.classList.remove('show', 'right', 'timeout', 'wrong');
+  fb.textContent = '';
+}
+
+function showDrillNext() {
+  const floater = document.getElementById('drill-next-floater');
+  floater.classList.add('show');
+  const btn = document.getElementById('drill-next-btn');
+  const graduated = deck.filter(d => d.streak >= STREAK_GOAL).length;
+  btn.textContent = graduated >= deck.length ? 'Continue to Part 02 →' : 'Next word →';
+}
+
+document.getElementById('drill-play-btn').addEventListener('click', () => {
+  // Manual replay during the question — but doesn't restart timer
+  speakWordAt(current.word, document.getElementById('drill-play-btn'), null);
+});
+document.getElementById('drill-next-btn').addEventListener('click', nextDrillCard);
+
+/* ============================================================
+   PART 02: LISTENING / DICTATION
+   ============================================================ */
+async function playChunk(text, btn) {
+  if (btn.disabled) return;
+  cancelAllPlayback();
+  btn.classList.add('playing');
+  activeChunkBtn = btn;
+  await speakOnce(text, listeningRate);
+  btn.classList.remove('playing');
+  if (activeChunkBtn === btn) activeChunkBtn = null;
+  btn.disabled = true;
+  btn.classList.add('used');
+}
+async function playWholeSentence(fullText, allBtn, chunkBtns) {
+  // NATURAL playback — one continuous utterance, not chunk-by-chunk
+  if (allBtn.disabled) return;
+  cancelAllPlayback();
+  allBtn.classList.add('playing');
+  activePlayAllBtn = allBtn;
+  chunkBtns.forEach(b => b.disabled = true);
+  await speakOnce(fullText, listeningRate);
+  // Mark all chunks as used (the whole sentence was just played)
+  chunkBtns.forEach(b => { b.classList.add('used'); b.disabled = true; });
+  allBtn.classList.remove('playing');
+  allBtn.disabled = true;
+  if (activePlayAllBtn === allBtn) activePlayAllBtn = null;
+}
+
+/* Lenient grading */
+function normalizeWord(w) { return w.toLowerCase().replace(/[^a-z0-9']/g, '').replace(/'/g, ''); }
+function tokenize(text) { return text.trim().split(/\s+/).filter(Boolean); }
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const al = a.length, bl = b.length;
+  if (!al) return bl; if (!bl) return al;
+  const v = Array(bl + 1).fill(0).map((_, i) => i);
+  for (let i = 1; i <= al; i++) {
+    let prev = i;
+    for (let j = 1; j <= bl; j++) {
+      const cur = a[i-1] === b[j-1] ? v[j-1] : Math.min(v[j-1], v[j], prev) + 1;
+      v[j-1] = prev; prev = cur;
+    }
+    v[bl] = prev;
+  }
+  return v[bl];
+}
+function wordsMatch(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 2) return false;
+  const d = levenshtein(a, b);
+  if (a.length <= 4) return d === 0;
+  if (a.length <= 7) return d <= 1;
+  return d <= 2;
+}
+function diffWords(originalText, learnerText) {
+  const origRaw = tokenize(originalText);
+  const learnRaw = tokenize(learnerText);
+  const orig = origRaw.map(normalizeWord);
+  const learn = learnRaw.map(normalizeWord);
+  const n = orig.length, m = learn.length;
+  const dp = Array(n + 1).fill(null).map(() => Array(m + 1).fill(0));
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      if (wordsMatch(orig[i-1], learn[j-1])) dp[i][j] = dp[i-1][j-1] + 1;
+      else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  const matched = Array(n).fill(false);
+  let i = n, j = m;
+  while (i > 0 && j > 0) {
+    if (wordsMatch(orig[i-1], learn[j-1])) { matched[i-1] = true; i--; j--; }
+    else if (dp[i-1][j] >= dp[i][j-1]) i--; else j--;
+  }
+  const correctCount = matched.filter(Boolean).length;
+  const accuracy = n > 0 ? Math.round((correctCount / n) * 100) : 0;
+  const html = origRaw.map((w, idx) =>
+    matched[idx] ? `<span class="word-right">${escapeHtml(w)}</span>` : `<span class="word-missing">${escapeHtml(w)}</span>`
+  ).join(' ');
+  return { accuracy, correctCount, total: n, html };
+}
+
+function renderListening() {
+  const container = document.getElementById('sentences');
+  container.innerHTML = '';
+  PARAGRAPH.forEach((s, i) => {
+    const card = document.createElement('article');
+    card.className = 'sentence-card';
+    const chunkButtonsHtml = s.chunks.map((c, ci) =>
+      `<button class="chunk-btn" data-sent="${i}" data-chunk="${ci}"><span class="chunk-num">${ci + 1}</span>(${c.trim().split(/\s+/).length}w)<span class="check">✓</span></button>`
+    ).join('');
+    card.innerHTML = `
+      <div class="sentence-num"><strong>Sentence ${String(i + 1).padStart(2, '0')}</strong> · ${PARAGRAPH.length} total</div>
+      <div class="chunk-strip">
+        <div class="chunk-strip-header">
+          <span class="chunk-strip-label">${s.chunks.length} chunks · one chance each</span>
+          <button class="play-all" data-sent="${i}"><span class="dot"></span>Play whole sentence</button>
+        </div>
+        <div class="chunk-row">${chunkButtonsHtml}</div>
+      </div>
+      <label class="input-label" for="answer-${i}">Type the full sentence</label>
+      <textarea class="answer" id="answer-${i}" placeholder="Write what you hear…" spellcheck="false"></textarea>
+      <div class="btn-row">
+        <button class="btn en-btn" data-idx="${i}" disabled><span class="lock-icon">🔒</span> Transcript (after submit)</button>
+        <button class="btn vi-btn" data-idx="${i}" disabled><span class="lock-icon">🔒</span> Tiếng Việt (after submit)</button>
+      </div>
+      <div class="reveal en-reveal"><div class="transcript">${escapeHtml(s.en)}</div></div>
+      <div class="reveal vi-reveal"><div class="vietnamese">${escapeHtml(s.vi)}</div></div>
+      <div class="result-box" id="result-${i}">
+        <div class="result-score"><strong><span class="score-pct">0</span>%</strong> · <span class="score-words">0 of 0</span> words matched</div>
+        <div class="result-diff"></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('sentences').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn || btn.disabled) return;
+  if (btn.classList.contains('chunk-btn')) {
+    const sIdx = parseInt(btn.dataset.sent, 10);
+    const cIdx = parseInt(btn.dataset.chunk, 10);
+    playChunk(PARAGRAPH[sIdx].chunks[cIdx], btn);
+  } else if (btn.classList.contains('play-all')) {
+    const sIdx = parseInt(btn.dataset.sent, 10);
+    const card = btn.closest('.sentence-card');
+    const chunkBtns = Array.from(card.querySelectorAll('.chunk-btn'));
+    playWholeSentence(PARAGRAPH[sIdx].en, btn, chunkBtns);
+  } else if (btn.classList.contains('en-btn')) {
+    const card = btn.closest('.sentence-card');
+    const reveal = card.querySelector('.en-reveal');
+    const open = reveal.classList.toggle('open');
+    btn.classList.toggle('active', open);
+    btn.textContent = open ? 'Hide transcript' : 'Show transcript';
+  } else if (btn.classList.contains('vi-btn')) {
+    const card = btn.closest('.sentence-card');
+    const reveal = card.querySelector('.vi-reveal');
+    const open = reveal.classList.toggle('open');
+    btn.classList.toggle('active', open);
+    btn.textContent = open ? 'Ẩn tiếng Việt' : 'Tiếng Việt';
+  }
+});
+
+document.querySelectorAll('.speed-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    listeningRate = parseFloat(b.dataset.rate);
+  });
+});
+
+document.getElementById('submit-btn').addEventListener('click', () => {
+  const anyAnswered = PARAGRAPH.some((_, i) => (document.getElementById('answer-' + i).value || '').trim().length > 0);
+  if (!anyAnswered) { alert('Please answer at least one sentence before submitting.'); return; }
+  cancelAllPlayback();
+  let totalCorrect = 0, totalWords = 0;
+  PARAGRAPH.forEach((s, i) => {
+    const answer = document.getElementById('answer-' + i).value || '';
+    const r = diffWords(s.en, answer);
+    totalCorrect += r.correctCount; totalWords += r.total;
+    const box = document.getElementById('result-' + i);
+    box.classList.add('show');
+    if (r.accuracy < 60) box.classList.add('poor');
+    else box.classList.remove('poor');
+    box.querySelector('.score-pct').textContent = r.accuracy;
+    box.querySelector('.score-words').textContent = r.correctCount + ' of ' + r.total;
+    box.querySelector('.result-diff').innerHTML = r.html;
+  });
+  // Unlock transcript and Vietnamese buttons now that the test is over
+  document.querySelectorAll('.en-btn').forEach(b => {
+    b.disabled = false;
+    b.innerHTML = 'Show transcript';
+  });
+  document.querySelectorAll('.vi-btn').forEach(b => {
+    b.disabled = false;
+    b.innerHTML = 'Tiếng Việt';
+  });
+  const overall = totalWords > 0 ? Math.round((totalCorrect / totalWords) * 100) : 0;
+  const summary = document.getElementById('summary');
+  summary.classList.add('show');
+  document.getElementById('summary-score').innerHTML = overall + '<sup>%</sup>';
+  document.getElementById('submit-btn').textContent = 'Re-score';
+  document.getElementById('result-0').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ============================================================
+   Wiring
+   ============================================================ */
+document.getElementById('start-from-drill').addEventListener('click', startDrill);
+document.getElementById('skip-to-listening').addEventListener('click', () => {
+  renderListening();
+  gotoStage('stage-listening');
+});
+document.getElementById('skip-from-drill').addEventListener('click', () => {
+  cancelAllPlayback();
+  stopTimer();
+  renderListening();
+  gotoStage('stage-listening');
+});
 </script>
 
 </body>
