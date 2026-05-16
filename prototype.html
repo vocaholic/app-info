@@ -550,8 +550,6 @@
       <button class="skip-link" id="skip-from-drill">Skip →</button>
     </div>
 
-    <div class="streak-strip" id="streak-strip"></div>
-
     <div class="testcard" id="drill-card">
       <div class="play-area">
         <div class="play-prompt">Listen — 5 seconds to answer</div>
@@ -769,7 +767,7 @@ let countdownIntervalId = null;
 let isAnswered = false; // true after picking an option or timeout
 
 function startDrill() {
-  deck = WORDS.map(w => ({ ...w, streak: 0, seen: false }));
+  deck = WORDS.map(w => ({ ...w, streak: 0, seen: false, lastMissAttempt: null }));
   totalAttempts = 0;
   gotoStage('stage-drill');
   updateDrillHeader();
@@ -785,29 +783,51 @@ function updateDrillHeader() {
 }
 
 function renderStreakStrip() {
-  const strip = document.getElementById('streak-strip');
-  strip.innerHTML = '';
-  deck.forEach((d, idx) => {
-    const chip = document.createElement('span');
-    chip.className = 'word-chip';
-    if (d.streak >= STREAK_GOAL) chip.classList.add('graduated');
-    if (current && d.word === current.word && d.streak < STREAK_GOAL) chip.classList.add('active');
-    // Show only an anonymous slot number — never reveal the English word during the drill
-    const slotLabel = '#' + String(idx + 1).padStart(2, '0');
-    chip.innerHTML = `${slotLabel} <span class="streak-num">${d.streak}/${STREAK_GOAL}</span>`;
-    strip.appendChild(chip);
-  });
+  // Streak strip removed from UI — header counters are sufficient for progress.
+  // Function kept as a no-op so existing call sites don't break.
 }
 
+/* Picker: weighted-random scheduler with soft repeat avoidance.
+   Goals:
+     - Words missed recently should come back soon, not eventually
+     - Same word shouldn't play twice in a row when alternatives exist
+     - Distribution should feel random, not deterministic
+   Weights:
+     - base = (STREAK_GOAL - streak)              streak 0 → 5, streak 4 → 1
+     - +3 if missed in the last 3 attempts        (mild recency boost)
+     - +2 if word has never been seen             (explore early)
+     - immediate previous word is excluded entirely IF there are ≥2 other candidates,
+       otherwise allowed (no choice). */
 function pickNextWord() {
   const candidates = deck.filter(d => d.streak < STREAK_GOAL);
   if (candidates.length === 0) return null;
-  // Avoid immediate repeat if alternatives exist
-  if (candidates.length > 1 && current) {
-    const others = candidates.filter(c => c.word !== current.word);
-    if (others.length > 0) return others[Math.floor(Math.random() * others.length)];
+  if (candidates.length === 1) return candidates[0];
+
+  // Soft anti-repeat: exclude the last word if there are alternatives
+  const prevWord = current ? current.word : null;
+  let pool = candidates;
+  if (prevWord) {
+    const others = candidates.filter(c => c.word !== prevWord);
+    if (others.length > 0) pool = others;
   }
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  if (pool.length === 1) return pool[0];
+
+  const weights = pool.map(c => {
+    let w = (STREAK_GOAL - c.streak); // 1..STREAK_GOAL
+    if (c.lastMissAttempt != null) {
+      const gap = totalAttempts - c.lastMissAttempt;
+      if (gap <= 3) w += 3; // recently missed → bring it back soon
+    }
+    if (!c.seen) w += 2;     // explore unseen words early
+    return Math.max(1, w);
+  });
+  const total = weights.reduce((s, x) => s + x, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
 }
 
 function nextDrillCard() {
@@ -905,6 +925,7 @@ function handleDrillTimeout() {
   totalAttempts++;
   current.seen = true;
   current.streak = 0;
+  current.lastMissAttempt = totalAttempts;
 
   // Disable options and reveal correct
   document.querySelectorAll('#drill-options .option-btn').forEach(b => {
@@ -944,15 +965,17 @@ function handleDrillAnswer(chosen, btnEl) {
     });
     const fb = document.getElementById('drill-feedback');
     fb.classList.add('show', 'right');
+    const heard = '<strong>The word is</strong> <em>' + escapeHtml(current.word) + '</em>.';
     if (wasFirstEncounter) {
-      fb.innerHTML = '<strong>Graduated on first try.</strong> You already know this word — moving on.';
+      fb.innerHTML = heard + ' <strong>Graduated on first try</strong> — you already know it.';
     } else if (current.streak >= STREAK_GOAL) {
-      fb.innerHTML = '<strong>Graduated.</strong> Five in a row — this word is in your ear.';
+      fb.innerHTML = heard + ' <strong>Graduated.</strong> Five in a row.';
     } else {
-      fb.innerHTML = '<strong>Correct.</strong> Streak ' + current.streak + ' / ' + STREAK_GOAL + '.';
+      fb.innerHTML = heard + ' Streak ' + current.streak + ' / ' + STREAK_GOAL + '.';
     }
   } else {
     current.streak = 0;
+    current.lastMissAttempt = totalAttempts;
     document.querySelectorAll('#drill-options .option-btn').forEach(b => {
       if (b === btnEl) b.classList.add('incorrect');
       else if (b.dataset.opt === current.vi) b.classList.add('reveal-correct');
