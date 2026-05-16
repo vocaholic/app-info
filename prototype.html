@@ -446,10 +446,17 @@
         document.getElementById(activeScreenId).classList.add('active');
     }
 
+    // FIXED INITIALIZATION: Triggers layout swaps and kicks off gameplay instantly upon physical landing click
     function unlockAndStartApplication() {
+        // Clear lingering audio restrictions
         window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        
+        // Paint dashboards
         document.getElementById("quiz-header").style.display = "block";
-        restartEntireApplicationState();
+        switchScreenView("game-card");
+        
+        // Directly cycle the first card array item
+        loadNextPhase1Card();
     }
 
     function jumpToPartTwoDirectly() {
@@ -648,7 +655,7 @@
                 container.appendChild(btn);
             });
 
-            // FIXED UIX FIX: Explicitly remove lingering focus from elements to block Enter auto-firing bugs
+            // Prevent focus bugs across viewport loads
             setTimeout(() => {
                 if (document.activeElement) document.activeElement.blur();
             }, 50);
@@ -705,4 +712,116 @@
 
     function evaluateMultipleChoiceSelection(clickedBtn, selectedText) {
         if (userHasAnswered) return;
-        userHasAnswered
+        userHasAnswered = true;
+        
+        clearInterval(countdownInterval);
+        document.getElementById("timer-bar-container").style.display = "none";
+
+        document.querySelectorAll(".option-btn").forEach(btn => btn.disabled = true);
+        const feedbackArea = document.getElementById("feedback-display");
+        const matchLookupIndex = activePool.findIndex(item => item.id === currentItem.id);
+
+        const revealTemplateHTML = `
+            <div class="reveal-title">${currentItem.word}</div>
+            <div class="reveal-sub">${currentItem.ipa} | Difficulty Tier: ${currentItem.difficulty}/10</div>
+        `;
+
+        if (selectedText === currentItem.meaning) {
+            clickedBtn.classList.add("correct");
+            activePool[matchLookupIndex].streak += 1;
+            
+            updateStreakDotsVisuals(activePool[matchLookupIndex].streak);
+
+            if (activePool[matchLookupIndex].streak >= 5) {
+                feedbackArea.innerHTML = `
+                    <div style="text-align: left;">
+                        ${revealTemplateHTML}
+                        <strong style="color: var(--success)">¡Correct! Streak: 5/5.</strong> Vocabulary term fully mastered!<br>
+                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    </div>
+                `;
+            } else {
+                feedbackArea.innerHTML = `
+                    <div style="text-align: left;">
+                        ${revealTemplateHTML}
+                        <strong style="color: var(--success)">¡Correct!</strong> Streak advanced to ${activePool[matchLookupIndex].streak}/5.<br>
+                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    </div>
+                `;
+            }
+        } else {
+            clickedBtn.classList.add("incorrect");
+            document.querySelectorAll(".option-btn").forEach(btn => {
+                if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
+            });
+
+            activePool[matchLookupIndex].streak = 0;
+            updateStreakDotsVisuals(0);
+
+            let reason = selectedText === "I don't know" ? "Skipped via 'I don't know'." : "Wrong definition match.";
+
+            feedbackArea.innerHTML = `
+                <div style="text-align: left;">
+                    ${revealTemplateHTML}
+                    <strong style="color: var(--error)">Incorrect response.</strong> ${reason}<br>
+                    <span style="font-size:0.95rem; color:var(--neutral)">Definition: <strong>${currentItem.meaning}</strong></span><br>
+                    <small style="color:#6c757d">Testing streak criteria reset down to 0. Shuffled back into tier.</small>
+                </div>
+            `;
+        }
+
+        document.getElementById("next-step-btn").style.display = "block";
+    }
+
+    function beginPartTwoDictationWorkflow() {
+        currentPhase = 2;
+        dictationIndex = 0;
+        switchScreenView("game-card");
+        loadNextPhase2Card();
+    }
+
+    function loadNextPhase2Card() {
+        if (dictationIndex < dictationSentences.length) {
+            currentItem = dictationSentences[dictationIndex];
+            runGlobalInterfacePainter();
+        } else {
+            switchScreenView("completion-screen");
+            document.getElementById("quiz-header").style.display = "none";
+        }
+    }
+
+    function advanceGameWorkflow() {
+        if (currentPhase === 1) {
+            loadNextPhase1Card();
+        } else {
+            loadNextPhase2Card();
+        }
+    }
+
+    function restartEntireApplicationState() {
+        clearInterval(countdownInterval);
+        activePool = [];
+        vocabMasteredCount = 0;
+        dictationIndex = 0;
+        currentPhase = 1;
+
+        buildPartOneVocabularyPool();
+    }
+
+    document.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            const nextBtn = document.getElementById("next-step-btn");
+            if (nextBtn.style.display === "block") {
+                nextBtn.click();
+            }
+        }
+    });
+
+    // DATA INSTANTIATION: Shuffles dictionary metrics into storage objects on browser paint
+    window.onload = () => {
+        restartEntireApplicationState();
+    };
+</script>
+
+</body>
+</html>
