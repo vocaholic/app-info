@@ -580,18 +580,12 @@
         }
     }
 
-    // FIXED WORKFLOW: Groups items into difficulty tiers, picking a random word from the hardest unmastered level
     function loadNextPhase1Card() {
         const unmastered = activePool.filter(item => item.streak < 5);
         
         if (unmastered.length > 0) {
-            // Find the absolute highest difficulty rating currently unmastered
             const maxDifficulty = Math.max(...unmastered.map(item => item.difficulty));
-            
-            // Collect all unmastered words belonging strictly to that highest remaining tier
             const hardestAvailableTier = unmastered.filter(item => item.difficulty === maxDifficulty);
-            
-            // Randomly pull a candidate from that specific bucket to guarantee interleaving
             const randIndex = Math.floor(Math.random() * hardestAvailableTier.length);
             currentItem = hardestAvailableTier[randIndex];
             
@@ -654,6 +648,11 @@
                 container.appendChild(btn);
             });
 
+            // FIXED UIX FIX: Explicitly remove lingering focus from elements to block Enter auto-firing bugs
+            setTimeout(() => {
+                if (document.activeElement) document.activeElement.blur();
+            }, 50);
+
             startCountdownTimer();
 
         } else {
@@ -693,6 +692,11 @@
 
             document.getElementById("next-step-btn").innerText = "Load Next Case Study →";
             document.getElementById("next-step-btn").style.display = "block";
+            
+            setTimeout(() => {
+                if (document.activeElement) document.activeElement.blur();
+            }, 50);
+
             dictationIndex++;
         }
 
@@ -701,113 +705,4 @@
 
     function evaluateMultipleChoiceSelection(clickedBtn, selectedText) {
         if (userHasAnswered) return;
-        userHasAnswered = true;
-        
-        clearInterval(countdownInterval);
-        document.getElementById("timer-bar-container").style.display = "none";
-
-        document.querySelectorAll(".option-btn").forEach(btn => btn.disabled = true);
-        const feedbackArea = document.getElementById("feedback-display");
-        const matchLookupIndex = activePool.findIndex(item => item.id === currentItem.id);
-
-        const revealTemplateHTML = `
-            <div class="reveal-title">${currentItem.word}</div>
-            <div class="reveal-sub">${currentItem.ipa} | Difficulty Tier: ${currentItem.difficulty}/10</div>
-        `;
-
-        if (selectedText === currentItem.meaning) {
-            clickedBtn.classList.add("correct");
-            activePool[matchLookupIndex].streak += 1;
-            
-            updateStreakDotsVisuals(activePool[matchLookupIndex].streak);
-
-            if (activePool[matchLookupIndex].streak >= 5) {
-                feedbackArea.innerHTML = `
-                    <div style="text-align: left;">
-                        ${revealTemplateHTML}
-                        <strong style="color: var(--success)">¡Correct! Streak: 5/5.</strong> Vocabulary term fully mastered!<br>
-                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
-                    </div>
-                `;
-            } else {
-                feedbackArea.innerHTML = `
-                    <div style="text-align: left;">
-                        ${revealTemplateHTML}
-                        <strong style="color: var(--success)">¡Correct!</strong> Streak advanced to ${activePool[matchLookupIndex].streak}/5.<br>
-                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
-                    </div>
-                `;
-            }
-        } else {
-            clickedBtn.classList.add("incorrect");
-            document.querySelectorAll(".option-btn").forEach(btn => {
-                if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
-            });
-
-            activePool[matchLookupIndex].streak = 0;
-            updateStreakDotsVisuals(0);
-
-            let reason = selectedText === "I don't know" ? "Skipped via 'I don't know'." : "Wrong definition match.";
-
-            feedbackArea.innerHTML = `
-                <div style="text-align: left;">
-                    ${revealTemplateHTML}
-                    <strong style="color: var(--error)">Incorrect response.</strong> ${reason}<br>
-                    <span style="font-size:0.95rem; color:var(--neutral)">Definition: <strong>${currentItem.meaning}</strong></span><br>
-                    <small style="color:#6c757d">Testing streak criteria reset down to 0. Shuffled back into tier.</small>
-                </div>
-            `;
-        }
-
-        document.getElementById("next-step-btn").style.display = "block";
-    }
-
-    function beginPartTwoDictationWorkflow() {
-        currentPhase = 2;
-        dictationIndex = 0;
-        switchScreenView("game-card");
-        loadNextPhase2Card();
-    }
-
-    function loadNextPhase2Card() {
-        if (dictationIndex < dictationSentences.length) {
-            currentItem = dictationSentences[dictationIndex];
-            runGlobalInterfacePainter();
-        } else {
-            switchScreenView("completion-screen");
-            document.getElementById("quiz-header").style.display = "none";
-        }
-    }
-
-    function advanceGameWorkflow() {
-        if (currentPhase === 1) {
-            loadNextPhase1Card();
-        } else {
-            loadNextPhase2Card();
-        }
-    }
-
-    function restartEntireApplicationState() {
-        clearInterval(countdownInterval);
-        activePool = [];
-        vocabMasteredCount = 0;
-        dictationIndex = 0;
-        currentPhase = 1;
-
-        buildPartOneVocabularyPool();
-        switchScreenView("game-card");
-        loadNextPhase1Card();
-    }
-
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            const nextBtn = document.getElementById("next-step-btn");
-            if (nextBtn.style.display === "block") {
-                nextBtn.click();
-            }
-        }
-    });
-</script>
-
-</body>
-</html>
+        userHasAnswered
