@@ -320,7 +320,7 @@
             <h1 style="color: var(--primary); margin-bottom: 10px;">UX Research Listening System</h1>
             <p style="font-size: 1.1rem; line-height: 1.6; color: #6c757d; margin-bottom: 25px;">
                 Master advanced English industry jargon for UI/UX Research entirely by sound. <br><br>
-                <strong>Part 1:</strong> Hardest terms are automatically sorted to appear first. Hit a continuous streak of 5 under a 5-second limit to clear each word. Use the Skip button at any time to jump to sentences.<br><br>
+                <strong>Part 1:</strong> The hardest terms appear first, shuffled randomly within difficulty tiers. Clear each word 5 continuous times under 5 seconds to pass. Click Skip at any time to skip to sentences.<br><br>
                 <strong>Part 2:</strong> Listen to 10 context-driven case study sentences.
             </p>
             <button class="action-btn" style="background-color: var(--primary);" onclick="unlockAndStartApplication()">Start Training Session</button>
@@ -378,8 +378,6 @@
 </div>
 
 <script>
-    // UX/UI Research Thematic Dataset
-    // Ranked loosely by subjective difficulty / obscurity (10 = Hardest, 1 = Simplest)
     const dictionary = {
         "heuristics": { difficulty: 10, meaning: "Recognized usability principles used to inspect interfaces.", ipa: "/hjuˈrɪs.tɪks/", sentence: "We evaluated the checkout flow based on Nielsen's heuristics." },
         "triangulation": { difficulty: 9, meaning: "Using multiple data collection methods to validate user research findings.", ipa: "/traɪˌæŋ.ɡjəˈleɪ.ʃən/", sentence: "By cross-referencing logs and interviews, we achieved data triangulation." },
@@ -393,7 +391,6 @@
         "prototype": { difficulty: 3, meaning: "An interactive model constructed to test usability theories quickly.", ipa: "/ˈprəʊ.tə.taɪp/", sentence: "We built a high-fidelity prototype to test the new sorting filters." }
     };
 
-    // Part 2: 10 Comprehensive contextual product architecture case study sentences
     const dictationSentences = [
         { phrase: "The prototype failed our core usability metrics.", translation: "The interactive model didn't pass the standard ease-of-use checks." },
         { phrase: "We evaluated the checkout flow based on Nielsen's heuristics.", translation: "We inspected the payment screens using established design principles." },
@@ -425,21 +422,8 @@
         return rawWord.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
     }
 
-    // Dynamic extraction engine sorting from HARDEST difficulty value down to the EASIEST
     function buildPartOneVocabularyPool() {
         const uniqueWords = new Set();
-        
-        dictationSentences.forEach(sentence => {
-            const tokens = sentence.phrase.split(/\s+/);
-            tokens.forEach(token => {
-                const cleaned = cleanToken(token);
-                if (cleaned && dictionary[cleaned]) {
-                    uniqueWords.add(cleaned);
-                }
-            });
-        });
-
-        // Ensure all system dictionary components are compiled cleanly
         Object.keys(dictionary).forEach(key => uniqueWords.add(key));
 
         activePool = Array.from(uniqueWords).map((wordKey, index) => {
@@ -454,8 +438,6 @@
             };
         });
 
-        // SORT MECHANISM: Descending organization order ensures absolute hard items appear first
-        activePool.sort((a, b) => b.difficulty - a.difficulty);
         totalVocabCount = activePool.length;
     }
 
@@ -565,15 +547,13 @@
         `;
 
         document.getElementById("feedback-display").innerHTML = `
-            ${revealTemplateHTML}
-            <strong style="color: var(--error)">Time out! (Over 5 seconds)</strong><br>
-            <span style="font-size:0.95rem; color:var(--neutral)">Meaning: <strong>${currentItem.meaning}</strong></span><br>
-            <small style="color:#6c757d">Continuous testing streak reset down to 0.</small>
+            <div style="text-align: left;">
+                ${revealTemplateHTML}
+                <strong style="color: var(--error)">Time out! (Over 5 seconds)</strong><br>
+                <span style="font-size:0.95rem; color:var(--neutral)">Meaning: <strong>${currentItem.meaning}</strong></span><br>
+                <small style="color:#6c757d">Continuous testing streak reset down to 0. Word shuffled back into tier pool.</small>
+            </div>
         `;
-
-        // Re-inject failure candidate immediately to the front of the tracking pile array
-        const removedItem = activePool.splice(matchIdx, 1)[0];
-        activePool.unshift(removedItem);
 
         document.getElementById("next-step-btn").style.display = "block";
     }
@@ -597,6 +577,27 @@
         } else {
             box.style.display = "none";
             btn.innerText = "Show Sentence Text";
+        }
+    }
+
+    // FIXED WORKFLOW: Groups items into difficulty tiers, picking a random word from the hardest unmastered level
+    function loadNextPhase1Card() {
+        const unmastered = activePool.filter(item => item.streak < 5);
+        
+        if (unmastered.length > 0) {
+            // Find the absolute highest difficulty rating currently unmastered
+            const maxDifficulty = Math.max(...unmastered.map(item => item.difficulty));
+            
+            // Collect all unmastered words belonging strictly to that highest remaining tier
+            const hardestAvailableTier = unmastered.filter(item => item.difficulty === maxDifficulty);
+            
+            // Randomly pull a candidate from that specific bucket to guarantee interleaving
+            const randIndex = Math.floor(Math.random() * hardestAvailableTier.length);
+            currentItem = hardestAvailableTier[randIndex];
+            
+            runGlobalInterfacePainter();
+        } else {
+            switchScreenView("phase-transition-screen");
         }
     }
 
@@ -631,13 +632,12 @@
             const remainingUnmastered = activePool.filter(item => item.streak < 5).length;
             queueCount.innerText = `Active Queue: ${remainingUnmastered}`;
 
-            badge.innerText = `Diff: ${currentItem.difficulty}/10`;
+            badge.innerText = `Tier Diff: ${currentItem.difficulty}/10`;
             badge.className = "mode-badge mode-main";
             streakContainer.style.visibility = "visible";
             
             updateStreakDotsVisuals(currentItem.streak);
 
-            // 4 Options Grid Layout setup configuration (2 Wrong, 1 Correct, 1 "I don't know")
             const options = pullConfusableDistractors(currentItem.meaning, 2);
             options.push(currentItem.meaning);
             options.sort(() => 0.5 - Math.random());
@@ -712,7 +712,7 @@
 
         const revealTemplateHTML = `
             <div class="reveal-title">${currentItem.word}</div>
-            <div class="reveal-sub">${currentItem.ipa} | Difficulty Rank: ${currentItem.difficulty}/10</div>
+            <div class="reveal-sub">${currentItem.ipa} | Difficulty Tier: ${currentItem.difficulty}/10</div>
         `;
 
         if (selectedText === currentItem.meaning) {
@@ -723,15 +723,19 @@
 
             if (activePool[matchLookupIndex].streak >= 5) {
                 feedbackArea.innerHTML = `
-                    ${revealTemplateHTML}
-                    <strong style="color: var(--success)">¡Correct! Streak: 5/5.</strong> Vocabulary term fully mastered!<br>
-                    <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    <div style="text-align: left;">
+                        ${revealTemplateHTML}
+                        <strong style="color: var(--success)">¡Correct! Streak: 5/5.</strong> Vocabulary term fully mastered!<br>
+                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    </div>
                 `;
             } else {
                 feedbackArea.innerHTML = `
-                    ${revealTemplateHTML}
-                    <strong style="color: var(--success)">¡Correct!</strong> Streak advanced to ${activePool[matchLookupIndex].streak}/5.<br>
-                    <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    <div style="text-align: left;">
+                        ${revealTemplateHTML}
+                        <strong style="color: var(--success)">¡Correct!</strong> Streak advanced to ${activePool[matchLookupIndex].streak}/5.<br>
+                        <small style="color:#6c757d">Context: ${currentItem.sentence}</small>
+                    </div>
                 `;
             }
         } else {
@@ -746,30 +750,16 @@
             let reason = selectedText === "I don't know" ? "Skipped via 'I don't know'." : "Wrong definition match.";
 
             feedbackArea.innerHTML = `
-                ${revealTemplateHTML}
-                <strong style="color: var(--error)">Incorrect response.</strong> ${reason}<br>
-                <span style="font-size:0.95rem; color:var(--neutral)">Definition: <strong>${currentItem.meaning}</strong></span><br>
-                <small style="color:#6c757d">Testing streak loop criteria reset down to 0.</small>
+                <div style="text-align: left;">
+                    ${revealTemplateHTML}
+                    <strong style="color: var(--error)">Incorrect response.</strong> ${reason}<br>
+                    <span style="font-size:0.95rem; color:var(--neutral)">Definition: <strong>${currentItem.meaning}</strong></span><br>
+                    <small style="color:#6c757d">Testing streak criteria reset down to 0. Shuffled back into tier.</small>
+                </div>
             `;
-
-            // On error, shuffle this missed item back to the absolute front so it cycles again quickly
-            const removedItem = activePool.splice(matchLookupIndex, 1)[0];
-            activePool.unshift(removedItem);
         }
 
         document.getElementById("next-step-btn").style.display = "block";
-    }
-
-    function loadNextPhase1Card() {
-        // Since activePool is sorted hard-to-easy, we always pick the first item that has a streak < 5
-        const nextTarget = activePool.find(item => item.streak < 5);
-        
-        if (nextTarget) {
-            currentItem = nextTarget;
-            runGlobalInterfacePainter();
-        } else {
-            switchScreenView("phase-transition-screen");
-        }
     }
 
     function beginPartTwoDictationWorkflow() {
