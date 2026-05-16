@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanish Listening & Dictation Master</title>
+    <title>Spanish Listening Trainer</title>
     <style>
         :root {
             --primary: #e63946;
@@ -61,7 +61,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Countdown Timer Strip */
         .timer-bar {
             width: 100%;
             height: 4px;
@@ -88,6 +87,17 @@
 
         .audio-container {
             margin: 15px 0 25px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .audio-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
         }
 
         .audio-btn {
@@ -110,10 +120,19 @@
             transform: scale(1.05);
         }
 
+        .audio-btn.wide {
+            width: auto;
+            height: auto;
+            border-radius: 30px;
+            font-size: 1rem;
+            padding: 14px 20px;
+            font-weight: bold;
+            gap: 8px;
+        }
+
         .hint-text {
             font-size: 0.9rem;
             color: var(--neutral);
-            margin-top: 12px;
         }
 
         .options-grid {
@@ -184,6 +203,11 @@
             opacity: 0.9;
         }
 
+        .action-btn.secondary-toggle {
+            background-color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
         .feedback {
             margin-top: 20px;
             min-height: 90px;
@@ -191,8 +215,16 @@
             line-height: 1.5;
         }
 
+        .reveal-box {
+            display: none;
+            background: #f1f3f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
         .reveal-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: var(--primary);
             font-weight: bold;
             margin-bottom: 5px;
@@ -204,7 +236,6 @@
             margin-bottom: 15px;
         }
 
-        /* 5-Dot Mastery System Tracker */
         .streak-dots {
             display: flex;
             justify-content: center;
@@ -236,7 +267,6 @@
         }
 
         .mode-main { background-color: #e3f2fd; color: #0d47a1; }
-        .mode-review { background-color: #fff3e0; color: #e65100; }
         .mode-dictation { background-color: #e8f5e9; color: #1b5e20; }
 
         .screen { display: none; }
@@ -260,8 +290,8 @@
         <div class="card">
             <h1 style="color: var(--primary); margin-bottom: 10px;">Spanish Audio Trainer</h1>
             <p style="font-size: 1.1rem; line-height: 1.6; color: #6c757d; margin-bottom: 25px;">
-                <strong>Part 1:</strong> Identify words by sound. Each word must be answered correctly <strong>5 continuous times</strong> to pass. You have a strict <strong>5-second time limit</strong> per attempt!<br><br>
-                <strong>Part 2:</strong> Dictation round covering 20 complete conversational sentences.
+                <strong>Part 1:</strong> Identify single words by sound under a 5-second limit. Pass 5 continuous times to master.<br><br>
+                <strong>Part 2:</strong> Listen to 20 complete sentences. Compare word-by-word separation vs. natural speed blending.
             </p>
             <button class="action-btn" style="background-color: var(--primary);" onclick="unlockAndStartApplication()">¡Vamos! Start Practice</button>
         </div>
@@ -280,14 +310,15 @@
                 <div class="dot" id="dot5"></div>
             </div>
             
-            <div class="audio-container">
-                <button class="audio-btn" onclick="triggerAudioPlayback()" aria-label="Play Spanish audio target">
-                    🔊
-                </button>
-                <div class="hint-text" id="audio-hint-text">Listen carefully to the audio</div>
-            </div>
+            <div class="audio-container" id="audio-interface-block">
+                </div>
 
             <div id="mc-options-area" class="options-grid"></div>
+
+            <div id="dictation-reveal-area" style="display: none;">
+                <button id="toggle-reveal-btn" class="action-btn secondary-toggle" onclick="toggleTextRevealBox()">Show Sentence Text</button>
+                <div id="hidden-reveal-box" class="reveal-box"></div>
+            </div>
 
             <button id="next-step-btn" class="action-btn" style="display: none; margin: 10px auto 0 auto;" onclick="advanceGameWorkflow()">Next Card →</button>
         </div>
@@ -298,7 +329,7 @@
     <div id="phase-transition-screen" class="screen">
         <div class="card">
             <h2 id="transition-header">¡Parte 1 Completada! 🎉</h2>
-            <p style="font-size: 1.15rem; line-height: 1.6;" id="transition-body">Brilliant focus! You have mastered every unique vocabulary word by passing it 5 continuous times under the time limit. Let's move on to Part 2.</p>
+            <p style="font-size: 1.15rem; line-height: 1.6;" id="transition-body">Brilliant focus! All core vocabulary terms have been passed 5 continuous times. Let's move on to Part 2.</p>
             <button class="action-btn" onclick="beginPartTwoDictationWorkflow()">Start Part 2: 20 Sentences Dictation →</button>
         </div>
     </div>
@@ -306,7 +337,7 @@
     <div id="completion-screen" class="screen">
         <div class="card">
             <h2>¡Enhorabuena! 🏆</h2>
-            <p style="font-size: 1.2rem; line-height: 1.6;">You have fully completed the training! You mastered all vocabulary under pressure, and safely processed all 20 structural dictation sentences.</p>
+            <p style="font-size: 1.2rem; line-height: 1.6;">Training fully completed! You parsed vocabulary variations cleanly, isolated word components under speed pressures, and completed all 20 structure evaluations.</p>
             <button class="action-btn" style="background-color: var(--primary);" onclick="restartEntireApplicationState()">Restart Program</button>
         </div>
     </div>
@@ -314,7 +345,6 @@
 </div>
 
 <script>
-    // System Dictionary Matrix
     const dictionary = {
         "el": { meaning: "the (masc.)", ipa: "/el/", sentence: "El café es excelente. (The coffee is excellent.)" },
         "la": { meaning: "the (fem.)", ipa: "/la/", sentence: "La idea es buena. (The idea is good.)" },
@@ -334,12 +364,11 @@
         "idea": { meaning: "idea", ipa: "/iˈðe.a/", sentence: "Es una gran idea. (It is a great idea.)" },
         "es": { meaning: "is (from 'ser')", ipa: "/es/", sentence: "Es muy bueno. (It is very good.)" },
         "buena": { meaning: "good (fem.)", ipa: "/ˈbwe.na/", sentence: "Una buena idea. (A good idea.)" },
-        "hay": { meaning: "there is / there are", ipa: "/aj/", sentence: "Hay un problema. (There is a problem.)" },
+        "hay": { meaning: "there is / there are", ipa: "/aj/", sentence: "Hay un problem. (There is a problem.)" },
         "gente": { meaning: "people", ipa: "/ˈxen.te/", sentence: "Hay mucha gente. (There are many people.)" },
         "aquí": { meaning: "here", ipa: "/aˈki/", sentence: "Ven aquí. (Come here.)" },
         "dice": { meaning: "he/she says", ipa: "/ˈdi.θe/", sentence: "Él dice la verdad. (He says the truth.)" },
-        "venga": { meaning: "he/she comes (subjunctive)", ipa: "/ˈben.ɡa/", sentence: "Espero que venga. (I hope that he/she comes.)" },
-        "él": { meaning: "he", ipa: "/el/", sentence: "Él es mi amigo. (He is mi amigo.)" },
+        "él": { meaning: "he", ipa: "/el/", sentence: "Él es mi amigo. (He is my friend.)" },
         "lava": { meaning: "he/she washes", ipa: "/ˈla.βa/", sentence: "Él se lava. (He washes himself.)" },
         "manos": { meaning: "hands", ipa: "/ˈma.nos/", sentence: "Lava tus manos. (Wash your hands.)" },
         "libro": { meaning: "book", ipa: "/ˈli.βro/", sentence: "Tengo un libro nuevo. (I have a new book.)" },
@@ -349,7 +378,6 @@
         "mesa": { meaning: "table", ipa: "/ˈme.sa/", sentence: "Está en la mesa. (It is on the table.)" }
     };
 
-    // Part 2 Expanded: 20 sentences utilizing core terms systematically
     const dictationSentences = [
         { phrase: "Café y leche.", translation: "Coffee and milk." },
         { phrase: "Tengo una idea que es buena.", translation: "I have an idea that is good." },
@@ -381,8 +409,8 @@
 
     let currentPhase = 1;      
     let dictationIndex = 0;
+    let textRevealedState = false;
 
-    // Countdown Timer Properties
     let countdownInterval = null;
     let timeRemainingMs = 5000;
     const totalTimeLimitMs = 5000;
@@ -397,7 +425,6 @@
             .replace(/ñ/g, "n");             
     }
 
-    // Compiles vocab objects into a pool where every item tracks a target streak up to 5
     function buildPartOneVocabularyPool() {
         const uniqueWords = new Set();
         
@@ -411,7 +438,6 @@
             });
         });
 
-        // Ensure baseline functional items are fully injected
         ["el", "la", "un", "una", "de", "que", "y", "en", "no", "se", "ser", "haber"].forEach(baseKey => {
             if(dictionary[baseKey]) uniqueWords.add(baseKey);
         });
@@ -423,7 +449,7 @@
                 meaning: dictionary[wordKey].meaning,
                 ipa: dictionary[wordKey].ipa,
                 sentence: dictionary[wordKey].sentence,
-                streak: 0 // Track continuous passes (0 to 5)
+                streak: 0 
             };
         });
 
@@ -447,35 +473,54 @@
         return filtered.sort(() => 0.5 - Math.random()).slice(0, count);
     }
 
-    function triggerAudioPlayback() {
-        if (!currentItem) return;
+    // FIXED pronunciation for lone "y" and added distinct dual-mode sentence play controls
+    function playSpanishTTS(textString, wordByWordMode = false) {
         window.speechSynthesis.cancel();
+        
+        let targetText = textString.trim();
+        
+        // FIX: If the word is sitting completely alone as "y", intercept and translate to sound value "i"
+        if (targetText.toLowerCase() === 'y') {
+            targetText = 'i';
+        }
 
-        if (currentPhase === 1) {
-            const segments = currentItem.word.split(/\s*[\/\u2014]\s*|\s+ó\s+|\s+o\s+/);
+        if (wordByWordMode) {
+            // Split up the sentence to prevent smooth sound contractions (Anti-Liaison Mode)
+            const words = targetText.split(/\s+/);
             let cumulativeDelay = 0;
             
-            segments.forEach((segment) => {
-                const atomicText = segment.trim();
-                if (atomicText.length > 0) {
+            words.forEach((w) => {
+                let cleanWord = w.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿?]/g, "");
+                if (cleanWord.toLowerCase() === 'y') cleanWord = 'i'; // Safe lone variable tracking nested deep inside arrays
+                
+                if (cleanWord.length > 0) {
                     setTimeout(() => {
-                        const utterance = new SpeechSynthesisUtterance(atomicText);
+                        const utterance = new SpeechSynthesisUtterance(cleanWord);
                         utterance.lang = 'es-ES';
-                        utterance.rate = 0.85; 
+                        utterance.rate = 0.75; // Deliberate and highly descriptive pacing
                         window.speechSynthesis.speak(utterance);
                     }, cumulativeDelay);
-                    cumulativeDelay += 900; 
+                    cumulativeDelay += 850; 
                 }
             });
         } else {
-            const utterance = new SpeechSynthesisUtterance(currentItem.phrase);
+            // Smooth, fluid native pass (Natural Liaison Allowed)
+            const utterance = new SpeechSynthesisUtterance(targetText);
             utterance.lang = 'es-ES';
             utterance.rate = 0.82;
             window.speechSynthesis.speak(utterance);
         }
     }
 
-    // 5-Second Countdown Clock Logic
+    function triggerAudioPlayback() {
+        if (!currentItem) return;
+        if (currentPhase === 1) {
+            playSpanishTTS(currentItem.word, false);
+        } else {
+            playSpanishTTS(currentItem.phrase, false);
+        }
+    }
+
     function startCountdownTimer() {
         clearInterval(countdownInterval);
         if (currentPhase !== 1) return;
@@ -484,7 +529,6 @@
         document.getElementById("timer-bar-container").style.display = "block";
         const fillBar = document.getElementById("timer-bar-fill");
         fillBar.style.width = "100%";
-        fillBar.style.backgroundColor = "var(--primary)";
 
         const intervalStepMs = 50;
         countdownInterval = setInterval(() => {
@@ -508,16 +552,13 @@
         userHasAnswered = true;
         document.getElementById("timer-bar-container").style.display = "none";
 
-        // Highlight correct options automatically
         document.querySelectorAll(".option-btn").forEach(btn => {
             btn.disabled = true;
             if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
         });
 
-        // Reset target element index item streak completely down to 0
         const matchIdx = activePool.findIndex(item => item.id === currentItem.id);
         activePool[matchIdx].streak = 0;
-
         updateStreakDotsVisuals(0);
 
         const revealTemplateHTML = `
@@ -529,7 +570,7 @@
             ${revealTemplateHTML}
             <strong style="color: var(--error)">Time out! (Over 5 seconds)</strong><br>
             <span style="font-size:0.95rem; color:var(--neutral)">Meaning: <strong>${currentItem.meaning}</strong></span><br>
-            <small style="color:#6c757d">Continuous streak reset back to 0.</small>
+            <small style="color:#6c757d">Continuous streak tracking reset to 0.</small>
         `;
 
         document.getElementById("next-step-btn").style.display = "block";
@@ -543,6 +584,20 @@
         }
     }
 
+    function toggleTextRevealBox() {
+        const box = document.getElementById("hidden-reveal-box");
+        const btn = document.getElementById("toggle-reveal-btn");
+        textRevealedState = !textRevealedState;
+        
+        if (textRevealedState) {
+            box.style.display = "block";
+            btn.innerText = "Hide Sentence Text";
+        } else {
+            box.style.display = "none";
+            btn.innerText = "Show Sentence Text";
+        }
+    }
+
     function runGlobalInterfacePainter() {
         userHasAnswered = false;
         document.getElementById("feedback-display").innerHTML = "";
@@ -553,11 +608,18 @@
         const queueCount = document.getElementById("queue-count");
         const badge = document.getElementById("mode-badge");
         const streakContainer = document.getElementById("streak-container");
+        const audioBox = document.getElementById("audio-interface-block");
 
         if (currentPhase === 1) {
             document.getElementById("phase-title").innerText = "Part 1: Listening Comprehension (5s Limit)";
-            document.getElementById("audio-hint-text").innerText = "Listen and quickly pick the meaning before time runs out!";
             document.getElementById("mc-options-area").style.display = "grid";
+            document.getElementById("dictation-reveal-area").style.display = "none";
+
+            // Establish base simple circular play layout configurations
+            audioBox.innerHTML = `
+                <button class="audio-btn" onclick="playSpanishTTS(currentItem.word, false)" aria-label="Play audio entry">🔊</button>
+                <div class="hint-text">Identify the word before time runs out!</div>
+            `;
             
             vocabMasteredCount = activePool.filter(item => item.streak >= 5).length;
             progressBarInner.style.width = `${(vocabMasteredCount / totalVocabCount) * 100}%`;
@@ -572,7 +634,6 @@
             
             updateStreakDotsVisuals(currentItem.streak);
 
-            // Generate Options Matrix (4 wrong, 1 correct, 1 "I don't know")
             const options = pullConfusableDistractors(currentItem.meaning, 4);
             options.push(currentItem.meaning);
             options.sort(() => 0.5 - Math.random());
@@ -592,29 +653,42 @@
             startCountdownTimer();
 
         } else {
-            // PART 2: DICTATION - NO KEYBOARD USER INPUT CARD GRAPHICS
+            // PART 2 Sentences UI Painter
             document.getElementById("timer-bar-container").style.display = "none";
-            document.getElementById("phase-title").innerText = "Part 2: Phrase Listening Session";
-            document.getElementById("audio-hint-text").innerText = "Listen closely to the full sentence structure spoken naturally";
+            document.getElementById("phase-title").innerText = "Part 2: Structure Modulation Exercises";
             document.getElementById("mc-options-area").style.display = "none";
+            document.getElementById("dictation-reveal-area").style.display = "block";
+
+            // Injected dynamic Dual-Audio rows configurations
+            audioBox.innerHTML = `
+                <div class="audio-row">
+                    <button class="audio-btn wide" style="background-color: var(--secondary);" onclick="playSpanishTTS(currentItem.phrase, true)">⏹ Fixed Word-by-Word</button>
+                    <button class="audio-btn wide" onclick="playSpanishTTS(currentItem.phrase, false)">💨 Natural Sentence</button>
+                </div>
+                <div class="hint-text">Compare separated elements vs. integrated natural blending contractions.</div>
+            `;
             
             badge.innerText = `Sentence ${dictationIndex + 1} of 20`;
             badge.className = "mode-badge mode-dictation";
             streakContainer.style.visibility = "hidden";
 
             progressBarInner.style.width = `${(dictationIndex / 20) * 100}%`;
-            progressText.innerText = `Sentences Completed: ${dictationIndex} / 20`;
+            progressText.innerText = `Sentences Processed: ${dictationIndex} / 20`;
             queueCount.innerText = `Remaining Targets: ${20 - dictationIndex}`;
 
-            document.getElementById("next-step-btn").innerText = "Listen Next →";
-            document.getElementById("next-step-btn").style.display = "block";
+            textRevealedState = false;
+            document.getElementById("toggle-reveal-btn").innerText = "Show Sentence Text";
             
-            // Instantly display complete transcription logs safely
-            document.getElementById("feedback-display").innerHTML = `
-                <div class="reveal-title" style="color: var(--secondary)">Spoken Phrase Structure</div>
-                <div class="reveal-sub" style="margin-bottom:5px; font-size:1.4rem; color:var(--text)">"${currentItem.phrase}"</div>
+            const revealBox = document.getElementById("hidden-reveal-box");
+            revealBox.style.display = "none";
+            revealBox.innerHTML = `
+                <div class="reveal-title" style="color: var(--secondary)">Spoken Target Structure</div>
+                <div style="font-size:1.35rem; font-weight:bold; color:var(--text); margin-bottom:5px;">"${currentItem.phrase}"</div>
                 <div style="color: #6c757d; font-size:0.95rem;">Translation: ${currentItem.translation}</div>
             `;
+
+            document.getElementById("next-step-btn").innerText = "Load Next Sentence →";
+            document.getElementById("next-step-btn").style.display = "block";
             dictationIndex++;
         }
 
@@ -662,7 +736,6 @@
                 if (btn.innerText === currentItem.meaning) btn.classList.add("correct");
             });
 
-            // Hard complete break on failure resets continuous monitoring counter back to 0
             activePool[matchLookupIndex].streak = 0;
             updateStreakDotsVisuals(0);
 
@@ -680,7 +753,6 @@
     }
 
     function loadNextPhase1Card() {
-        // Find items that haven't hit a consecutive correct streak of 5
         const unmastered = activePool.filter(item => item.streak < 5);
         
         if (unmastered.length > 0) {
@@ -695,7 +767,6 @@
     function beginPartTwoDictationWorkflow() {
         currentPhase = 2;
         dictationIndex = 0;
-        document.getElementById("next-step-btn").innerText = "Next Card →";
         switchScreenView("game-card");
         loadNextPhase2Card();
     }
