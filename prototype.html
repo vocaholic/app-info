@@ -446,16 +446,17 @@
         document.getElementById(activeScreenId).classList.add('active');
     }
 
-    // FIXED INITIALIZATION: Triggers layout swaps and kicks off gameplay instantly upon physical landing click
+    // FIXED INITIALIZATION: Stripped cross-origin autoplays completely to unlock execution contexts safely
     function unlockAndStartApplication() {
-        // Clear lingering audio restrictions
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        // Safe, isolated audio permission unlocking ping
+        try {
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        } catch(e) { console.log(e); }
         
-        // Paint dashboards
         document.getElementById("quiz-header").style.display = "block";
         switchScreenView("game-card");
         
-        // Directly cycle the first card array item
         loadNextPhase1Card();
     }
 
@@ -472,30 +473,34 @@
     }
 
     function playEnglishTTS(textString, wordByWordMode = false) {
-        window.speechSynthesis.cancel();
-        let targetText = textString.trim();
+        try {
+            window.speechSynthesis.cancel();
+            let targetText = textString.trim();
 
-        if (wordByWordMode) {
-            const words = targetText.split(/\s+/);
-            let cumulativeDelay = 0;
-            
-            words.forEach((w) => {
-                let cleanWord = w.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                if (cleanWord.length > 0) {
-                    setTimeout(() => {
-                        const utterance = new SpeechSynthesisUtterance(cleanWord);
-                        utterance.lang = 'en-US';
-                        utterance.rate = 0.75; 
-                        window.speechSynthesis.speak(utterance);
-                    }, cumulativeDelay);
-                    cumulativeDelay += 850; 
-                }
-            });
-        } else {
-            const utterance = new SpeechSynthesisUtterance(targetText);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            window.speechSynthesis.speak(utterance);
+            if (wordByWordMode) {
+                const words = targetText.split(/\s+/);
+                let cumulativeDelay = 0;
+                
+                words.forEach((w) => {
+                    let cleanWord = w.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                    if (cleanWord.length > 0) {
+                        setTimeout(() => {
+                            const utterance = new SpeechSynthesisUtterance(cleanWord);
+                            utterance.lang = 'en-US';
+                            utterance.rate = 0.75; 
+                            window.speechSynthesis.speak(utterance);
+                        }, cumulativeDelay);
+                        cumulativeDelay += 850; 
+                    }
+                });
+            } else {
+                const utterance = new SpeechSynthesisUtterance(targetText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            }
+        } catch(err) {
+            console.error("Audio API blocked:", err);
         }
     }
 
@@ -623,7 +628,7 @@
 
             audioBox.innerHTML = `
                 <button class="audio-btn" onclick="playEnglishTTS(currentItem.word, false)" aria-label="Play audio file">🔊</button>
-                <div class="hint-text">Define the UIX research term before time runs out!</div>
+                <div class="hint-text">Click the speaker icon to play the term, then define it before time runs out!</div>
             `;
             
             vocabMasteredCount = activePool.filter(item => item.streak >= 5).length;
@@ -655,7 +660,6 @@
                 container.appendChild(btn);
             });
 
-            // Prevent focus bugs across viewport loads
             setTimeout(() => {
                 if (document.activeElement) document.activeElement.blur();
             }, 50);
@@ -705,9 +709,10 @@
             }, 50);
 
             dictationIndex++;
+            
+            // Auto trigger audio track safely on sentences block shift
+            setTimeout(triggerAudioPlayback, 400);
         }
-
-        setTimeout(triggerAudioPlayback, 400);
     }
 
     function evaluateMultipleChoiceSelection(clickedBtn, selectedText) {
@@ -817,7 +822,6 @@
         }
     });
 
-    // DATA INSTANTIATION: Shuffles dictionary metrics into storage objects on browser paint
     window.onload = () => {
         restartEntireApplicationState();
     };
