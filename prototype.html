@@ -660,7 +660,8 @@ function showResultScreen(isCorrect) {
   
   const ul = document.getElementById('result-examples');
   ul.innerHTML = '';
-  currentWordObj.examples.forEach(ex => {
+  // SLICE HERE: Only take the first 2 examples instead of all 5
+  currentWordObj.examples.slice(0, 2).forEach(ex => {
     let li = document.createElement('li');
     li.innerHTML = `<strong>${ex.en}</strong><span class="vi-translation">${ex.vi}</span>`;
     ul.appendChild(li);
