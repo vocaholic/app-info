@@ -132,6 +132,29 @@
     
     .word-correct { color: #28a745; font-weight: bold; }
     .word-wrong { color: #dc3545; text-decoration: underline; font-weight: bold; }
+
+    .config-box {
+      background: #e9ecef;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .config-box label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    .config-box input {
+      width: 80px;
+      font-size: 18px;
+      padding: 8px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+      margin-left: 10px;
+    }
+    .config-box input:focus { border-color: #007bff; outline: none; }
   </style>
 </head>
 <body>
@@ -142,11 +165,17 @@
     <h1>UI/UX Research Vocabulary</h1>
     <p style="text-align: center; font-size: 18px;">Master 20 key industry terms through listening.</p>
     <ul style="font-size: 16px; line-height: 1.8;">
-      <li><strong>Part 1:</strong> Listen to the word. Select the meaning in 5 seconds.</li>
-      <li><strong>Part 2:</strong> Review mistakes. A word is mastered after 3 correct streaks.</li>
-      <li><strong>Part 3:</strong> Listen to full sentences and dictate what you hear.</li>
+      <li><strong>Part 1:</strong> Initial Check. Listen to all words once and select meaning within the time limit.</li>
+      <li><strong>Part 2:</strong> Review Mistakes. Words you missed will appear in random order until you get a 3-correct streak.</li>
+      <li><strong>Part 3:</strong> Sentence Dictation. Listen to full sentences and dictate what you hear.</li>
     </ul>
-    <button class="btn" style="width: 100%; margin-top: 20px; font-size: 20px;" onclick="startPart1()">Start Learning</button>
+
+    <div class="config-box">
+      <label for="time-cap">⏱️ Time limit per word (seconds):</label>
+      <input type="number" id="time-cap" value="5" min="2" max="60" step="1">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 25px; font-size: 20px;" onclick="startPart1()">Start Learning</button>
   </div>
 
   <!-- SHARED QUIZ SCREEN (Part 1 & 2) -->
@@ -266,7 +295,7 @@ const wordData = [
     word: "Quantitative", 
     vi: "Định lượng (Đo lường bằng con số)", 
     examples: [
-      { en: "Quantitative data tells us how many users clicked the button.", vi: "Dữ liệu định lượng cho chúng ta biết có bao nhiêu người dùng đã nhấp vào nút (What)." },
+      { en: "Quantitative data tells us how many users clicked the button.", vi: "Dữ liệu định lượng cho chúng bản biết có bao nhiêu người dùng đã nhấp vào nút (What)." },
       { en: "We sent out a quantitative survey to 5,000 customers.", vi: "Chúng tôi đã gửi một cuộc khảo sát định lượng tới 5.000 khách hàng." },
       { en: "Quantitative research is best for measuring success rates.", vi: "Nghiên cứu định lượng là phương pháp tốt nhất để đo lường tỷ lệ thành công." },
       { en: "The quantitative analysis proved the new feature was popular.", vi: "Phân tích số liệu chứng minh tính năng mới được ưa chuộng." },
@@ -455,11 +484,13 @@ const sentenceData = [
 const allMeanings = wordData.map(w => w.vi);
 
 // --- GLOBAL STATE ---
+let configuredTime = 5.0; // Dynamic timer value
 let currentPhase = 0; // 1: Part 1, 2: Part 2, 3: Part 3
 let p1Index = 0;
 let wrongWords = []; 
 let p2Pool = []; 
 let currentWordObj = null;
+let lastP2WordObj = null; // To prevent consecutive repeats in Phase 2
 
 let timerInterval;
 let timeLeft = 5.0;
@@ -496,16 +527,30 @@ function generateOptions(correctMeaning) {
   shuffle(availableWrongs);
   
   options = options.concat(availableWrongs.slice(0, 4));
-  options.push("I don't know");
-  return shuffle(options);
+  
+  // Shuffle the 5 active choices first
+  shuffle(options);
+  
+  // Add "Tôi không biết" fixed at the very top (index 0)
+  options.unshift("Tôi không biết");
+  
+  return options;
 }
 
 // --- PART 1 LOGIC ---
 function startPart1() {
+  // Read and validate the configured time from the input
+  let timeVal = parseFloat(document.getElementById('time-cap').value);
+  if (!isNaN(timeVal) && timeVal >= 2) {
+    configuredTime = timeVal;
+  } else {
+    configuredTime = 5.0; // fallback
+  }
+
   currentPhase = 1;
   p1Index = 0;
   wrongWords = [];
-  document.getElementById('quiz-title').innerText = "Part 1: Vocabulary Test";
+  document.getElementById('quiz-title').innerText = "Part 1: Initial Check";
   document.getElementById('btn-skip-p2').classList.remove('hidden');
   loadQuizWord();
 }
@@ -521,11 +566,22 @@ function loadQuizWord() {
     document.getElementById('quiz-stats').innerText = `Word ${p1Index + 1} of ${wordData.length}`;
   } else if (currentPhase === 2) {
     if (p2Pool.length === 0) return startPart3();
-    let randIndex = Math.floor(Math.random() * p2Pool.length);
+    
+    // Select randomly but prevent back-to-back repetitions if possible
+    let availableIndices = [];
+    for (let i = 0; i < p2Pool.length; i++) {
+        // If there's more than 1 word left, don't pick the same one we just showed
+        if (p2Pool.length > 1 && p2Pool[i].wordObj === lastP2WordObj) continue;
+        availableIndices.push(i);
+    }
+    
+    let randIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
     currentWordObj = p2Pool[randIndex].wordObj;
-    currentWordObj._p2Index = randIndex; 
+    currentWordObj._p2Index = randIndex; // save index for updating streak
+    lastP2WordObj = currentWordObj; // remember this word for the next loop
+    
     document.getElementById('quiz-progress').style.width = '100%';
-    document.getElementById('quiz-stats').innerText = `${p2Pool.length} words left to master (Need 3 streak)`;
+    document.getElementById('quiz-stats').innerText = `${p2Pool.length} words left to master (Need 3 consecutive correct)`;
   }
 
   switchScreen('screen-quiz');
@@ -541,7 +597,7 @@ function loadQuizWord() {
     container.appendChild(btn);
   });
 
-  timeLeft = 5.0;
+  timeLeft = configuredTime;
   document.getElementById('quiz-timer').innerText = timeLeft.toFixed(1) + 's';
   playCurrentAudio();
 
@@ -582,7 +638,9 @@ function handleAnswer(btnElement, selectedMeaning) {
     if (isCorrect) {
       poolItem.streak++;
       if (poolItem.streak >= 3) {
+        // Splice removes it from the pool permanently
         p2Pool.splice(currentWordObj._p2Index, 1); 
+        lastP2WordObj = null; // clear it so it doesn't mess with the array indexing check next turn
       }
     } else {
       poolItem.streak = 0; 
@@ -630,6 +688,7 @@ function startPart2() {
   }
   
   currentPhase = 2;
+  lastP2WordObj = null; // reset filter memory
   p2Pool = wrongWords.map(w => ({ wordObj: w, streak: 0 }));
   document.getElementById('quiz-title').innerText = "Part 2: Review Mistakes";
   document.getElementById('btn-skip-p2').classList.add('hidden'); 
