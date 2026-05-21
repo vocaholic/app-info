@@ -791,6 +791,17 @@
           <button type="button" class="toggle-btn" id="typo-lenient">Allow typos</button>
         </div>
       </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Mobile keyboard
+          <small>On: your phone's keyboard opens automatically when it's time to type. Off: tap the text box yourself to open it.</small>
+        </div>
+        <div class="toggle-group" role="group">
+          <button type="button" class="toggle-btn active" id="kbd-auto-on">On</button>
+          <button type="button" class="toggle-btn" id="kbd-auto-off">Off</button>
+        </div>
+      </div>
     </div>
 
     <div class="stages-overview">
@@ -969,6 +980,26 @@ const POOL = [
           "tomorrow",
           "next week"
         ]
+      },
+      {
+        "word": "was",
+        "en": "past of 'be' (I/he/she/it)",
+        "ipa": "/wɒz/",
+        "distractors": [
+          "is (present)",
+          "were (you/we/they)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "your",
+        "en": "second-person possessive",
+        "ipa": "/jɔːr/",
+        "distractors": [
+          "my",
+          "his",
+          "their"
+        ]
       }
     ]
   },
@@ -1019,6 +1050,36 @@ const POOL = [
           "kitchen",
           "park"
         ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "at",
+        "en": "preposition of place or time",
+        "ipa": "/æt/",
+        "distractors": [
+          "in (inside)",
+          "on (surface)",
+          "by (near)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -1068,6 +1129,36 @@ const POOL = [
           "demand word",
           "thanks",
           "sorry"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
         ]
       }
     ]
@@ -1129,6 +1220,26 @@ const POOL = [
           "to work",
           "to talk"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "some",
+        "en": "an unspecified amount",
+        "ipa": "/sʌm/",
+        "distractors": [
+          "none",
+          "all",
+          "every"
+        ]
       }
     ]
   },
@@ -1188,6 +1299,16 @@ const POOL = [
           "against each other",
           "in different places"
         ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
       }
     ]
   },
@@ -1236,6 +1357,26 @@ const POOL = [
           "wrong, incorrect",
           "to the left",
           "much later"
+        ]
+      },
+      {
+        "word": "on",
+        "en": "preposition: touching the surface",
+        "ipa": "/ɒn/",
+        "distractors": [
+          "off (not touching)",
+          "under (below)",
+          "in (inside)"
+        ]
+      },
+      {
+        "word": "be",
+        "en": "to exist; base form of 'is/are'",
+        "ipa": "/biː/",
+        "distractors": [
+          "to have",
+          "to do",
+          "to go"
         ]
       }
     ]
@@ -1286,6 +1427,26 @@ const POOL = [
           "to abandon",
           "to delay"
         ]
+      },
+      {
+        "word": "does",
+        "en": "present of 'do' (he/she/it)",
+        "ipa": "/dʌz/",
+        "distractors": [
+          "do (you/we/they)",
+          "did (past)",
+          "doing (now)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -1325,6 +1486,36 @@ const POOL = [
           "school",
           "store"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "at",
+        "en": "preposition of place or time",
+        "ipa": "/æt/",
+        "distractors": [
+          "in (inside)",
+          "on (surface)",
+          "by (near)"
+        ]
       }
     ]
   },
@@ -1363,6 +1554,46 @@ const POOL = [
           "a foot",
           "an arm only",
           "a head"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -1424,6 +1655,36 @@ const POOL = [
           "seconds",
           "days"
         ]
+      },
+      {
+        "word": "be",
+        "en": "to exist; base form of 'is/are'",
+        "ipa": "/biː/",
+        "distractors": [
+          "to have",
+          "to do",
+          "to go"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "few",
+        "en": "a small number of",
+        "ipa": "/fjuː/",
+        "distractors": [
+          "many",
+          "all",
+          "none"
+        ]
       }
     ]
   },
@@ -1474,6 +1735,46 @@ const POOL = [
           "last night",
           "this morning"
         ]
+      },
+      {
+        "word": "do",
+        "en": "to perform; auxiliary for questions",
+        "ipa": "/duː/",
+        "distractors": [
+          "did (past)",
+          "does (he/she)",
+          "done (finished)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -1522,6 +1823,36 @@ const POOL = [
           "much later",
           "never",
           "yesterday"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "should",
+        "en": "expresses advice or expectation",
+        "ipa": "/ʃʊd/",
+        "distractors": [
+          "must (required)",
+          "cannot",
+          "might (maybe)"
         ]
       }
     ]
@@ -1583,6 +1914,26 @@ const POOL = [
           "sideways",
           "backward"
         ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
       }
     ]
   },
@@ -1643,6 +1994,26 @@ const POOL = [
           "only specific things",
           "people"
         ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -1692,6 +2063,26 @@ const POOL = [
           "to forget",
           "to know for sure"
         ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
       }
     ]
   },
@@ -1731,6 +2122,36 @@ const POOL = [
           "Sunday",
           "Monday",
           "Friday"
+        ]
+      },
+      {
+        "word": "are",
+        "en": "present of 'be' (you/we/they)",
+        "ipa": "/ɑːr/",
+        "distractors": [
+          "is (singular)",
+          "was (past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -1782,6 +2203,46 @@ const POOL = [
           "obstacle",
           "stop"
         ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "when",
+        "en": "at what time",
+        "ipa": "/wɛn/",
+        "distractors": [
+          "where (place)",
+          "what (thing)",
+          "why (reason)"
+        ]
+      },
+      {
+        "word": "on",
+        "en": "preposition: touching the surface",
+        "ipa": "/ɒn/",
+        "distractors": [
+          "off (not touching)",
+          "under (below)",
+          "in (inside)"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
       }
     ]
   },
@@ -1831,6 +2292,26 @@ const POOL = [
           "to dislike",
           "to forget"
         ]
+      },
+      {
+        "word": "that",
+        "en": "demonstrative; that one (far)",
+        "ipa": "/ðæt/",
+        "distractors": [
+          "this (near)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -1859,6 +2340,46 @@ const POOL = [
           "place",
           "person",
           "reason"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "another",
+        "en": "one more, a different one",
+        "ipa": "/əˈnʌðər/",
+        "distractors": [
+          "the same one",
+          "none more",
+          "no other"
         ]
       }
     ]
@@ -1930,6 +2451,26 @@ const POOL = [
           "avoiding",
           "leaving"
         ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
       }
     ]
   },
@@ -1990,6 +2531,26 @@ const POOL = [
           "ignored",
           "asked"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
       }
     ]
   },
@@ -2039,6 +2600,36 @@ const POOL = [
           "clear plan",
           "exact match"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "been",
+        "en": "past participle of 'be'",
+        "ipa": "/biːn/",
+        "distractors": [
+          "being (present)",
+          "was (simple past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -2067,6 +2658,56 @@ const POOL = [
           "place",
           "person",
           "reason"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "that",
+        "en": "demonstrative; that one (far)",
+        "ipa": "/ðæt/",
+        "distractors": [
+          "this (near)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "one",
+        "en": "the number 1; a single thing",
+        "ipa": "/wʌn/",
+        "distractors": [
+          "two (2)",
+          "none (0)",
+          "many"
+        ]
+      },
+      {
+        "word": "more",
+        "en": "a greater amount",
+        "ipa": "/mɔːr/",
+        "distractors": [
+          "less",
+          "the same",
+          "none"
         ]
       }
     ]
@@ -2116,6 +2757,26 @@ const POOL = [
           "a casual chat",
           "an exam",
           "a holiday"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "our",
+        "en": "first-person plural possessive",
+        "ipa": "/ˈaʊər/",
+        "distractors": [
+          "my (singular)",
+          "your",
+          "their"
         ]
       }
     ]
@@ -2176,6 +2837,26 @@ const POOL = [
           "exactly nothing",
           "the maximum"
         ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
       }
     ]
   },
@@ -2215,6 +2896,36 @@ const POOL = [
           "to ignore",
           "to praise"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
       }
     ]
   },
@@ -2244,6 +2955,56 @@ const POOL = [
           "demand word",
           "thanks",
           "sorry"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "with",
+        "en": "preposition: accompanied by",
+        "ipa": "/wɪð/",
+        "distractors": [
+          "without (lacking)",
+          "against",
+          "from"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -2295,6 +3056,26 @@ const POOL = [
           "a refusal",
           "a delay"
         ]
+      },
+      {
+        "word": "not",
+        "en": "makes a word or phrase negative",
+        "ipa": "/nɒt/",
+        "distractors": [
+          "yes (affirmative)",
+          "always",
+          "definitely"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -2343,6 +3124,26 @@ const POOL = [
           "summaries only",
           "headlines only",
           "no information"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -2393,6 +3194,46 @@ const POOL = [
           "to ignore",
           "to assume blindly",
           "to skip"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "and",
+        "en": "joins words or phrases (plus)",
+        "ipa": "/ænd/",
+        "distractors": [
+          "or",
+          "but",
+          "nor"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
         ]
       }
     ]
@@ -2463,6 +3304,26 @@ const POOL = [
           "sideways",
           "backward"
         ]
+      },
+      {
+        "word": "just",
+        "en": "only, simply, or very recently",
+        "ipa": "/dʒʌst/",
+        "distractors": [
+          "long ago",
+          "always",
+          "never"
+        ]
+      },
+      {
+        "word": "some",
+        "en": "an unspecified amount",
+        "ipa": "/sʌm/",
+        "distractors": [
+          "none",
+          "all",
+          "every"
+        ]
       }
     ]
   },
@@ -2523,6 +3384,56 @@ const POOL = [
           "juice",
           "coffee"
         ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "some",
+        "en": "an unspecified amount",
+        "ipa": "/sʌm/",
+        "distractors": [
+          "none",
+          "all",
+          "every"
+        ]
+      },
+      {
+        "word": "on",
+        "en": "preposition: touching the surface",
+        "ipa": "/ɒn/",
+        "distractors": [
+          "off (not touching)",
+          "under (below)",
+          "in (inside)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -2561,6 +3472,46 @@ const POOL = [
           "wallet",
           "phone",
           "glasses"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "in",
+        "en": "preposition: inside, within",
+        "ipa": "/ɪn/",
+        "distractors": [
+          "out (outside)",
+          "on (surface)",
+          "at (point)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -2601,6 +3552,56 @@ const POOL = [
           "a flat plate",
           "a glass",
           "a small cup"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "there",
+        "en": "at that place; also 'there is'",
+        "ipa": "/ðɛər/",
+        "distractors": [
+          "here (this place)",
+          "nowhere",
+          "everywhere"
+        ]
+      },
+      {
+        "word": "any",
+        "en": "some, even one (in questions)",
+        "ipa": "/ˈɛni/",
+        "distractors": [
+          "none",
+          "all",
+          "every single"
+        ]
+      },
+      {
+        "word": "in",
+        "en": "preposition: inside, within",
+        "ipa": "/ɪn/",
+        "distractors": [
+          "out (outside)",
+          "on (surface)",
+          "at (point)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -2662,6 +3663,46 @@ const POOL = [
           "seconds",
           "days"
         ]
+      },
+      {
+        "word": "be",
+        "en": "to exist; base form of 'is/are'",
+        "ipa": "/biː/",
+        "distractors": [
+          "to have",
+          "to do",
+          "to go"
+        ]
+      },
+      {
+        "word": "at",
+        "en": "preposition of place or time",
+        "ipa": "/æt/",
+        "distractors": [
+          "in (inside)",
+          "on (surface)",
+          "by (near)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "in",
+        "en": "preposition: inside, within",
+        "ipa": "/ɪn/",
+        "distractors": [
+          "out (outside)",
+          "on (surface)",
+          "at (point)"
+        ]
       }
     ]
   },
@@ -2722,6 +3763,46 @@ const POOL = [
           "ignoring text",
           "speaking"
         ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "that",
+        "en": "demonstrative; that one (far)",
+        "ipa": "/ðæt/",
+        "distractors": [
+          "this (near)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "yet",
+        "en": "up to now; still (in negatives)",
+        "ipa": "/jɛt/",
+        "distractors": [
+          "already",
+          "never",
+          "long ago"
+        ]
       }
     ]
   },
@@ -2770,6 +3851,26 @@ const POOL = [
           "fully charged",
           "alive",
           "new"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
         ]
       }
     ]
@@ -2830,6 +3931,26 @@ const POOL = [
           "to write only",
           "to listen only"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "our",
+        "en": "first-person plural possessive",
+        "ipa": "/ˈaʊər/",
+        "distractors": [
+          "my (singular)",
+          "your",
+          "their"
+        ]
       }
     ]
   },
@@ -2879,6 +4000,46 @@ const POOL = [
           "a lot",
           "all of it",
           "none"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -2930,6 +4091,46 @@ const POOL = [
           "to ignore",
           "to block"
         ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "if",
+        "en": "introduces a condition",
+        "ipa": "/ɪf/",
+        "distractors": [
+          "unless",
+          "because",
+          "although"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "any",
+        "en": "some, even one (in questions)",
+        "ipa": "/ˈɛni/",
+        "distractors": [
+          "none",
+          "all",
+          "every single"
+        ]
       }
     ]
   },
@@ -2979,6 +4180,46 @@ const POOL = [
           "week",
           "month",
           "year"
+        ]
+      },
+      {
+        "word": "been",
+        "en": "past participle of 'be'",
+        "ipa": "/biːn/",
+        "distractors": [
+          "being (present)",
+          "was (simple past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
         ]
       }
     ]
@@ -3040,6 +4281,26 @@ const POOL = [
           "a vacation",
           "a one-time errand"
         ]
+      },
+      {
+        "word": "so",
+        "en": "therefore; to such a degree",
+        "ipa": "/soʊ/",
+        "distractors": [
+          "but",
+          "however",
+          "because"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
       }
     ]
   },
@@ -3100,6 +4361,26 @@ const POOL = [
           "to dislike",
           "to forget"
         ]
+      },
+      {
+        "word": "it",
+        "en": "subject/object pronoun (thing)",
+        "ipa": "/ɪt/",
+        "distractors": [
+          "he (male)",
+          "she (female)",
+          "they (plural)"
+        ]
+      },
+      {
+        "word": "might",
+        "en": "expresses possibility (maybe will)",
+        "ipa": "/maɪt/",
+        "distractors": [
+          "definitely will",
+          "cannot",
+          "must"
+        ]
       }
     ]
   },
@@ -3138,6 +4419,46 @@ const POOL = [
           "terrible",
           "boring",
           "ordinary"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -3187,6 +4508,26 @@ const POOL = [
           "evening",
           "night",
           "afternoon"
+        ]
+      },
+      {
+        "word": "been",
+        "en": "past participle of 'be'",
+        "ipa": "/biːn/",
+        "distractors": [
+          "being (present)",
+          "was (simple past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "all",
+        "en": "every one, the whole",
+        "ipa": "/ɔːl/",
+        "distractors": [
+          "none",
+          "some",
+          "few"
         ]
       }
     ]
@@ -3248,6 +4589,36 @@ const POOL = [
           "to ignore",
           "to celebrate"
         ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "be",
+        "en": "to exist; base form of 'is/are'",
+        "ipa": "/biː/",
+        "distractors": [
+          "to have",
+          "to do",
+          "to go"
+        ]
       }
     ]
   },
@@ -3286,6 +4657,36 @@ const POOL = [
           "morning early",
           "midnight",
           "dawn"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "by",
+        "en": "preposition: near, via, or before",
+        "ipa": "/baɪ/",
+        "distractors": [
+          "far from",
+          "without",
+          "after"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -3347,6 +4748,26 @@ const POOL = [
           "today",
           "last week"
         ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -3396,6 +4817,36 @@ const POOL = [
           "much later",
           "never",
           "yesterday"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
         ]
       }
     ]
@@ -3447,6 +4898,46 @@ const POOL = [
           "writing",
           "ignoring"
         ]
+      },
+      {
+        "word": "it",
+        "en": "subject/object pronoun (thing)",
+        "ipa": "/ɪt/",
+        "distractors": [
+          "he (male)",
+          "she (female)",
+          "they (plural)"
+        ]
+      },
+      {
+        "word": "was",
+        "en": "past of 'be' (I/he/she/it)",
+        "ipa": "/wɒz/",
+        "distractors": [
+          "is (present)",
+          "were (you/we/they)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
       }
     ]
   },
@@ -3496,6 +4987,36 @@ const POOL = [
           "earns",
           "saves",
           "gives away"
+        ]
+      },
+      {
+        "word": "do",
+        "en": "to perform; auxiliary for questions",
+        "ipa": "/duː/",
+        "distractors": [
+          "did (past)",
+          "does (he/she)",
+          "done (finished)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -3547,6 +5068,46 @@ const POOL = [
           "places",
           "ideas"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "few",
+        "en": "a small number of",
+        "ipa": "/fjuː/",
+        "distractors": [
+          "many",
+          "all",
+          "none"
+        ]
       }
     ]
   },
@@ -3586,6 +5147,56 @@ const POOL = [
           "a park",
           "a house",
           "a library"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
         ]
       }
     ]
@@ -3627,6 +5238,46 @@ const POOL = [
           "free",
           "tiny"
         ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "too",
+        "en": "also; or excessively",
+        "ipa": "/tuː/",
+        "distractors": [
+          "not enough",
+          "only",
+          "instead"
+        ]
       }
     ]
   },
@@ -3666,6 +5317,46 @@ const POOL = [
           "in addition to",
           "the same way",
           "exactly as planned"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "with",
+        "en": "preposition: accompanied by",
+        "ipa": "/wɪð/",
+        "distractors": [
+          "without (lacking)",
+          "against",
+          "from"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -3707,6 +5398,46 @@ const POOL = [
           "shape",
           "weight only"
         ]
+      },
+      {
+        "word": "do",
+        "en": "to perform; auxiliary for questions",
+        "ipa": "/duː/",
+        "distractors": [
+          "did (past)",
+          "does (he/she)",
+          "done (finished)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -3746,6 +5477,46 @@ const POOL = [
           "a box",
           "a basket",
           "a wallet"
+        ]
+      },
+      {
+        "word": "me",
+        "en": "first-person object pronoun",
+        "ipa": "/miː/",
+        "distractors": [
+          "you",
+          "him",
+          "us"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "these",
+        "en": "demonstrative; these ones (near)",
+        "ipa": "/ðiːz/",
+        "distractors": [
+          "those (far)",
+          "this (singular near)",
+          "that (singular far)"
         ]
       }
     ]
@@ -3807,6 +5578,16 @@ const POOL = [
           "loudly",
           "secretly"
         ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -3856,6 +5637,26 @@ const POOL = [
           "the menu",
           "the bill",
           "the discount"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -3907,6 +5708,26 @@ const POOL = [
           "never",
           "yesterday"
         ]
+      },
+      {
+        "word": "just",
+        "en": "only, simply, or very recently",
+        "ipa": "/dʒʌst/",
+        "distractors": [
+          "long ago",
+          "always",
+          "never"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
       }
     ]
   },
@@ -3957,6 +5778,26 @@ const POOL = [
           "seconds",
           "days (very long)"
         ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "in",
+        "en": "preposition: inside, within",
+        "ipa": "/ɪn/",
+        "distractors": [
+          "out (outside)",
+          "on (surface)",
+          "at (point)"
+        ]
       }
     ]
   },
@@ -4006,6 +5847,26 @@ const POOL = [
           "a destination",
           "an office building",
           "a park"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -4067,6 +5928,26 @@ const POOL = [
           "the lobby only",
           "the corridor only"
         ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -4117,6 +5998,36 @@ const POOL = [
           "night",
           "afternoon"
         ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
       }
     ]
   },
@@ -4157,6 +6068,46 @@ const POOL = [
           "to fly",
           "to sit still"
         ]
+      },
+      {
+        "word": "should",
+        "en": "expresses advice or expectation",
+        "ipa": "/ʃʊd/",
+        "distractors": [
+          "must (required)",
+          "cannot",
+          "might (maybe)"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "or",
+        "en": "presents an alternative",
+        "ipa": "/ɔːr/",
+        "distractors": [
+          "and (both)",
+          "but",
+          "nor"
+        ]
       }
     ]
   },
@@ -4196,6 +6147,46 @@ const POOL = [
           "a driver's license",
           "a credit card",
           "a receipt"
+        ]
+      },
+      {
+        "word": "did",
+        "en": "past of 'do' (auxiliary)",
+        "ipa": "/dɪd/",
+        "distractors": [
+          "does (present)",
+          "will do (future)",
+          "doing (now)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "your",
+        "en": "second-person possessive",
+        "ipa": "/jɔːr/",
+        "distractors": [
+          "my",
+          "his",
+          "their"
         ]
       }
     ]
@@ -4257,6 +6248,16 @@ const POOL = [
           "day",
           "weekend only"
         ]
+      },
+      {
+        "word": "on",
+        "en": "preposition: touching the surface",
+        "ipa": "/ɒn/",
+        "distractors": [
+          "off (not touching)",
+          "under (below)",
+          "in (inside)"
+        ]
       }
     ]
   },
@@ -4296,6 +6297,36 @@ const POOL = [
           "groceries",
           "office supplies",
           "documents only"
+        ]
+      },
+      {
+        "word": "did",
+        "en": "past of 'do' (auxiliary)",
+        "ipa": "/dɪd/",
+        "distractors": [
+          "does (present)",
+          "will do (future)",
+          "doing (now)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "your",
+        "en": "second-person possessive",
+        "ipa": "/jɔːr/",
+        "distractors": [
+          "my",
+          "his",
+          "their"
         ]
       }
     ]
@@ -4347,6 +6378,46 @@ const POOL = [
           "a memory",
           "a wish"
         ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "than",
+        "en": "used in comparisons",
+        "ipa": "/ðæn/",
+        "distractors": [
+          "as (equal)",
+          "then (time)",
+          "from"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
       }
     ]
   },
@@ -4387,6 +6458,36 @@ const POOL = [
           "today",
           "last week"
         ]
+      },
+      {
+        "word": "just",
+        "en": "only, simply, or very recently",
+        "ipa": "/dʒʌst/",
+        "distractors": [
+          "long ago",
+          "always",
+          "never"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
       }
     ]
   },
@@ -4426,6 +6527,36 @@ const POOL = [
           "demand word",
           "thanks",
           "sorry"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -4487,6 +6618,16 @@ const POOL = [
           "everything",
           "a person"
         ]
+      },
+      {
+        "word": "so",
+        "en": "therefore; to such a degree",
+        "ipa": "/soʊ/",
+        "distractors": [
+          "but",
+          "however",
+          "because"
+        ]
       }
     ]
   },
@@ -4525,6 +6666,26 @@ const POOL = [
           "tasting bad",
           "tasting plain",
           "looking nice only"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
         ]
       }
     ]
@@ -4566,6 +6727,36 @@ const POOL = [
           "sweet",
           "cold"
         ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "here",
+        "en": "at this place",
+        "ipa": "/hɪər/",
+        "distractors": [
+          "there (that place)",
+          "nowhere",
+          "elsewhere"
+        ]
       }
     ]
   },
@@ -4596,6 +6787,56 @@ const POOL = [
           "stone",
           "wind"
         ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "of",
+        "en": "preposition: belonging to, part of",
+        "ipa": "/əv/",
+        "distractors": [
+          "for",
+          "to",
+          "with"
+        ]
       }
     ]
   },
@@ -4615,6 +6856,56 @@ const POOL = [
           "a refusal",
           "a walk-in",
           "a cancellation"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "two",
+        "en": "the number 2",
+        "ipa": "/tuː/",
+        "distractors": [
+          "one (1)",
+          "three (3)",
+          "ten (10)"
         ]
       }
     ]
@@ -4645,6 +6936,56 @@ const POOL = [
           "much later",
           "never",
           "yesterday"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "will",
+        "en": "expresses the future",
+        "ipa": "/wɪl/",
+        "distractors": [
+          "did (past)",
+          "would (conditional)",
+          "won't (negative)"
+        ]
+      },
+      {
+        "word": "be",
+        "en": "to exist; base form of 'is/are'",
+        "ipa": "/biː/",
+        "distractors": [
+          "to have",
+          "to do",
+          "to go"
+        ]
+      },
+      {
+        "word": "with",
+        "en": "preposition: accompanied by",
+        "ipa": "/wɪð/",
+        "distractors": [
+          "without (lacking)",
+          "against",
+          "from"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
         ]
       }
     ]
@@ -4686,6 +7027,46 @@ const POOL = [
           "noodles",
           "potatoes"
         ]
+      },
+      {
+        "word": "just",
+        "en": "only, simply, or very recently",
+        "ipa": "/dʒʌst/",
+        "distractors": [
+          "long ago",
+          "always",
+          "never"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "and",
+        "en": "joins words or phrases (plus)",
+        "ipa": "/ænd/",
+        "distractors": [
+          "or",
+          "but",
+          "nor"
+        ]
       }
     ]
   },
@@ -4714,6 +7095,46 @@ const POOL = [
           "terrible",
           "amazing",
           "broken"
+        ]
+      },
+      {
+        "word": "was",
+        "en": "past of 'be' (I/he/she/it)",
+        "ipa": "/wɒz/",
+        "distractors": [
+          "is (present)",
+          "were (you/we/they)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
         ]
       }
     ]
@@ -4754,6 +7175,36 @@ const POOL = [
           "demand word",
           "thanks",
           "sorry"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -4815,6 +7266,26 @@ const POOL = [
           "for the first time",
           "always"
         ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
       }
     ]
   },
@@ -4844,6 +7315,66 @@ const POOL = [
           "to ignore",
           "to break",
           "to discard"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "there",
+        "en": "at that place; also 'there is'",
+        "ipa": "/ðɛər/",
+        "distractors": [
+          "here (this place)",
+          "nowhere",
+          "everywhere"
+        ]
+      },
+      {
+        "word": "here",
+        "en": "at this place",
+        "ipa": "/hɪər/",
+        "distractors": [
+          "there (that place)",
+          "nowhere",
+          "elsewhere"
+        ]
+      },
+      {
+        "word": "that",
+        "en": "demonstrative; that one (far)",
+        "ipa": "/ðæt/",
+        "distractors": [
+          "this (near)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "can",
+        "en": "to be able to",
+        "ipa": "/kæn/",
+        "distractors": [
+          "cannot",
+          "must",
+          "should"
         ]
       }
     ]
@@ -4895,6 +7426,26 @@ const POOL = [
           "thankful",
           "demanding"
         ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
       }
     ]
   },
@@ -4934,6 +7485,46 @@ const POOL = [
           "evening",
           "night",
           "afternoon"
+        ]
+      },
+      {
+        "word": "did",
+        "en": "past of 'do' (auxiliary)",
+        "ipa": "/dɪd/",
+        "distractors": [
+          "does (present)",
+          "will do (future)",
+          "doing (now)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "your",
+        "en": "second-person possessive",
+        "ipa": "/jɔːr/",
+        "distractors": [
+          "my",
+          "his",
+          "their"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -4985,6 +7576,36 @@ const POOL = [
           "to ignore",
           "to speak"
         ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
       }
     ]
   },
@@ -5014,6 +7635,66 @@ const POOL = [
           "to keep forever",
           "to throw away",
           "to refuse"
+        ]
+      },
+      {
+        "word": "do",
+        "en": "to perform; auxiliary for questions",
+        "ipa": "/duː/",
+        "distractors": [
+          "did (past)",
+          "does (he/she)",
+          "done (finished)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "have",
+        "en": "to possess; auxiliary for past",
+        "ipa": "/hæv/",
+        "distractors": [
+          "had (past)",
+          "has (he/she)",
+          "having (now)"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
         ]
       }
     ]
@@ -5065,6 +7746,26 @@ const POOL = [
           "last night",
           "this morning"
         ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "an",
+        "en": "indefinite article before a vowel",
+        "ipa": "/ən/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -5115,6 +7816,36 @@ const POOL = [
           "sideways",
           "into"
         ]
+      },
+      {
+        "word": "it",
+        "en": "subject/object pronoun (thing)",
+        "ipa": "/ɪt/",
+        "distractors": [
+          "he (male)",
+          "she (female)",
+          "they (plural)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "is",
+        "en": "present of 'be' (he/she/it)",
+        "ipa": "/ɪz/",
+        "distractors": [
+          "are (plural)",
+          "was (past)",
+          "be (base)"
+        ]
       }
     ]
   },
@@ -5164,6 +7895,36 @@ const POOL = [
           "letter",
           "fax only",
           "in-person"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
+        ]
+      },
+      {
+        "word": "on",
+        "en": "preposition: touching the surface",
+        "ipa": "/ɒn/",
+        "distractors": [
+          "off (not touching)",
+          "under (below)",
+          "in (inside)"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
         ]
       }
     ]
@@ -5225,6 +7986,26 @@ const POOL = [
           "for the first time",
           "always"
         ]
+      },
+      {
+        "word": "it",
+        "en": "subject/object pronoun (thing)",
+        "ipa": "/ɪt/",
+        "distractors": [
+          "he (male)",
+          "she (female)",
+          "they (plural)"
+        ]
+      },
+      {
+        "word": "and",
+        "en": "joins words or phrases (plus)",
+        "ipa": "/ænd/",
+        "distractors": [
+          "or",
+          "but",
+          "nor"
+        ]
       }
     ]
   },
@@ -5264,6 +8045,36 @@ const POOL = [
           "weekday",
           "holiday",
           "evening"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "are",
+        "en": "present of 'be' (you/we/they)",
+        "ipa": "/ɑːr/",
+        "distractors": [
+          "is (singular)",
+          "was (past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "this",
+        "en": "demonstrative; this one (near)",
+        "ipa": "/ðɪs/",
+        "distractors": [
+          "that (far)",
+          "these (plural near)",
+          "those (plural far)"
         ]
       }
     ]
@@ -5314,6 +8125,36 @@ const POOL = [
           "home",
           "office",
           "shop"
+        ]
+      },
+      {
+        "word": "are",
+        "en": "present of 'be' (you/we/they)",
+        "ipa": "/ɑːr/",
+        "distractors": [
+          "is (singular)",
+          "was (past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "in",
+        "en": "preposition: inside, within",
+        "ipa": "/ɪn/",
+        "distractors": [
+          "out (outside)",
+          "on (surface)",
+          "at (point)"
         ]
       }
     ]
@@ -5375,6 +8216,16 @@ const POOL = [
           "Monday",
           "Friday"
         ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
       }
     ]
   },
@@ -5424,6 +8275,26 @@ const POOL = [
           "strangers",
           "coworkers",
           "neighbors only"
+        ]
+      },
+      {
+        "word": "I",
+        "en": "first-person subject pronoun",
+        "ipa": "/aɪ/",
+        "distractors": [
+          "you",
+          "he",
+          "we"
+        ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
         ]
       }
     ]
@@ -5475,6 +8346,36 @@ const POOL = [
           "an adult man",
           "an old person"
         ]
+      },
+      {
+        "word": "my",
+        "en": "first-person possessive",
+        "ipa": "/maɪ/",
+        "distractors": [
+          "your",
+          "his",
+          "our"
+        ]
+      },
+      {
+        "word": "just",
+        "en": "only, simply, or very recently",
+        "ipa": "/dʒʌst/",
+        "distractors": [
+          "long ago",
+          "always",
+          "never"
+        ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
       }
     ]
   },
@@ -5514,6 +8415,56 @@ const POOL = [
           "strangers",
           "coworkers",
           "neighbors only"
+        ]
+      },
+      {
+        "word": "it",
+        "en": "subject/object pronoun (thing)",
+        "ipa": "/ɪt/",
+        "distractors": [
+          "he (male)",
+          "she (female)",
+          "they (plural)"
+        ]
+      },
+      {
+        "word": "was",
+        "en": "past of 'be' (I/he/she/it)",
+        "ipa": "/wɒz/",
+        "distractors": [
+          "is (present)",
+          "were (you/we/they)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "so",
+        "en": "therefore; to such a degree",
+        "ipa": "/soʊ/",
+        "distractors": [
+          "but",
+          "however",
+          "because"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "your",
+        "en": "second-person possessive",
+        "ipa": "/jɔːr/",
+        "distractors": [
+          "my",
+          "his",
+          "their"
         ]
       }
     ]
@@ -5565,6 +8516,36 @@ const POOL = [
           "an exam",
           "a regular workday"
         ]
+      },
+      {
+        "word": "a",
+        "en": "indefinite article (one, some)",
+        "ipa": "/ə/",
+        "distractors": [
+          "the (specific)",
+          "this",
+          "that"
+        ]
+      },
+      {
+        "word": "for",
+        "en": "preposition: intended to, because of",
+        "ipa": "/fɔːr/",
+        "distractors": [
+          "against",
+          "without",
+          "from"
+        ]
+      },
+      {
+        "word": "him",
+        "en": "object pronoun (male)",
+        "ipa": "/hɪm/",
+        "distractors": [
+          "her (female)",
+          "them (plural)",
+          "it (thing)"
+        ]
       }
     ]
   },
@@ -5604,6 +8585,46 @@ const POOL = [
           "tomorrow morning",
           "last night",
           "this morning"
+        ]
+      },
+      {
+        "word": "are",
+        "en": "present of 'be' (you/we/they)",
+        "ipa": "/ɑːr/",
+        "distractors": [
+          "is (singular)",
+          "was (past)",
+          "will be (future)"
+        ]
+      },
+      {
+        "word": "you",
+        "en": "second-person pronoun",
+        "ipa": "/juː/",
+        "distractors": [
+          "I (me)",
+          "he",
+          "they"
+        ]
+      },
+      {
+        "word": "to",
+        "en": "preposition: toward; infinitive marker",
+        "ipa": "/tuː/",
+        "distractors": [
+          "from (away)",
+          "at (point)",
+          "for (purpose)"
+        ]
+      },
+      {
+        "word": "the",
+        "en": "definite article (the specific one)",
+        "ipa": "/ðə/",
+        "distractors": [
+          "a (any one)",
+          "this",
+          "that"
         ]
       }
     ]
@@ -5665,6 +8686,26 @@ const POOL = [
           "holiday",
           "evening"
         ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "so",
+        "en": "therefore; to such a degree",
+        "ipa": "/soʊ/",
+        "distractors": [
+          "but",
+          "however",
+          "because"
+        ]
       }
     ]
   },
@@ -5724,6 +8765,36 @@ const POOL = [
           "yesterday",
           "tomorrow",
           "next week"
+        ]
+      },
+      {
+        "word": "so",
+        "en": "therefore; to such a degree",
+        "ipa": "/soʊ/",
+        "distractors": [
+          "but",
+          "however",
+          "because"
+        ]
+      },
+      {
+        "word": "we",
+        "en": "first-person plural subject pronoun",
+        "ipa": "/wiː/",
+        "distractors": [
+          "they",
+          "you",
+          "I"
+        ]
+      },
+      {
+        "word": "could",
+        "en": "past/conditional of 'can'",
+        "ipa": "/kʊd/",
+        "distractors": [
+          "cannot",
+          "must",
+          "will"
         ]
       }
     ]
@@ -5879,6 +8950,7 @@ let streakGoal = 3;
 let sentenceCount = 5;
 let mode = 'random';
 let allowTypos = false;  // default strict; toggled on the intro screen
+let autoKeyboard = true;  // ON by default: auto-focus input so the OS keyboard opens automatically
 
 /* ============================================================
    Session state
@@ -6138,6 +9210,24 @@ attachStepper('count', 'count-value', 3, 10, 5, v => {
   });
 })();
 
+// Mobile keyboard toggle: ON auto-focuses the input (OS keyboard opens automatically);
+// OFF leaves it to the user to tap the field. Default ON.
+(function() {
+  const onBtn = document.getElementById('kbd-auto-on');
+  const offBtn = document.getElementById('kbd-auto-off');
+  onBtn.addEventListener('click', () => {
+    autoKeyboard = true;
+    onBtn.classList.add('active');
+    offBtn.classList.remove('active');
+  });
+  offBtn.addEventListener('click', () => {
+    autoKeyboard = false;
+    offBtn.classList.add('active');
+    onBtn.classList.remove('active');
+  });
+})();
+
+
 /* ============================================================
    Start button handlers
    ============================================================ */
@@ -6163,6 +9253,13 @@ document.getElementById('start-btn').addEventListener('click', () => {
   phaseAQueue = deck.slice();
   current = null;
   startDrill();
+  // Focus the input *inside this tap gesture* so mobile browsers open the OS keyboard.
+  // (iOS Safari only opens the keyboard from focus() if it happens within a user gesture.)
+  // Only when the Mobile keyboard toggle is ON.
+  if (autoKeyboard) {
+    const wi = document.getElementById('word-input');
+    if (wi) wi.focus();
+  }
 });
 
 document.getElementById('skip-to-dictation').addEventListener('click', () => {
@@ -6310,10 +9407,16 @@ function nextDrillCard() {
   // Reset input
   const input = document.getElementById('word-input');
   input.value = '';
-  input.disabled = false;
+  input.readOnly = false;   // re-enable editing (was readOnly during feedback)
+  input.disabled = false;   // safety: ensure never disabled
   input.className = 'word-input';
   document.getElementById('check-btn').disabled = true;
   document.getElementById('idk-btn').disabled = false;
+  // Focus immediately and synchronously. Because the input was never disabled/blurred
+  // during feedback, the OS keyboard is still open from the previous card — this just
+  // moves the cursor into the fresh field and keeps the keyboard up. Doing it here
+  // (not after the audio setTimeout) avoids the out-of-gesture reopen problem.
+  if (autoKeyboard) input.focus();
 
   // Play once, then start timer
   document.getElementById('drill-play-btn').disabled = true;
@@ -6322,8 +9425,8 @@ function nextDrillCard() {
       document.getElementById('drill-play-btn').disabled = false;
       if (!isAnswered) {
         startTimer();
-        // Focus the input so user can start typing
-        input.focus();
+        // Re-assert focus after audio in case anything stole it. Harmless if already focused.
+        if (autoKeyboard) input.focus();
       }
     });
   }, 250);
@@ -6440,7 +9543,7 @@ function handleDrillTimeout() {
   current.lastMissAttempt = totalAttempts;
   const userTyped = document.getElementById('word-input').value;
   const input = document.getElementById('word-input');
-  input.disabled = true;
+  input.readOnly = true;  // block edits but keep focus so the OS keyboard stays open
   input.classList.add('timeout');
   document.getElementById('check-btn').disabled = true;
   document.getElementById('idk-btn').disabled = true;
@@ -6483,7 +9586,7 @@ function handleDrillAnswer(typed) {
   const correct = matchResult.match;
 
   const input = document.getElementById('word-input');
-  input.disabled = true;
+  input.readOnly = true;  // block edits but keep focus so the OS keyboard stays open
   document.getElementById('check-btn').disabled = true;
   document.getElementById('idk-btn').disabled = true;
 
@@ -6559,7 +9662,7 @@ function handleIDK() {
   current.lastMissAttempt = totalAttempts;
   const userTyped = document.getElementById('word-input').value;
   const input = document.getElementById('word-input');
-  input.disabled = true;
+  input.readOnly = true;  // block edits but keep focus so the OS keyboard stays open
   input.classList.add('wrong');
   document.getElementById('check-btn').disabled = true;
   document.getElementById('idk-btn').disabled = true;
@@ -6620,6 +9723,7 @@ document.getElementById('drill-feedback').addEventListener('click', (e) => {
 });
 
 const wordInput = document.getElementById('word-input');
+wordInput.addEventListener('focus', () => scrollFieldIntoFocusZone(wordInput));
 wordInput.addEventListener('input', () => {
   document.getElementById('check-btn').disabled = wordInput.value.trim().length === 0;
 });
@@ -6635,7 +9739,15 @@ document.getElementById('check-btn').addEventListener('click', () => {
 document.getElementById('idk-btn').addEventListener('click', () => {
   if (!isAnswered) handleIDK();
 });
-document.getElementById('drill-next-btn').addEventListener('click', nextDrillCard);
+document.getElementById('drill-next-btn').addEventListener('click', () => {
+  // Focus inside the tap gesture so the OS keyboard stays open on mobile across cards.
+  // Only when the Mobile keyboard toggle is ON.
+  if (autoKeyboard) {
+    const wi = document.getElementById('word-input');
+    if (wi) wi.focus();
+  }
+  nextDrillCard();
+});
 document.getElementById('skip-from-drill').addEventListener('click', () => {
   cancelAllPlayback();
   stopTimer();
@@ -6976,6 +10088,46 @@ function renderListening() {
       '</div>';
     container.appendChild(card);
   });
+
+  // Wire up dictation textareas for mobile-friendly behavior:
+  //  (a) on focus, scroll the textarea into the upper third of the viewport so it's not
+  //      hidden behind the OS keyboard
+  //  (b) Enter checks that sentence and moves focus to the next one (re-focusing inside
+  //      the keydown so the OS keyboard stays open)
+  selectedSentences.forEach((_, i) => {
+    const ta = document.getElementById('answer-' + i);
+    if (!ta) return;
+    ta.addEventListener('focus', () => scrollFieldIntoFocusZone(ta));
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        // Check this sentence on Enter
+        if (ta.value.trim().length > 0) checkSentence(i);
+        // Then, if auto-keyboard is on, jump to the next sentence and keep typing
+        if (autoKeyboard) {
+          const next = document.getElementById('answer-' + (i + 1));
+          if (next) {
+            next.focus();  // inside keydown gesture → OS keyboard stays open
+            scrollFieldIntoFocusZone(next);
+          } else {
+            ta.blur(); // last sentence: dismiss keyboard
+          }
+        }
+      }
+    });
+  });
+}
+
+// Scroll an input/textarea so it sits in the upper third of the viewport — comfortably
+// above the OS keyboard and clearly visible. Used on focus in Section 3.
+function scrollFieldIntoFocusZone(el) {
+  // Defer to the next frame so the keyboard has begun to appear and layout settled
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    const targetY = window.innerHeight * 0.28; // ~upper third
+    const delta = rect.top - targetY;
+    window.scrollBy({ top: delta, behavior: 'smooth' });
+  }, 100);
 }
 
 document.getElementById('sentences').addEventListener('click', (e) => {
@@ -6993,6 +10145,12 @@ document.getElementById('sentences').addEventListener('click', (e) => {
   } else if (btn.classList.contains('check-sentence-btn')) {
     const idx = parseInt(btn.dataset.idx, 10);
     checkSentence(idx);
+    // Move focus to the next sentence's textarea so the OS keyboard stays available
+    // (this runs inside the button-tap gesture, so mobile browsers allow the keyboard).
+    if (autoKeyboard) {
+      const next = document.getElementById('answer-' + (idx + 1));
+      if (next) { next.focus(); scrollFieldIntoFocusZone(next); }
+    }
   } else if (btn.classList.contains('en-btn')) {
     const card = btn.closest('.sentence-card');
     const reveal = card.querySelector('.en-reveal');
