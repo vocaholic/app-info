@@ -9002,7 +9002,10 @@ function buildDeckFrom(sentences) {
       }
     });
   });
-  return out;
+  // Shuffle so the Section 1 drill order does NOT mirror the order words appear in the
+  // Section 3 sentences — otherwise a user could infer the dictation answers from the
+  // sequence in which words are drilled. Order is fixed for the session (shuffled once).
+  return shuffle(out);
 }
 
 /* ============================================================
