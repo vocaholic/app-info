@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1a1814" />
+<title>Linking Lab — Hear the Blend</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #4a463f;
+    --ink-mute: #8a857a;
+    --paper: #faf7f0;
+    --paper-warm: #f3eede;
+    --paper-card: #ffffff;
+    --rule: #e5dec9;
+    --accent: #3a5d2c;
+    --accent-soft: #d8e4cf;
+    --right: #2d6a4f;
+    --right-soft: #d9ebdf;
+    --wrong: #b8451a;
+    --wrong-soft: #fbe6dc;
+    --timeout: #b88a1a;
+    --timeout-soft: #f6ecd2;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter Tight', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior: none; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage { display: none; min-height: 100vh; }
+  .stage.active { display: flex; flex-direction: column; }
+
+  /* ===== Intro ===== */
+  .intro-wrap { padding: 28px 20px 100px; flex: 1; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-mute);
+    padding-bottom: 12px; margin-bottom: 22px;
+    border-bottom: 1px solid var(--ink);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+  }
+  .eyebrow span:last-child { color: var(--accent); }
+  .title {
+    font-family: var(--serif); font-weight: 500;
+    font-size: 30px; line-height: 1.02;
+    letter-spacing: -0.025em; margin-bottom: 14px;
+  }
+  .title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .deck {
+    font-family: var(--serif); font-style: italic;
+    font-size: 15px; color: var(--ink-soft); margin-bottom: 24px;
+  }
+  .stages-overview { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .stage-card {
+    padding: 14px 16px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+  .stage-card-num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 3px;
+  }
+  .stage-card-title {
+    font-family: var(--serif); font-size: 17px; font-weight: 500;
+    letter-spacing: -0.01em; margin-bottom: 3px;
+  }
+  .stage-card-body { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
+
+  /* Settings card */
+  .settings {
+    margin: 14px 0 18px;
+    padding: 16px 16px 8px;
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+  }
+  .settings-header {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .setting-row {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .setting-row:last-of-type { border-bottom: none; }
+  .setting-label {
+    font-family: var(--serif); font-size: 15px;
+    color: var(--ink); line-height: 1.3;
+  }
+  .setting-label small {
+    display: block; font-family: var(--sans);
+    font-size: 11.5px; color: var(--ink-mute); font-style: italic;
+    line-height: 1.35; margin-top: 2px;
+  }
+  .stepper {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .step-btn {
+    width: 36px; height: 36px;
+    background: var(--paper); border: 1px solid var(--ink);
+    color: var(--ink); border-radius: 50%;
+    font-family: var(--sans); font-size: 18px; font-weight: 500;
+    cursor: pointer; -webkit-appearance: none;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .step-btn:active:not(:disabled) { background: var(--ink); color: var(--paper); }
+  .step-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .step-display {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    color: var(--ink); min-width: 38px; text-align: center;
+    letter-spacing: -0.01em;
+  }
+  .step-unit { font-size: 12px; color: var(--ink-mute); margin-left: 2px; }
+
+  /* Two-button segmented toggle (for Strict / Allow typos) */
+  .toggle-group {
+    display: inline-flex; border: 1px solid var(--ink);
+    border-radius: 2px; overflow: hidden;
+  }
+  .toggle-btn {
+    background: var(--paper); border: none;
+    border-right: 1px solid var(--ink);
+    padding: 9px 14px; font-family: var(--sans); font-size: 12px;
+    font-weight: 500; color: var(--ink); cursor: pointer;
+    -webkit-appearance: none;
+    white-space: nowrap;
+  }
+  .toggle-btn:last-child { border-right: none; }
+  .toggle-btn.active { background: var(--ink); color: var(--paper); }
+  .toggle-btn:active:not(.active) { background: var(--paper-warm); }
+
+  /* Mode selector */
+  .mode-tabs {
+    display: flex; gap: 0;
+    margin: 18px 0 14px;
+    border: 1px solid var(--ink);
+    border-radius: 4px; overflow: hidden;
+  }
+  .mode-tab {
+    flex: 1; background: var(--paper); border: none;
+    border-right: 1px solid var(--ink); padding: 12px 8px;
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    color: var(--ink); cursor: pointer; -webkit-appearance: none;
+  }
+  .mode-tab:last-child { border-right: none; }
+  .mode-tab.active { background: var(--ink); color: var(--paper); }
+  .mode-tab:active:not(.active) { background: var(--paper-warm); }
+
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+
+  /* Refresh row */
+  .refresh-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; background: var(--paper-warm);
+    border-radius: 4px; margin-bottom: 14px;
+  }
+  .refresh-info {
+    flex: 1; font-family: var(--serif); font-size: 13.5px;
+    color: var(--ink-soft); line-height: 1.4;
+  }
+  .refresh-info strong { color: var(--ink); }
+  .refresh-btn {
+    background: var(--paper); border: 1px solid var(--ink);
+    color: var(--ink); padding: 8px 14px;
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    border-radius: 2px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    -webkit-appearance: none;
+  }
+  .refresh-btn:active { background: var(--ink); color: var(--paper); }
+
+  /* Paste textarea */
+  .paste-area {
+    width: 100%; min-height: 140px;
+    font-family: var(--serif); font-size: 14.5px;
+    padding: 12px 14px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px;
+    line-height: 1.5; resize: vertical; outline: none;
+    -webkit-appearance: none;
+    margin-bottom: 8px;
+  }
+  .paste-area:focus { border-color: var(--ink); }
+  .paste-area::placeholder { color: var(--ink-mute); font-style: italic; }
+  .paste-hint {
+    font-family: var(--serif); font-style: italic; font-size: 12.5px;
+    color: var(--ink-mute); margin-bottom: 14px; line-height: 1.4;
+  }
+
+  .button-stack { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .primary-btn, .secondary-btn {
+    width: 100%; padding: 16px 20px;
+    font-family: var(--sans); font-size: 15px; font-weight: 600;
+    border-radius: 4px; cursor: pointer;
+    transition: background 0.12s ease;
+    border: none; -webkit-appearance: none;
+  }
+  .primary-btn { background: var(--ink); color: var(--paper); }
+  .primary-btn:active { background: var(--accent); }
+  .primary-btn:disabled { opacity: 0.4; background: var(--ink-mute); cursor: not-allowed; }
+  .secondary-btn {
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--rule); font-weight: 500; font-size: 14px;
+  }
+  .secondary-btn:active { background: var(--paper-warm); color: var(--ink); }
+
+  /* ===== Drill (Section 1 & 2) ===== */
+  .test-wrap { padding: 14px 16px 24px; flex: 1; display: flex; flex-direction: column; }
+  .test-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute); gap: 8px;
+  }
+  .test-header-left { flex: 1; min-width: 0; }
+  .test-header strong { color: var(--ink); }
+  .skip-link {
+    background: transparent; border: 1px solid var(--rule);
+    color: var(--ink-soft); padding: 6px 10px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; border-radius: 2px;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .skip-link:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .testcard {
+    background: var(--paper-card); border: 1px solid var(--ink);
+    border-radius: 8px; padding: 22px 18px;
+    box-shadow: 0 1px 0 var(--rule), 0 4px 12px rgba(26,24,20,0.04);
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .testcard.flip-in { animation: flipIn 0.3s ease; }
+  @keyframes flipIn {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .play-area { text-align: center; padding-bottom: 14px; }
+  .play-prompt {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px;
+  }
+  .big-play-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 14px 28px; font-family: var(--sans); font-size: 15px;
+    font-weight: 600; border-radius: 4px;
+    -webkit-appearance: none; cursor: pointer;
+  }
+  .big-play-btn:active:not(:disabled) { background: var(--accent); }
+  .big-play-btn:disabled { opacity: 0.45; cursor: not-allowed; background: var(--ink-mute); }
+  .big-play-btn.playing { background: var(--accent); }
+  .big-play-btn .play-dot {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--paper);
+  }
+  .big-play-btn.playing .play-dot { animation: pulse 0.9s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .timer-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+  }
+  .timer-bar-wrap {
+    flex: 1; height: 4px; background: var(--rule);
+    border-radius: 2px; overflow: hidden;
+  }
+  .timer-bar-fill {
+    height: 100%; background: var(--wrong);
+    width: 100%; transition: none;
+    transform-origin: left;
+  }
+  .timer-bar-fill.running { animation: timerDrain linear forwards; }
+  @keyframes timerDrain {
+    0% { width: 100%; }
+    100% { width: 0%; }
+  }
+  .timer-seconds {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--wrong); font-weight: 600;
+    letter-spacing: 0.05em; min-width: 24px; text-align: right;
+  }
+  .timer-row.idle .timer-bar-fill { background: var(--rule); width: 100%; }
+  .timer-row.idle .timer-seconds { color: var(--ink-mute); }
+
+  .input-area { margin-top: 18px; }
+  .input-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 8px;
+  }
+  .word-input {
+    width: 100%; padding: 14px 16px;
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    color: var(--ink); background: var(--paper);
+    border: 1px solid var(--ink); border-radius: 4px;
+    text-align: center; outline: none;
+    -webkit-appearance: none;
+    letter-spacing: 0.01em;
+  }
+  .word-input:focus { background: var(--paper-card); }
+  .word-input:disabled { opacity: 0.7; background: var(--paper-warm); }
+  .word-input.right { border-color: var(--right); background: var(--right-soft); color: var(--right); }
+  .word-input.wrong { border-color: var(--wrong); background: var(--wrong-soft); color: var(--wrong); }
+  .word-input.timeout { border-color: var(--timeout); background: var(--timeout-soft); color: var(--timeout); }
+
+  .input-actions {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .check-btn {
+    flex: 1; background: var(--ink); color: var(--paper); border: none;
+    padding: 12px 16px; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; border-radius: 4px; cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .check-btn:active:not(:disabled) { background: var(--accent); }
+  .check-btn:disabled { background: var(--ink-mute); opacity: 0.6; cursor: not-allowed; }
+  .idk-btn {
+    flex-shrink: 0; background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--rule); padding: 12px 14px;
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    border-radius: 4px; cursor: pointer; -webkit-appearance: none;
+  }
+  .idk-btn:active:not(:disabled) { background: var(--paper-warm); color: var(--ink); }
+  .idk-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .feedback {
+    display: none; margin-top: 14px; padding: 12px 14px;
+    border-radius: 4px;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: var(--right-soft); }
+  .feedback.timeout { background: var(--timeout-soft); }
+  .feedback.wrong { background: var(--wrong-soft); }
+  .feedback-line1 {
+    font-family: var(--serif); font-size: 15px; line-height: 1.45;
+  }
+  .feedback.right .feedback-line1 { color: var(--right); }
+  .feedback.timeout .feedback-line1 { color: var(--timeout); }
+  .feedback.wrong .feedback-line1 { color: var(--wrong); }
+  .feedback strong { font-weight: 600; }
+  .feedback-reveal {
+    margin-top: 8px;
+    font-family: var(--mono); font-size: 13px;
+    color: var(--ink); line-height: 1.5;
+  }
+  .feedback-reveal .word-spelled { color: var(--ink); font-weight: 600; font-size: 15px; }
+  .feedback-reveal .word-ipa {
+    color: var(--accent); font-weight: 500;
+    background: var(--accent-soft);
+    padding: 1px 6px; border-radius: 3px;
+    margin-left: 6px;
+  }
+  .feedback-reveal .user-typed {
+    display: block; margin-top: 4px;
+    color: var(--ink-mute); font-style: italic;
+    font-family: var(--serif); font-size: 13px;
+  }
+  .feedback-en {
+    margin-top: 6px;
+    font-family: var(--serif); font-size: 13.5px;
+    color: var(--ink-soft); font-style: italic; line-height: 1.4;
+  }
+
+  /* Two-row comparison panel (shown after a miss with non-empty input) */
+  .compare-panel {
+    margin-top: 10px;
+    display: flex; flex-direction: column;
+    gap: 6px;
+  }
+  .compare-hint {
+    font-family: var(--serif); font-style: italic;
+    font-size: 12px; color: var(--ink-mute);
+    text-align: center; padding-bottom: 2px;
+  }
+  .compare-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.05);
+  }
+  .compare-row:active { transform: scale(0.98); }
+  .compare-row.compare-correct {
+    background: var(--right-soft);
+    border-color: rgba(45, 106, 79, 0.3);
+  }
+  .compare-row.compare-wrong {
+    background: var(--wrong-soft);
+    border-color: rgba(184, 69, 26, 0.3);
+  }
+  .compare-row.now-playing {
+    border-width: 2px;
+    transform: translateX(2px);
+  }
+  .compare-row.compare-correct.now-playing { border-color: var(--right); }
+  .compare-row.compare-wrong.now-playing { border-color: var(--wrong); }
+
+  .compare-label {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 600; white-space: nowrap;
+  }
+  .compare-correct .compare-label { color: var(--right); }
+  .compare-wrong .compare-label { color: var(--wrong); }
+  .compare-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 11px; font-weight: 700;
+  }
+  .compare-correct .compare-icon { background: var(--right); color: var(--paper); }
+  .compare-wrong .compare-icon { background: var(--wrong); color: var(--paper); }
+
+  .compare-word {
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
+  }
+  .compare-spelling {
+    font-family: var(--serif); font-size: 16px; font-weight: 600;
+    color: var(--ink); line-height: 1.2;
+  }
+  .compare-ipa {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--accent); font-weight: 500;
+    line-height: 1.2;
+  }
+  .compare-status {
+    display: none;
+    align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+  }
+  .compare-row.now-playing .compare-status { display: inline-flex; }
+  .play-pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+    animation: comparePulse 0.9s ease-in-out infinite;
+  }
+  @keyframes comparePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.6); }
+  }
+
+  .next-floater { display: none; margin-top: 14px; }
+  .next-floater.show { display: block; }
+  .next-btn {
+    width: 100%; background: var(--ink); color: var(--paper); border: none;
+    padding: 12px 16px; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; border-radius: 4px;
+    -webkit-appearance: none; cursor: pointer;
+  }
+  .next-btn:active { background: var(--accent); }
+
+  /* ===== Summary stage ===== */
+  .summary-wrap { padding: 28px 20px 100px; flex: 1; }
+  .summary-counts {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    margin: 18px 0 22px;
+  }
+  .summary-count {
+    padding: 12px 14px; border-radius: 6px;
+    background: var(--paper-card); border: 1px solid var(--rule);
+    border-left: 3px solid var(--ink-mute);
+  }
+  .summary-count.s-grad-first { border-left-color: var(--right); }
+  .summary-count.s-grad-review { border-left-color: var(--accent); }
+  .summary-count.s-still { border-left-color: var(--wrong); }
+  .summary-count.s-unseen { border-left-color: var(--ink-mute); }
+  .summary-count-num {
+    font-family: var(--serif); font-size: 26px; font-weight: 500;
+    line-height: 1; letter-spacing: -0.02em;
+  }
+  .summary-count-label {
+    margin-top: 4px;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-mute); line-height: 1.3;
+  }
+  .summary-groups { display: flex; flex-direction: column; gap: 18px; }
+  .summary-group {
+    background: var(--paper-card); border: 1px solid var(--rule);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .summary-group-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 10px;
+    padding-bottom: 8px; border-bottom: 1px dashed var(--rule);
+  }
+  .summary-group-title { color: var(--ink); font-weight: 600; }
+  .summary-group.g-first .summary-group-title { color: var(--right); }
+  .summary-group.g-review .summary-group-title { color: var(--accent); }
+  .summary-group.g-still .summary-group-title { color: var(--wrong); }
+  .summary-group-count { color: var(--ink-mute); }
+  .summary-item {
+    display: grid; grid-template-columns: 120px 1fr; column-gap: 12px;
+    padding: 8px 0; border-bottom: 1px dashed var(--rule);
+    align-items: baseline;
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-item-word {
+    font-family: var(--serif); font-size: 16px; font-weight: 500;
+    color: var(--ink);
+  }
+  .summary-item-ipa {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--accent); display: block; margin-top: 2px;
+  }
+  .summary-item-en {
+    font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* ===== Dictation (Section 3) ===== */
+  .listening-wrap { padding: 28px 18px 100px; flex: 1; }
+  .listening-controls {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; margin-bottom: 20px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .listening-controls-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .speed-buttons { display: flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; }
+  .speed-btn {
+    background: var(--paper); border: none; border-right: 1px solid var(--ink);
+    padding: 7px 12px; font-family: var(--mono); font-size: 11px;
+    font-weight: 500; color: var(--ink); cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .speed-btn:last-child { border-right: none; }
+  .speed-btn:active { background: var(--paper-warm); }
+  .speed-btn.active { background: var(--ink); color: var(--paper); }
+
+  .sentence-card { border-bottom: 1px solid var(--rule); padding: 22px 0; }
+  .sentence-card:first-of-type { border-top: 1px solid var(--rule); }
+  .sentence-num {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px;
+  }
+  .sentence-num strong { color: var(--ink); font-weight: 700; }
+
+  .chunk-strip {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 12px; padding: 12px 14px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px;
+  }
+  .chunk-strip-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .chunk-strip-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .play-all {
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 7px 12px; font-family: var(--sans); font-size: 12px;
+    font-weight: 600; cursor: pointer; border-radius: 2px;
+    display: inline-flex; align-items: center; gap: 6px;
+    -webkit-appearance: none;
+  }
+  .play-all:active:not(:disabled) { background: var(--accent); }
+  .play-all:disabled { opacity: 0.35; cursor: not-allowed; }
+  .play-all .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper); }
+  .play-all.playing .dot { animation: pulse 0.9s ease-in-out infinite; }
+  .chunk-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .chunk-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--paper); border: 1px solid var(--ink);
+    color: var(--ink); padding: 6px 10px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .chunk-btn:active:not(:disabled) { background: var(--ink); color: var(--paper); }
+  .chunk-btn:disabled {
+    opacity: 0.4; cursor: not-allowed;
+    background: var(--paper-warm); border-color: var(--rule); color: var(--ink-mute);
+  }
+  .chunk-btn.playing {
+    background: var(--accent); border-color: var(--accent); color: var(--paper);
+    opacity: 1;
+  }
+  .chunk-btn .chunk-num { font-weight: 700; opacity: 0.7; }
+  .chunk-btn .check { display: none; color: var(--accent); }
+  .chunk-btn.used .check { display: inline-block; }
+  .chunk-btn.used.playing .check { color: var(--paper); }
+
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; margin-bottom: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--paper-card); border: 1px solid var(--ink);
+    color: var(--ink); padding: 7px 12px;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .btn:active { background: var(--ink); color: var(--paper); }
+  .btn.active { background: var(--ink); color: var(--paper); }
+  .btn:disabled {
+    background: var(--paper-warm); border-color: var(--rule);
+    color: var(--ink-mute); cursor: not-allowed; border-style: dashed;
+  }
+  /* Per-sentence check button: filled accent so it reads as the primary per-card action */
+  .check-sentence-btn {
+    background: var(--accent); color: var(--paper); border-color: var(--accent);
+    font-weight: 600;
+  }
+  .check-sentence-btn:active { background: var(--ink); border-color: var(--ink); }
+  .check-sentence-btn.checked {
+    background: var(--paper-card); color: var(--accent); border-color: var(--accent);
+    font-weight: 500;
+  }
+  .reveal { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .reveal.open { max-height: 800px; }
+  .transcript {
+    font-family: var(--serif); font-size: 16px; line-height: 1.45;
+    padding: 11px 14px; background: var(--paper-card);
+    border-left: 3px solid var(--ink); border-radius: 0 4px 4px 0;
+    margin-top: 4px;
+  }
+  .input-label {
+    display: block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 6px 0 6px;
+  }
+  textarea.answer {
+    width: 100%; min-height: 72px; resize: vertical;
+    font-family: var(--serif); font-size: 15.5px; line-height: 1.5;
+    padding: 10px 12px; background: var(--paper-card);
+    border: 1px solid var(--rule); border-radius: 4px; outline: none;
+    -webkit-appearance: none;
+  }
+  textarea.answer:focus { border-color: var(--ink); }
+  textarea.answer::placeholder { color: var(--ink-mute); font-style: italic; font-size: 14px; }
+  textarea.answer:disabled { background: var(--paper-warm); }
+
+  .result-box {
+    margin-top: 10px; padding: 11px 14px;
+    background: var(--paper-card); border-radius: 4px;
+    border-left: 3px solid var(--accent); display: none;
+  }
+  .result-box.show { display: block; }
+  .result-box.poor { border-left-color: var(--wrong); }
+  .result-score {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px;
+  }
+  .result-score strong { color: var(--ink); font-size: 13px; }
+  .result-diff { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; }
+  .word-right { background: var(--right-soft); padding: 1px 3px; border-radius: 2px; }
+  .word-missing { background: var(--wrong-soft); color: var(--wrong); padding: 1px 3px; border-radius: 2px; }
+
+  .submit-area {
+    margin-top: 32px; padding: 24px 18px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 4px; text-align: center;
+  }
+  .submit-area h2 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px;
+    margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .submit-area p { color: #b8b0a0; font-size: 13px; margin-bottom: 16px; }
+  .submit-btn {
+    background: var(--paper); color: var(--ink); border: none;
+    padding: 12px 24px; font-family: var(--sans); font-size: 14px;
+    font-weight: 600; cursor: pointer; border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .summary-block { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(250,247,240,0.2); }
+  .summary-block.show { display: block; }
+  .summary-score {
+    font-family: var(--serif); font-size: 44px; font-weight: 500;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .summary-score sup { font-size: 18px; color: #b8b0a0; }
+  .summary-final-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: #b8b0a0;
+  }
+
+
+  /* ===== Linking-specific additions (same design tokens) ===== */
+  .link-tag {
+    display: inline-block; font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 2px;
+    background: var(--accent-soft); color: var(--accent);
+    margin-left: 8px; vertical-align: middle; font-weight: 600;
+  }
+  .link-reveal {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--paper-card); border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0;
+  }
+  .link-reveal-row {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .link-reveal-row:last-child { margin-bottom: 0; }
+  .link-reveal-label {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-mute);
+    min-width: 88px;
+  }
+  .link-sentence-full {
+    font-family: var(--serif); font-size: 17px; color: var(--ink); line-height: 1.4;
+  }
+  .link-sentence-full .linked {
+    text-decoration: underline; text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px; text-underline-offset: 3px;
+    color: var(--accent); font-weight: 600;
+  }
+  .link-respell {
+    font-family: var(--mono); font-size: 16px; font-weight: 600;
+    color: var(--ink); background: var(--paper-warm);
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 0.02em;
+  }
+  .link-ipa {
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 2px 8px; border-radius: 3px;
+  }
+  .link-vi {
+    font-family: var(--serif); font-style: italic; font-size: 14.5px;
+    color: var(--ink-soft); line-height: 1.4;
+  }
+  .link-play-mini {
+    background: var(--paper); border: 1px solid var(--ink); color: var(--ink);
+    padding: 4px 10px; font-family: var(--sans); font-size: 11px; font-weight: 600;
+    border-radius: 2px; cursor: pointer; -webkit-appearance: none;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .link-play-mini:active { background: var(--ink); color: var(--paper); }
+  .link-play-mini .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  /* Word-diff colors reused from Section 3 dictation */
+  .word-right { background: var(--right-soft); padding: 1px 3px; border-radius: 2px; }
+  .word-missing { background: var(--wrong-soft); color: var(--wrong); padding: 1px 3px; border-radius: 2px; text-decoration: line-through; }
+  .word-extra { color: var(--ink-mute); font-style: italic; }
+  /* Type filter chips on intro */
+  .type-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .type-chip {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 7px 11px;
+    border: 1px solid var(--ink); border-radius: 2px;
+    background: var(--paper); color: var(--ink); cursor: pointer;
+    -webkit-appearance: none; font-weight: 500;
+  }
+  .type-chip.active { background: var(--ink); color: var(--paper); }
+  .type-chip:active:not(.active) { background: var(--paper-warm); }
+  .type-chip small { display:block; font-size:8.5px; color:var(--ink-mute); margin-top:1px; font-weight:400; letter-spacing:0.04em; }
+  .type-chip.active small { color: var(--accent-soft); }
+  .word-input { font-size: 18px !important; }
+
+</style>
+</head>
+<body>
+
+<!-- ===== Intro ===== -->
+<section class="stage active" id="stage-intro">
+  <div class="intro-wrap">
+    <div class="eyebrow">
+      <span>Linking Lab · v1</span>
+      <span>Hear the Blend</span>
+    </div>
+    <h1 class="title">Words blur together. <em>Catch them.</em></h1>
+    <p class="deck">Native speakers link words so "give it" sounds like <em>gi&#8209;vit</em>. Two stages. Section 1: a short sentence plays once — type the whole thing. Section 2: drill the ones you missed until they stick.</p>
+
+    <div class="mode-panel active" id="panel-random">
+      <div class="refresh-row">
+        <div class="refresh-info">
+          Picking <strong id="pick-count">5</strong> short sentences from a pool of <strong id="pool-count">500</strong>.
+        </div>
+        <button type="button" class="refresh-btn" id="refresh-btn">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="settings">
+      <div class="settings-header">Settings</div>
+
+      <div class="setting-row" style="grid-template-columns: 1fr;">
+        <div class="setting-label">
+          Linking types to practice
+          <small>Tap to include / exclude. At least one must stay on.</small>
+          <div class="type-chips" id="type-chips">
+            <button type="button" class="type-chip active" data-type="CV">C→V<small>give it</small></button>
+            <button type="button" class="type-chip active" data-type="VV">V→V<small>go on</small></button>
+            <button type="button" class="type-chip active" data-type="CC">Same-C<small>had to</small></button>
+            <button type="button" class="type-chip active" data-type="TJ">/t/+/y/<small>did you</small></button>
+            <button type="button" class="type-chip active" data-type="FLAP">Flap-T<small>get up</small></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Time per sentence
+          <small>Section 1 &amp; 2 timer (3-15s)</small>
+        </div>
+        <div class="stepper">
+          <button type="button" class="step-btn" id="timer-down">−</button>
+          <div class="step-display"><span id="timer-value">7</span><span class="step-unit">s</span></div>
+          <button type="button" class="step-btn" id="timer-up">+</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Review streak goal
+          <small>Section 2 graduates after N in a row (2-5)</small>
+        </div>
+        <div class="stepper">
+          <button type="button" class="step-btn" id="streak-down">−</button>
+          <div class="step-display"><span id="streak-value">2</span></div>
+          <button type="button" class="step-btn" id="streak-up">+</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Number of sentences
+          <small>How many to drill this session (3-30)</small>
+        </div>
+        <div class="stepper">
+          <button type="button" class="step-btn" id="count-down">−</button>
+          <div class="step-display"><span id="count-value">20</span></div>
+          <button type="button" class="step-btn" id="count-up">+</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Spelling rule
+          <small>Strict counts spelling; Allow typos forgives small slips. Homophones &amp; apostrophes always accepted.</small>
+        </div>
+        <div class="toggle-group" role="group">
+          <button type="button" class="toggle-btn active" id="typo-strict">Strict</button>
+          <button type="button" class="toggle-btn" id="typo-lenient">Allow typos</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          Mobile keyboard
+          <small>On: your phone's keyboard opens automatically when it's time to type. Off: tap the text box yourself.</small>
+        </div>
+        <div class="toggle-group" role="group">
+          <button type="button" class="toggle-btn active" id="kbd-auto-on">On</button>
+          <button type="button" class="toggle-btn" id="kbd-auto-off">Off</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stages-overview">
+      <div class="stage-card">
+        <div class="stage-card-num">Section 01 · First Pass</div>
+        <div class="stage-card-title">Hear a sentence, type it whole</div>
+        <div class="stage-card-body">A short 3–4 word sentence plays once. Type the whole sentence before the timer runs out. Get it right and it graduates; miss it and it goes to Section 2. The reveal shows you exactly which words linked and how they sound.</div>
+      </div>
+      <div class="stage-card">
+        <div class="stage-card-num">Section 02 · Review</div>
+        <div class="stage-card-title">Drill the misses to mastery</div>
+        <div class="stage-card-body">The sentences you missed come back. Get each one right N times in a row to graduate (default 2).</div>
+      </div>
+    </div>
+
+    <div class="button-stack">
+      <button class="primary-btn" id="start-btn">Begin Section 01 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Drill (Section 1 & 2) ===== -->
+<section class="stage" id="stage-drill">
+  <div class="test-wrap">
+    <div class="test-header">
+      <div class="test-header-left">
+        <strong id="drill-section-label">Section 01</strong> · <strong id="drill-graduated">0</strong> / <strong id="drill-total">0</strong> done · <span id="drill-attempts">0</span> attempts
+      </div>
+      <button class="skip-link" id="skip-from-drill">Skip →</button>
+    </div>
+
+    <div class="testcard" id="drill-card">
+      <div class="play-area">
+        <div class="play-prompt">Listen — what's the sentence?</div>
+        <button class="big-play-btn" id="drill-play-btn">
+          <span class="play-dot"></span>
+          <span>Play sentence</span>
+        </button>
+        <div class="timer-row idle" id="timer-row">
+          <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-fill"></div></div>
+          <span class="timer-seconds" id="timer-seconds">7s</span>
+        </div>
+      </div>
+      <div class="input-area">
+        <div class="input-label">Type the whole sentence</div>
+        <input type="text" class="word-input" id="word-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="" />
+        <div class="input-actions">
+          <button class="check-btn" id="check-btn" disabled>Check</button>
+          <button class="idk-btn" id="idk-btn">Replay</button>
+        </div>
+      </div>
+      <div class="feedback" id="drill-feedback"></div>
+      <div class="next-floater" id="drill-next-floater">
+        <button class="next-btn" id="drill-next-btn">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Summary ===== -->
+<section class="stage" id="stage-summary">
+  <div class="summary-wrap">
+    <div class="eyebrow">
+      <span>Sections 01 &amp; 02 · Summary</span>
+      <span>Linking trained</span>
+    </div>
+    <h1 class="title">Where you stand <em>so far.</em></h1>
+    <p class="deck" id="summary-deck">Here is what graduated on the first try, what needed review, and the links you practiced.</p>
+
+    <div class="summary-counts" id="summary-counts"></div>
+    <div class="summary-groups" id="summary-groups"></div>
+
+    <div class="button-stack" style="margin-top: 24px;">
+      <button class="primary-btn" id="summary-restart">↻ New session</button>
+      <button class="secondary-btn" id="summary-export-btn">📥 Export results to CSV</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const POOL = [{"text":"Give it to me.","chunks":["Give it","to me."],"linkPhrase":"give it","linkRespell":"gi-vit","linkIpa":"/gɪ‿vɪt/","linkType":"CV","vi":"Đưa nó cho em."},{"text":"Give it a try.","chunks":["Give it","a try."],"linkPhrase":"give it","linkRespell":"gi-vit","linkIpa":"/gɪ‿vɪt/","linkType":"CV","vi":"Thử một lần đi."},{"text":"Pick it up.","chunks":["Pick it up."],"linkPhrase":"pick it","linkRespell":"pi-kit","linkIpa":"/pɪ‿kɪt/","linkType":"CV","vi":"Nhặt nó lên."},{"text":"Turn it off.","chunks":["Turn it off."],"linkPhrase":"turn it","linkRespell":"tur-nit","linkIpa":"/tɜːr‿nɪt/","linkType":"CV","vi":"Tắt nó đi."},{"text":"Turn it on.","chunks":["Turn it on."],"linkPhrase":"turn it","linkRespell":"tur-nit","linkIpa":"/tɜːr‿nɪt/","linkType":"CV","vi":"Bật nó lên."},{"text":"Take it easy.","chunks":["Take it easy."],"linkPhrase":"take it","linkRespell":"tay-kit","linkIpa":"/teɪ‿kɪt/","linkType":"CV","vi":"Cứ thong thả."},{"text":"Hold on a sec.","chunks":["Hold on","a sec."],"linkPhrase":"hold on","linkRespell":"hol-don","linkIpa":"/hoʊl‿dɒn/","linkType":"CV","vi":"Đợi một chút."},{"text":"Come on in.","chunks":["Come on in."],"linkPhrase":"come on","linkRespell":"co-mon","linkIpa":"/kʌ‿mɒn/","linkType":"CV","vi":"Vào đi."},{"text":"Move on up.","chunks":["Move on up."],"linkPhrase":"move on","linkRespell":"moo-von","linkIpa":"/muː‿vɒn/","linkType":"CV","vi":"Tiến lên trên."},{"text":"Check it out.","chunks":["Check it out."],"linkPhrase":"check it","linkRespell":"che-kit","linkIpa":"/tʃe‿kɪt/","linkType":"CV","vi":"Xem thử đi."},{"text":"Read it again.","chunks":["Read it again."],"linkPhrase":"read it","linkRespell":"ree-dit","linkIpa":"/riː‿dɪt/","linkType":"CV","vi":"Đọc lại đi."},{"text":"Send it over.","chunks":["Send it over."],"linkPhrase":"send it","linkRespell":"sen-dit","linkIpa":"/sen‿dɪt/","linkType":"CV","vi":"Gửi nó qua đây."},{"text":"Bring it back.","chunks":["Bring it back."],"linkPhrase":"bring it","linkRespell":"bri-ngit","linkIpa":"/brɪ‿ŋɪt/","linkType":"CV","vi":"Mang nó lại."},{"text":"Put it down.","chunks":["Put it down."],"linkPhrase":"put it","linkRespell":"pu-dit","linkIpa":"/pʊ‿ɾɪt/","linkType":"CV","vi":"Đặt nó xuống."},{"text":"Throw it away.","chunks":["Throw it away."],"linkPhrase":"throw it","linkRespell":"throw-wit","linkIpa":"/θroʊ‿ɪt/","linkType":"CV","vi":"Vứt nó đi."},{"text":"Hand it over.","chunks":["Hand it over."],"linkPhrase":"hand it","linkRespell":"han-dit","linkIpa":"/hæn‿dɪt/","linkType":"CV","vi":"Đưa nó qua đây."},{"text":"Wrap it up.","chunks":["Wrap it up."],"linkPhrase":"wrap it","linkRespell":"wra-pit","linkIpa":"/ræ‿pɪt/","linkType":"CV","vi":"Gói nó lại."},{"text":"Fill it up.","chunks":["Fill it up."],"linkPhrase":"fill it","linkRespell":"fi-lit","linkIpa":"/fɪ‿lɪt/","linkType":"CV","vi":"Đổ đầy nó lên."},{"text":"Lock it up.","chunks":["Lock it up."],"linkPhrase":"lock it","linkRespell":"lo-kit","linkIpa":"/lɒ‿kɪt/","linkType":"CV","vi":"Khóa nó lại."},{"text":"Hang on a moment.","chunks":["Hang on","a moment."],"linkPhrase":"hang on","linkRespell":"han-gon","linkIpa":"/hæ‿ŋɒn/","linkType":"CV","vi":"Đợi một lát."},{"text":"Cut it out.","chunks":["Cut it out."],"linkPhrase":"cut it","linkRespell":"cu-dit","linkIpa":"/kʌ‿ɾɪt/","linkType":"CV","vi":"Thôi đi."},{"text":"Drop it off.","chunks":["Drop it off."],"linkPhrase":"drop it","linkRespell":"dro-pit","linkIpa":"/drɒ‿pɪt/","linkType":"CV","vi":"Bỏ nó xuống."},{"text":"Save it for later.","chunks":["Save it","for later."],"linkPhrase":"save it","linkRespell":"say-vit","linkIpa":"/seɪ‿vɪt/","linkType":"CV","vi":"Để dành sau."},{"text":"Pass it along.","chunks":["Pass it along."],"linkPhrase":"pass it","linkRespell":"pa-sit","linkIpa":"/pæ‿sɪt/","linkType":"CV","vi":"Chuyền nó đi."},{"text":"Look it up.","chunks":["Look it up."],"linkPhrase":"look it","linkRespell":"loo-kit","linkIpa":"/lʊ‿kɪt/","linkType":"CV","vi":"Tra nó đi."},{"text":"Set it aside.","chunks":["Set it aside."],"linkPhrase":"set it","linkRespell":"se-dit","linkIpa":"/se‿ɾɪt/","linkType":"CV","vi":"Để nó sang bên."},{"text":"Roll it over.","chunks":["Roll it over."],"linkPhrase":"roll it","linkRespell":"ro-lit","linkIpa":"/roʊ‿lɪt/","linkType":"CV","vi":"Lăn nó qua."},{"text":"Switch it off.","chunks":["Switch it off."],"linkPhrase":"switch it","linkRespell":"swi-chit","linkIpa":"/swɪ‿tʃɪt/","linkType":"CV","vi":"Tắt công tắc."},{"text":"Make it work.","chunks":["Make it work."],"linkPhrase":"make it","linkRespell":"may-kit","linkIpa":"/meɪ‿kɪt/","linkType":"CV","vi":"Làm cho được."},{"text":"Break it down.","chunks":["Break it down."],"linkPhrase":"break it","linkRespell":"bray-kit","linkIpa":"/breɪ‿kɪt/","linkType":"CV","vi":"Chia nhỏ ra."},{"text":"Keep it up.","chunks":["Keep it up."],"linkPhrase":"keep it","linkRespell":"kee-pit","linkIpa":"/kiː‿pɪt/","linkType":"CV","vi":"Cứ tiếp tục."},{"text":"Plug it in.","chunks":["Plug it in."],"linkPhrase":"plug it","linkRespell":"plu-git","linkIpa":"/plʌ‿gɪt/","linkType":"CV","vi":"Cắm nó vào."},{"text":"Toss it over.","chunks":["Toss it over."],"linkPhrase":"toss it","linkRespell":"to-sit","linkIpa":"/tɒ‿sɪt/","linkType":"CV","vi":"Ném nó qua."},{"text":"Lay it out.","chunks":["Lay it out."],"linkPhrase":"lay it","linkRespell":"lay-yit","linkIpa":"/leɪ‿ɪt/","linkType":"CV","vi":"Bày nó ra."},{"text":"Hook it up.","chunks":["Hook it up."],"linkPhrase":"hook it","linkRespell":"hoo-kit","linkIpa":"/hʊ‿kɪt/","linkType":"CV","vi":"Nối nó vào."},{"text":"Fix it up.","chunks":["Fix it up."],"linkPhrase":"fix it","linkRespell":"fi-ksit","linkIpa":"/fɪ‿ksɪt/","linkType":"CV","vi":"Sửa nó lại."},{"text":"Clean it up.","chunks":["Clean it up."],"linkPhrase":"clean it","linkRespell":"clee-nit","linkIpa":"/kliː‿nɪt/","linkType":"CV","vi":"Dọn nó sạch."},{"text":"Carry it inside.","chunks":["Carry it inside."],"linkPhrase":"carry it","linkRespell":"carry-yit","linkIpa":"/kæri‿ɪt/","linkType":"CV","vi":"Mang nó vào trong."},{"text":"Leave it alone.","chunks":["Leave it alone."],"linkPhrase":"leave it","linkRespell":"lee-vit","linkIpa":"/liː‿vɪt/","linkType":"CV","vi":"Để nó yên."},{"text":"Knock it off.","chunks":["Knock it off."],"linkPhrase":"knock it","linkRespell":"no-kit","linkIpa":"/nɒ‿kɪt/","linkType":"CV","vi":"Dừng lại đi."},{"text":"Hold it tight.","chunks":["Hold it tight."],"linkPhrase":"hold it","linkRespell":"hol-dit","linkIpa":"/hoʊl‿dɪt/","linkType":"CV","vi":"Giữ chặt nó."},{"text":"Eat it up.","chunks":["Eat it up."],"linkPhrase":"eat it","linkRespell":"ee-dit","linkIpa":"/iː‿ɾɪt/","linkType":"CV","vi":"Ăn hết đi."},{"text":"Pour it out.","chunks":["Pour it out."],"linkPhrase":"pour it","linkRespell":"por-rit","linkIpa":"/pɔːr‿ɪt/","linkType":"CV","vi":"Đổ nó ra."},{"text":"Print it out.","chunks":["Print it out."],"linkPhrase":"print it","linkRespell":"prin-tit","linkIpa":"/prɪn‿tɪt/","linkType":"CV","vi":"In nó ra."},{"text":"Type it in.","chunks":["Type it in."],"linkPhrase":"type it","linkRespell":"ty-pit","linkIpa":"/taɪ‿pɪt/","linkType":"CV","vi":"Gõ nó vào."},{"text":"Wipe it down.","chunks":["Wipe it down."],"linkPhrase":"wipe it","linkRespell":"wy-pit","linkIpa":"/waɪ‿pɪt/","linkType":"CV","vi":"Lau nó sạch."},{"text":"Heat it up.","chunks":["Heat it up."],"linkPhrase":"heat it","linkRespell":"hee-dit","linkIpa":"/hiː‿ɾɪt/","linkType":"CV","vi":"Hâm nó nóng."},{"text":"Cool it down.","chunks":["Cool it down."],"linkPhrase":"cool it","linkRespell":"coo-lit","linkIpa":"/kuː‿lɪt/","linkType":"CV","vi":"Làm nó nguội."},{"text":"Slow it down.","chunks":["Slow it down."],"linkPhrase":"slow it","linkRespell":"slow-wit","linkIpa":"/sloʊ‿ɪt/","linkType":"CV","vi":"Làm nó chậm lại."},{"text":"Speed it up.","chunks":["Speed it up."],"linkPhrase":"speed it","linkRespell":"spee-dit","linkIpa":"/spiː‿dɪt/","linkType":"CV","vi":"Tăng tốc nó lên."},{"text":"Bring it on.","chunks":["Bring it on."],"linkPhrase":"bring it","linkRespell":"bri-ngit","linkIpa":"/brɪ‿ŋɪt/","linkType":"CV","vi":"Tới luôn đi."},{"text":"Sign it off.","chunks":["Sign it off."],"linkPhrase":"sign it","linkRespell":"sy-nit","linkIpa":"/saɪ‿nɪt/","linkType":"CV","vi":"Ký duyệt nó."},{"text":"Try it out.","chunks":["Try it out."],"linkPhrase":"try it","linkRespell":"try-yit","linkIpa":"/traɪ‿ɪt/","linkType":"CV","vi":"Thử nó đi."},{"text":"Use it up.","chunks":["Use it up."],"linkPhrase":"use it","linkRespell":"you-zit","linkIpa":"/juː‿zɪt/","linkType":"CV","vi":"Dùng hết nó."},{"text":"Tape it up.","chunks":["Tape it up."],"linkPhrase":"tape it","linkRespell":"tay-pit","linkIpa":"/teɪ‿pɪt/","linkType":"CV","vi":"Dán nó lại."},{"text":"Wash it off.","chunks":["Wash it off."],"linkPhrase":"wash it","linkRespell":"wo-shit","linkIpa":"/wɒ‿ʃɪt/","linkType":"CV","vi":"Rửa nó sạch."},{"text":"Push it open.","chunks":["Push it open."],"linkPhrase":"push it","linkRespell":"poo-shit","linkIpa":"/pʊ‿ʃɪt/","linkType":"CV","vi":"Đẩy nó mở ra."},{"text":"Pull it out.","chunks":["Pull it out."],"linkPhrase":"pull it","linkRespell":"poo-lit","linkIpa":"/pʊ‿lɪt/","linkType":"CV","vi":"Kéo nó ra."},{"text":"Mark it down.","chunks":["Mark it down."],"linkPhrase":"mark it","linkRespell":"mar-kit","linkIpa":"/mɑːr‿kɪt/","linkType":"CV","vi":"Ghi nó xuống."},{"text":"Pack it up.","chunks":["Pack it up."],"linkPhrase":"pack it","linkRespell":"pa-kit","linkIpa":"/pæ‿kɪt/","linkType":"CV","vi":"Gói nó lại."},{"text":"Add it up.","chunks":["Add it up."],"linkPhrase":"add it","linkRespell":"a-dit","linkIpa":"/æ‿ɾɪt/","linkType":"CV","vi":"Cộng nó lại."},{"text":"Spell it out.","chunks":["Spell it out."],"linkPhrase":"spell it","linkRespell":"spe-lit","linkIpa":"/spe‿lɪt/","linkType":"CV","vi":"Đánh vần nó ra."},{"text":"Write it down.","chunks":["Write it down."],"linkPhrase":"write it","linkRespell":"wry-dit","linkIpa":"/raɪ‿ɾɪt/","linkType":"CV","vi":"Viết nó xuống."},{"text":"Hold an umbrella.","chunks":["Hold an umbrella."],"linkPhrase":"hold an","linkRespell":"hol-dan","linkIpa":"/hoʊl‿dæn/","linkType":"CV","vi":"Cầm một cây dù."},{"text":"Find an answer.","chunks":["Find an answer."],"linkPhrase":"find an","linkRespell":"fyn-dan","linkIpa":"/faɪn‿dæn/","linkType":"CV","vi":"Tìm một câu trả lời."},{"text":"Grab an apple.","chunks":["Grab an apple."],"linkPhrase":"grab an","linkRespell":"gra-ban","linkIpa":"/græ‿bæn/","linkType":"CV","vi":"Lấy một quả táo."},{"text":"Need an hour.","chunks":["Need an hour."],"linkPhrase":"need an","linkRespell":"nee-dan","linkIpa":"/niː‿dæn/","linkType":"CV","vi":"Cần một tiếng."},{"text":"Want an answer.","chunks":["Want an answer."],"linkPhrase":"want an","linkRespell":"wan-tan","linkIpa":"/wɒn‿tæn/","linkType":"CV","vi":"Muốn một câu trả lời."},{"text":"Bring an extra.","chunks":["Bring an extra."],"linkPhrase":"bring an","linkRespell":"bri-ngan","linkIpa":"/brɪ‿ŋæn/","linkType":"CV","vi":"Mang thêm một cái."},{"text":"Take an exam.","chunks":["Take an exam."],"linkPhrase":"take an","linkRespell":"tay-kan","linkIpa":"/teɪ‿kæn/","linkType":"CV","vi":"Làm một bài thi."},{"text":"Make an effort.","chunks":["Make an effort."],"linkPhrase":"make an","linkRespell":"may-kan","linkIpa":"/meɪ‿kæn/","linkType":"CV","vi":"Cố gắng một chút."},{"text":"Open it slowly.","chunks":["Open it slowly."],"linkPhrase":"open it","linkRespell":"open-nit","linkIpa":"/oʊpə‿nɪt/","linkType":"CV","vi":"Mở nó từ từ."},{"text":"Call it off.","chunks":["Call it off."],"linkPhrase":"call it","linkRespell":"co-lit","linkIpa":"/kɔː‿lɪt/","linkType":"CV","vi":"Hủy nó đi."},{"text":"Sort it out.","chunks":["Sort it out."],"linkPhrase":"sort it","linkRespell":"sor-tit","linkIpa":"/sɔːr‿tɪt/","linkType":"CV","vi":"Giải quyết nó."},{"text":"Work it out.","chunks":["Work it out."],"linkPhrase":"work it","linkRespell":"wur-kit","linkIpa":"/wɜːr‿kɪt/","linkType":"CV","vi":"Tính toán cho ra."},{"text":"Run it again.","chunks":["Run it again."],"linkPhrase":"run it","linkRespell":"ru-nit","linkIpa":"/rʌ‿nɪt/","linkType":"CV","vi":"Chạy lại nó đi."},{"text":"Cook it well.","chunks":["Cook it well."],"linkPhrase":"cook it","linkRespell":"koo-kit","linkIpa":"/kʊ‿kɪt/","linkType":"CV","vi":"Nấu chín nó."},{"text":"Lift it up.","chunks":["Lift it up."],"linkPhrase":"lift it","linkRespell":"lif-tit","linkIpa":"/lɪf‿tɪt/","linkType":"CV","vi":"Nâng nó lên."},{"text":"Drag it over.","chunks":["Drag it over."],"linkPhrase":"drag it","linkRespell":"dra-git","linkIpa":"/dræ‿gɪt/","linkType":"CV","vi":"Kéo nó qua."},{"text":"Stack it up.","chunks":["Stack it up."],"linkPhrase":"stack it","linkRespell":"sta-kit","linkIpa":"/stæ‿kɪt/","linkType":"CV","vi":"Xếp chồng lên."},{"text":"Tie it up.","chunks":["Tie it up."],"linkPhrase":"tie it","linkRespell":"ty-yit","linkIpa":"/taɪ‿ɪt/","linkType":"CV","vi":"Buộc nó lại."},{"text":"Fold it up.","chunks":["Fold it up."],"linkPhrase":"fold it","linkRespell":"fol-dit","linkIpa":"/foʊl‿dɪt/","linkType":"CV","vi":"Gấp nó lại."},{"text":"Mix it well.","chunks":["Mix it well."],"linkPhrase":"mix it","linkRespell":"mi-ksit","linkIpa":"/mɪ‿ksɪt/","linkType":"CV","vi":"Trộn đều nó."},{"text":"Stir it gently.","chunks":["Stir it gently."],"linkPhrase":"stir it","linkRespell":"stir-rit","linkIpa":"/stɜːr‿ɪt/","linkType":"CV","vi":"Khuấy nhẹ nó."},{"text":"Cover it up.","chunks":["Cover it up."],"linkPhrase":"cover it","linkRespell":"cover-rit","linkIpa":"/kʌvə‿rɪt/","linkType":"CV","vi":"Đậy nó lại."},{"text":"Burn it down.","chunks":["Burn it down."],"linkPhrase":"burn it","linkRespell":"bur-nit","linkIpa":"/bɜːr‿nɪt/","linkType":"CV","vi":"Đốt nó đi."},{"text":"Hide it away.","chunks":["Hide it away."],"linkPhrase":"hide it","linkRespell":"hy-dit","linkIpa":"/haɪ‿dɪt/","linkType":"CV","vi":"Giấu nó đi."},{"text":"Share it around.","chunks":["Share it around."],"linkPhrase":"share it","linkRespell":"shay-rit","linkIpa":"/ʃeə‿rɪt/","linkType":"CV","vi":"Chia sẻ nó."},{"text":"Order it now.","chunks":["Order it now."],"linkPhrase":"order it","linkRespell":"order-rit","linkIpa":"/ɔːrdə‿rɪt/","linkType":"CV","vi":"Đặt nó ngay."},{"text":"Match it up.","chunks":["Match it up."],"linkPhrase":"match it","linkRespell":"ma-chit","linkIpa":"/mæ‿tʃɪt/","linkType":"CV","vi":"Ghép nó lại."},{"text":"Go on ahead.","chunks":["Go on ahead."],"linkPhrase":"go on","linkRespell":"go-won","linkIpa":"/goʊ‿wɒn/","linkType":"VV","vi":"Cứ đi trước đi."},{"text":"Go away now.","chunks":["Go away now."],"linkPhrase":"go away","linkRespell":"go-waway","linkIpa":"/goʊ‿wəweɪ/","linkType":"VV","vi":"Đi đi."},{"text":"I am ready.","chunks":["I am ready."],"linkPhrase":"I am","linkRespell":"I-yam","linkIpa":"/aɪ‿jæm/","linkType":"VV","vi":"Em sẵn sàng rồi."},{"text":"I asked her.","chunks":["I asked her."],"linkPhrase":"I asked","linkRespell":"I-yasked","linkIpa":"/aɪ‿jɑːskt/","linkType":"VV","vi":"Em đã hỏi cô ấy."},{"text":"She is here.","chunks":["She is here."],"linkPhrase":"she is","linkRespell":"she-yis","linkIpa":"/ʃiː‿jɪz/","linkType":"VV","vi":"Cô ấy ở đây."},{"text":"He is late.","chunks":["He is late."],"linkPhrase":"he is","linkRespell":"he-yis","linkIpa":"/hiː‿jɪz/","linkType":"VV","vi":"Anh ấy trễ rồi."},{"text":"We are open.","chunks":["We are open."],"linkPhrase":"we are","linkRespell":"we-yar","linkIpa":"/wiː‿jɑːr/","linkType":"VV","vi":"Chúng tôi mở cửa."},{"text":"Do it again.","chunks":["Do it again."],"linkPhrase":"do it","linkRespell":"do-wit","linkIpa":"/duː‿wɪt/","linkType":"VV","vi":"Làm lại đi."},{"text":"Who is that?","chunks":["Who is that?"],"linkPhrase":"who is","linkRespell":"who-wiz","linkIpa":"/huː‿wɪz/","linkType":"VV","vi":"Ai đó vậy?"},{"text":"Too easy, right?","chunks":["Too easy, right?"],"linkPhrase":"too easy","linkRespell":"too-weasy","linkIpa":"/tuː‿wiːzi/","linkType":"VV","vi":"Dễ quá, phải không?"},{"text":"Say it again.","chunks":["Say it again."],"linkPhrase":"say it","linkRespell":"say-yit","linkIpa":"/seɪ‿jɪt/","linkType":"VV","vi":"Nói lại đi."},{"text":"May I ask?","chunks":["May I ask?"],"linkPhrase":"may I","linkRespell":"may-yI","linkIpa":"/meɪ‿jaɪ/","linkType":"VV","vi":"Em hỏi được không?"},{"text":"Try again later.","chunks":["Try again later."],"linkPhrase":"try again","linkRespell":"try-yagain","linkIpa":"/traɪ‿jəgen/","linkType":"VV","vi":"Thử lại sau."},{"text":"Be on time.","chunks":["Be on time."],"linkPhrase":"be on","linkRespell":"be-yon","linkIpa":"/biː‿jɒn/","linkType":"VV","vi":"Đến đúng giờ."},{"text":"The end is near.","chunks":["The end","is near."],"linkPhrase":"the end","linkRespell":"thee-yend","linkIpa":"/ðiː‿jend/","linkType":"VV","vi":"Sắp kết thúc rồi."},{"text":"No idea why.","chunks":["No idea why."],"linkPhrase":"no idea","linkRespell":"no-widea","linkIpa":"/noʊ‿waɪdɪə/","linkType":"VV","vi":"Không biết tại sao."},{"text":"So easy now.","chunks":["So easy now."],"linkPhrase":"so easy","linkRespell":"so-weasy","linkIpa":"/soʊ‿wiːzi/","linkType":"VV","vi":"Giờ dễ rồi."},{"text":"Go inside quietly.","chunks":["Go inside quietly."],"linkPhrase":"go inside","linkRespell":"go-winside","linkIpa":"/goʊ‿wɪnsaɪd/","linkType":"VV","vi":"Vào trong nhẹ nhàng."},{"text":"How are you?","chunks":["How are you?"],"linkPhrase":"how are","linkRespell":"how-war","linkIpa":"/haʊ‿wɑːr/","linkType":"VV","vi":"Bạn khỏe không?"},{"text":"Now or never.","chunks":["Now or never."],"linkPhrase":"now or","linkRespell":"now-wor","linkIpa":"/naʊ‿wɔːr/","linkType":"VV","vi":"Bây giờ hoặc không bao giờ."},{"text":"Why are you here?","chunks":["Why are","you here?"],"linkPhrase":"why are","linkRespell":"why-yar","linkIpa":"/waɪ‿jɑːr/","linkType":"VV","vi":"Sao bạn ở đây?"},{"text":"They are coming.","chunks":["They are coming."],"linkPhrase":"they are","linkRespell":"they-yar","linkIpa":"/ðeɪ‿jɑːr/","linkType":"VV","vi":"Họ đang tới."},{"text":"You are early.","chunks":["You are early."],"linkPhrase":"you are","linkRespell":"you-war","linkIpa":"/juː‿wɑːr/","linkType":"VV","vi":"Bạn tới sớm."},{"text":"Stay awake longer.","chunks":["Stay awake longer."],"linkPhrase":"stay awake","linkRespell":"stay-yawake","linkIpa":"/steɪ‿jəweɪk/","linkType":"VV","vi":"Thức lâu hơn."},{"text":"Free at last.","chunks":["Free at last."],"linkPhrase":"free at","linkRespell":"free-yat","linkIpa":"/friː‿jæt/","linkType":"VV","vi":"Cuối cùng cũng tự do."},{"text":"Go up there.","chunks":["Go up there."],"linkPhrase":"go up","linkRespell":"go-wup","linkIpa":"/goʊ‿wʌp/","linkType":"VV","vi":"Lên trên đó."},{"text":"Two apples please.","chunks":["Two apples please."],"linkPhrase":"two apples","linkRespell":"too-wapples","linkIpa":"/tuː‿wæpəlz/","linkType":"VV","vi":"Hai quả táo nhé."},{"text":"She always smiles.","chunks":["She always smiles."],"linkPhrase":"she always","linkRespell":"she-yalways","linkIpa":"/ʃiː‿jɔːlweɪz/","linkType":"VV","vi":"Cô ấy luôn cười."},{"text":"We often meet.","chunks":["We often meet."],"linkPhrase":"we often","linkRespell":"we-yoften","linkIpa":"/wiː‿jɒfən/","linkType":"VV","vi":"Chúng tôi hay gặp."},{"text":"Do all of them.","chunks":["Do all","of them."],"linkPhrase":"do all","linkRespell":"do-wall","linkIpa":"/duː‿wɔːl/","linkType":"VV","vi":"Làm hết tất cả."},{"text":"Be aware now.","chunks":["Be aware now."],"linkPhrase":"be aware","linkRespell":"be-yaware","linkIpa":"/biː‿jəweər/","linkType":"VV","vi":"Hãy cẩn thận."},{"text":"Who else knows?","chunks":["Who else knows?"],"linkPhrase":"who else","linkRespell":"who-welse","linkIpa":"/huː‿wels/","linkType":"VV","vi":"Còn ai biết nữa?"},{"text":"How about now?","chunks":["How about now?"],"linkPhrase":"how about","linkRespell":"how-wabout","linkIpa":"/haʊ‿wəbaʊt/","linkType":"VV","vi":"Bây giờ thì sao?"},{"text":"Go easy on him.","chunks":["Go easy","on him."],"linkPhrase":"go easy","linkRespell":"go-weasy","linkIpa":"/goʊ‿wiːzi/","linkType":"VV","vi":"Nhẹ tay với anh ấy."},{"text":"I owe you one.","chunks":["I owe","you one."],"linkPhrase":"I owe","linkRespell":"I-yowe","linkIpa":"/aɪ‿joʊ/","linkType":"VV","vi":"Em nợ bạn một lần."},{"text":"She owns it.","chunks":["She owns it."],"linkPhrase":"she owns","linkRespell":"she-yowns","linkIpa":"/ʃiː‿joʊnz/","linkType":"VV","vi":"Cô ấy sở hữu nó."},{"text":"We agree fully.","chunks":["We agree fully."],"linkPhrase":"we agree","linkRespell":"we-yagree","linkIpa":"/wiː‿jəgriː/","linkType":"VV","vi":"Chúng tôi hoàn toàn đồng ý."},{"text":"Do anything you want.","chunks":["Do anything","you want."],"linkPhrase":"do anything","linkRespell":"do-wanything","linkIpa":"/duː‿weniθɪŋ/","linkType":"VV","vi":"Làm gì cũng được."},{"text":"Be honest please.","chunks":["Be honest please."],"linkPhrase":"be honest","linkRespell":"be-yonest","linkIpa":"/biː‿jɒnɪst/","linkType":"VV","vi":"Hãy thành thật nhé."},{"text":"Stay inside today.","chunks":["Stay inside today."],"linkPhrase":"stay inside","linkRespell":"stay-yinside","linkIpa":"/steɪ‿jɪnsaɪd/","linkType":"VV","vi":"Ở trong nhà hôm nay."},{"text":"Throw it over.","chunks":["Throw it over."],"linkPhrase":"throw it","linkRespell":"throw-wit","linkIpa":"/θroʊ‿wɪt/","linkType":"VV","vi":"Ném nó qua."},{"text":"Allow it once.","chunks":["Allow it once."],"linkPhrase":"allow it","linkRespell":"allow-wit","linkIpa":"/əlaʊ‿wɪt/","linkType":"VV","vi":"Cho phép một lần."},{"text":"Follow us inside.","chunks":["Follow us inside."],"linkPhrase":"follow us","linkRespell":"follow-wus","linkIpa":"/fɒloʊ‿wʌs/","linkType":"VV","vi":"Theo chúng tôi vào."},{"text":"Show us how.","chunks":["Show us how."],"linkPhrase":"show us","linkRespell":"show-wus","linkIpa":"/ʃoʊ‿wʌs/","linkType":"VV","vi":"Chỉ cho chúng tôi."},{"text":"Know it well.","chunks":["Know it well."],"linkPhrase":"know it","linkRespell":"know-wit","linkIpa":"/noʊ‿wɪt/","linkType":"VV","vi":"Biết rõ nó."},{"text":"Throw away trash.","chunks":["Throw away trash."],"linkPhrase":"throw away","linkRespell":"throw-waway","linkIpa":"/θroʊ‿wəweɪ/","linkType":"VV","vi":"Vứt rác đi."},{"text":"Go ask them.","chunks":["Go ask them."],"linkPhrase":"go ask","linkRespell":"go-wask","linkIpa":"/goʊ‿wɑːsk/","linkType":"VV","vi":"Đi hỏi họ đi."},{"text":"Do okay today.","chunks":["Do okay today."],"linkPhrase":"do okay","linkRespell":"do-wokay","linkIpa":"/duː‿woʊkeɪ/","linkType":"VV","vi":"Làm tốt hôm nay."},{"text":"Be okay soon.","chunks":["Be okay soon."],"linkPhrase":"be okay","linkRespell":"be-yokay","linkIpa":"/biː‿joʊkeɪ/","linkType":"VV","vi":"Sẽ ổn thôi."},{"text":"I had to go.","chunks":["I had","to go."],"linkPhrase":"had to","linkRespell":"ha-to","linkIpa":"/hæ‿tə/","linkType":"CC","vi":"Em phải đi."},{"text":"We need to talk.","chunks":["We need","to talk."],"linkPhrase":"need to","linkRespell":"nee-to","linkIpa":"/niː‿tə/","linkType":"CC","vi":"Chúng ta cần nói chuyện."},{"text":"Want to come?","chunks":["Want to come?"],"linkPhrase":"want to","linkRespell":"wan-to","linkIpa":"/wɒn‿tə/","linkType":"CC","vi":"Muốn đến không?"},{"text":"Got to run now.","chunks":["Got to","run now."],"linkPhrase":"got to","linkRespell":"go-to","linkIpa":"/gɒ‿tə/","linkType":"CC","vi":"Phải chạy đây."},{"text":"Used to live here.","chunks":["Used to","live here."],"linkPhrase":"used to","linkRespell":"use-to","linkIpa":"/juːs‿tə/","linkType":"CC","vi":"Từng sống ở đây."},{"text":"Big game tonight.","chunks":["Big game tonight."],"linkPhrase":"big game","linkRespell":"bi-game","linkIpa":"/bɪ‿geɪm/","linkType":"CC","vi":"Trận lớn tối nay."},{"text":"Bad day again.","chunks":["Bad day again."],"linkPhrase":"bad day","linkRespell":"ba-day","linkIpa":"/bæ‿deɪ/","linkType":"CC","vi":"Lại một ngày tệ."},{"text":"Black coffee please.","chunks":["Black coffee please."],"linkPhrase":"black coffee","linkRespell":"bla-coffee","linkIpa":"/blæ‿kɒfi/","linkType":"CC","vi":"Cà phê đen nhé."},{"text":"Stop pushing me.","chunks":["Stop pushing me."],"linkPhrase":"stop pushing","linkRespell":"sto-pushing","linkIpa":"/stɒ‿pʊʃɪŋ/","linkType":"CC","vi":"Đừng đẩy em."},{"text":"This Saturday works.","chunks":["This Saturday works."],"linkPhrase":"this Saturday","linkRespell":"thi-saturday","linkIpa":"/ðɪ‿sætərdeɪ/","linkType":"CC","vi":"Thứ Bảy này được."},{"text":"Last time, promise.","chunks":["Last time, promise."],"linkPhrase":"last time","linkRespell":"las-time","linkIpa":"/læs‿taɪm/","linkType":"CC","vi":"Lần cuối, hứa đó."},{"text":"Both things matter.","chunks":["Both things matter."],"linkPhrase":"both things","linkRespell":"bo-things","linkIpa":"/boʊ‿θɪŋz/","linkType":"CC","vi":"Cả hai đều quan trọng."},{"text":"Some money left.","chunks":["Some money left."],"linkPhrase":"some money","linkRespell":"so-money","linkIpa":"/sʌ‿mʌni/","linkType":"CC","vi":"Còn ít tiền."},{"text":"Half full glass.","chunks":["Half full glass."],"linkPhrase":"half full","linkRespell":"ha-full","linkIpa":"/hæ‿fʊl/","linkType":"CC","vi":"Ly đầy một nửa."},{"text":"Five vans arrived.","chunks":["Five vans arrived."],"linkPhrase":"five vans","linkRespell":"fy-vans","linkIpa":"/faɪ‿vænz/","linkType":"CC","vi":"Năm chiếc xe tải đến."},{"text":"Web browser opened.","chunks":["Web browser opened."],"linkPhrase":"web browser","linkRespell":"we-browser","linkIpa":"/we‿braʊzər/","linkType":"CC","vi":"Trình duyệt đã mở."},{"text":"Good day, sir.","chunks":["Good day, sir."],"linkPhrase":"good day","linkRespell":"goo-day","linkIpa":"/gʊ‿deɪ/","linkType":"CC","vi":"Chào ngày tốt lành."},{"text":"Red door there.","chunks":["Red door there."],"linkPhrase":"red door","linkRespell":"re-door","linkIpa":"/re‿dɔːr/","linkType":"CC","vi":"Cửa đỏ ở kia."},{"text":"Hot tea, please.","chunks":["Hot tea, please."],"linkPhrase":"hot tea","linkRespell":"ho-tea","linkIpa":"/hɒ‿tiː/","linkType":"CC","vi":"Trà nóng nhé."},{"text":"Cheap pizza tonight.","chunks":["Cheap pizza tonight."],"linkPhrase":"cheap pizza","linkRespell":"chee-pizza","linkIpa":"/tʃiː‿piːtsə/","linkType":"CC","vi":"Pizza rẻ tối nay."},{"text":"Top priority now.","chunks":["Top priority now."],"linkPhrase":"top priority","linkRespell":"to-priority","linkIpa":"/tɒ‿praɪɒrɪti/","linkType":"CC","vi":"Ưu tiên hàng đầu."},{"text":"Quick kiss goodbye.","chunks":["Quick kiss goodbye."],"linkPhrase":"quick kiss","linkRespell":"qui-kiss","linkIpa":"/kwɪ‿kɪs/","linkType":"CC","vi":"Hôn nhanh tạm biệt."},{"text":"Long night ahead.","chunks":["Long night ahead."],"linkPhrase":"long night","linkRespell":"lo-night","linkIpa":"/lɒ‿naɪt/","linkType":"CC","vi":"Đêm dài phía trước."},{"text":"Calm man, really.","chunks":["Calm man, really."],"linkPhrase":"calm man","linkRespell":"cal-man","linkIpa":"/kɑː‿mæn/","linkType":"CC","vi":"Người đàn ông điềm tĩnh."},{"text":"Warm milk helps.","chunks":["Warm milk helps."],"linkPhrase":"warm milk","linkRespell":"war-milk","linkIpa":"/wɔːr‿mɪlk/","linkType":"CC","vi":"Sữa ấm giúp ích."},{"text":"Some more, please.","chunks":["Some more, please."],"linkPhrase":"some more","linkRespell":"so-more","linkIpa":"/sʌ‿mɔːr/","linkType":"CC","vi":"Thêm chút nữa nhé."},{"text":"Tell Larry first.","chunks":["Tell Larry first."],"linkPhrase":"tell Larry","linkRespell":"te-larry","linkIpa":"/te‿læri/","linkType":"CC","vi":"Báo Larry trước."},{"text":"Full lunch today.","chunks":["Full lunch today."],"linkPhrase":"full lunch","linkRespell":"fu-lunch","linkIpa":"/fʊ‿lʌntʃ/","linkType":"CC","vi":"Bữa trưa no nê."},{"text":"Both teams won.","chunks":["Both teams won."],"linkPhrase":"both teams","linkRespell":"bo-teams","linkIpa":"/boʊ‿tiːmz/","linkType":"CC","vi":"Cả hai đội thắng."},{"text":"Fresh shrimp here.","chunks":["Fresh shrimp here."],"linkPhrase":"fresh shrimp","linkRespell":"fre-shrimp","linkIpa":"/fre‿ʃrɪmp/","linkType":"CC","vi":"Tôm tươi ở đây."},{"text":"Nice cider, huh?","chunks":["Nice cider, huh?"],"linkPhrase":"nice cider","linkRespell":"ny-cider","linkIpa":"/naɪ‿saɪdər/","linkType":"CC","vi":"Rượu táo ngon nhỉ?"},{"text":"Pick cards now.","chunks":["Pick cards now."],"linkPhrase":"pick cards","linkRespell":"pi-cards","linkIpa":"/pɪ‿kɑːrdz/","linkType":"CC","vi":"Chọn bài đi."},{"text":"Wave Vera over.","chunks":["Wave Vera over."],"linkPhrase":"wave Vera","linkRespell":"way-vera","linkIpa":"/weɪ‿vɪərə/","linkType":"CC","vi":"Vẫy Vera lại."},{"text":"Stop pretending now.","chunks":["Stop pretending now."],"linkPhrase":"stop pretending","linkRespell":"sto-pretending","linkIpa":"/stɒ‿prɪtendɪŋ/","linkType":"CC","vi":"Đừng giả vờ nữa."},{"text":"That table there.","chunks":["That table there."],"linkPhrase":"that table","linkRespell":"tha-table","linkIpa":"/ðæ‿teɪbəl/","linkType":"CC","vi":"Cái bàn kia."},{"text":"Hit two birds.","chunks":["Hit two birds."],"linkPhrase":"hit two","linkRespell":"hi-two","linkIpa":"/hɪ‿tuː/","linkType":"CC","vi":"Một công đôi việc."},{"text":"Take care today.","chunks":["Take care today."],"linkPhrase":"take care","linkRespell":"tay-care","linkIpa":"/teɪ‿keər/","linkType":"CC","vi":"Giữ gìn sức khỏe."},{"text":"Best time ever.","chunks":["Best time ever."],"linkPhrase":"best time","linkRespell":"bes-time","linkIpa":"/bes‿taɪm/","linkType":"CC","vi":"Khoảng thời gian tuyệt nhất."},{"text":"First time here.","chunks":["First time here."],"linkPhrase":"first time","linkRespell":"firs-time","linkIpa":"/fɜːrs‿taɪm/","linkType":"CC","vi":"Lần đầu ở đây."},{"text":"Next time, maybe.","chunks":["Next time, maybe."],"linkPhrase":"next time","linkRespell":"neks-time","linkIpa":"/neks‿taɪm/","linkType":"CC","vi":"Lần sau có lẽ."},{"text":"Tough choice indeed.","chunks":["Tough choice indeed."],"linkPhrase":"tough choice","linkRespell":"tuf-choice","linkIpa":"/tʌ‿tʃɔɪs/","linkType":"CC","vi":"Lựa chọn khó thật."},{"text":"Rich chocolate cake.","chunks":["Rich chocolate cake."],"linkPhrase":"rich chocolate","linkRespell":"ri-chocolate","linkIpa":"/rɪ‿tʃɒklət/","linkType":"CC","vi":"Bánh sô-cô-la đậm đà."},{"text":"Stiff fingers today.","chunks":["Stiff fingers today."],"linkPhrase":"stiff fingers","linkRespell":"sti-fingers","linkIpa":"/stɪ‿fɪŋgərz/","linkType":"CC","vi":"Ngón tay cứng hôm nay."},{"text":"Deep pool ahead.","chunks":["Deep pool ahead."],"linkPhrase":"deep pool","linkRespell":"dee-pool","linkIpa":"/diː‿puːl/","linkType":"CC","vi":"Hồ sâu phía trước."},{"text":"Sharp pencil needed.","chunks":["Sharp pencil needed."],"linkPhrase":"sharp pencil","linkRespell":"shar-pencil","linkIpa":"/ʃɑːr‿pensəl/","linkType":"CC","vi":"Cần bút chì nhọn."},{"text":"Soft fur, nice.","chunks":["Soft fur, nice."],"linkPhrase":"soft fur","linkRespell":"sof-fur","linkIpa":"/sɒ‿fɜːr/","linkType":"CC","vi":"Lông mềm, đẹp."},{"text":"Loud drum beats.","chunks":["Loud drum beats."],"linkPhrase":"loud drum","linkRespell":"lou-drum","linkIpa":"/laʊ‿drʌm/","linkType":"CC","vi":"Tiếng trống lớn."},{"text":"Cold drink please.","chunks":["Cold drink please."],"linkPhrase":"cold drink","linkRespell":"col-drink","linkIpa":"/koʊl‿drɪŋk/","linkType":"CC","vi":"Nước lạnh nhé."},{"text":"Old dog sleeps.","chunks":["Old dog sleeps."],"linkPhrase":"old dog","linkRespell":"ol-dog","linkIpa":"/oʊl‿dɒg/","linkType":"CC","vi":"Con chó già đang ngủ."},{"text":"Hard drive failed.","chunks":["Hard drive failed."],"linkPhrase":"hard drive","linkRespell":"har-drive","linkIpa":"/hɑːr‿draɪv/","linkType":"CC","vi":"Ổ cứng hỏng rồi."},{"text":"Did you eat?","chunks":["Did you eat?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn ăn chưa?"},{"text":"Did you call?","chunks":["Did you call?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn gọi chưa?"},{"text":"Could you help?","chunks":["Could you help?"],"linkPhrase":"could you","linkRespell":"coo-dja","linkIpa":"/kʊ‿dʒə/","linkType":"TJ","vi":"Bạn giúp được không?"},{"text":"Would you mind?","chunks":["Would you mind?"],"linkPhrase":"would you","linkRespell":"woo-dja","linkIpa":"/wʊ‿dʒə/","linkType":"TJ","vi":"Bạn có phiền không?"},{"text":"Don't you know?","chunks":["Don't you know?"],"linkPhrase":"don't you","linkRespell":"don-cha","linkIpa":"/doʊn‿tʃə/","linkType":"TJ","vi":"Bạn không biết à?"},{"text":"Can't you stay?","chunks":["Can't you stay?"],"linkPhrase":"can't you","linkRespell":"can-cha","linkIpa":"/kæn‿tʃə/","linkType":"TJ","vi":"Bạn không ở lại được à?"},{"text":"Want you here.","chunks":["Want you here."],"linkPhrase":"want you","linkRespell":"wan-chu","linkIpa":"/wɒn‿tʃu/","linkType":"TJ","vi":"Muốn bạn ở đây."},{"text":"Got you covered.","chunks":["Got you covered."],"linkPhrase":"got you","linkRespell":"go-chu","linkIpa":"/gɒ‿tʃu/","linkType":"TJ","vi":"Lo cho bạn rồi."},{"text":"Bless you, friend.","chunks":["Bless you, friend."],"linkPhrase":"bless you","linkRespell":"ble-shu","linkIpa":"/ble‿ʃu/","linkType":"TJ","vi":"Chúc bạn khỏe."},{"text":"Miss you already.","chunks":["Miss you already."],"linkPhrase":"miss you","linkRespell":"mi-shu","linkIpa":"/mɪ‿ʃu/","linkType":"TJ","vi":"Nhớ bạn rồi đó."},{"text":"As you wish.","chunks":["As you wish."],"linkPhrase":"as you","linkRespell":"a-zhu","linkIpa":"/æ‿ʒu/","linkType":"TJ","vi":"Theo ý bạn."},{"text":"Was your day good?","chunks":["Was your","day good?"],"linkPhrase":"was your","linkRespell":"wa-zhur","linkIpa":"/wɒ‿ʒʊr/","linkType":"TJ","vi":"Ngày của bạn tốt chứ?"},{"text":"Is your tea cold?","chunks":["Is your","tea cold?"],"linkPhrase":"is your","linkRespell":"i-zhur","linkIpa":"/ɪ‿ʒʊr/","linkType":"TJ","vi":"Trà của bạn nguội à?"},{"text":"Need your help.","chunks":["Need your help."],"linkPhrase":"need your","linkRespell":"nee-jur","linkIpa":"/niː‿dʒʊr/","linkType":"TJ","vi":"Cần bạn giúp."},{"text":"Send your form.","chunks":["Send your form."],"linkPhrase":"send your","linkRespell":"sen-jur","linkIpa":"/sen‿dʒʊr/","linkType":"TJ","vi":"Gửi đơn của bạn."},{"text":"Hold your horses.","chunks":["Hold your horses."],"linkPhrase":"hold your","linkRespell":"hol-jur","linkIpa":"/hoʊl‿dʒʊr/","linkType":"TJ","vi":"Bình tĩnh nào."},{"text":"Mind your step.","chunks":["Mind your step."],"linkPhrase":"mind your","linkRespell":"myn-jur","linkIpa":"/maɪn‿dʒʊr/","linkType":"TJ","vi":"Coi chừng bước chân."},{"text":"Meet your team.","chunks":["Meet your team."],"linkPhrase":"meet your","linkRespell":"mee-chur","linkIpa":"/miː‿tʃʊr/","linkType":"TJ","vi":"Gặp đội của bạn."},{"text":"Eat your lunch.","chunks":["Eat your lunch."],"linkPhrase":"eat your","linkRespell":"ee-chur","linkIpa":"/iː‿tʃʊr/","linkType":"TJ","vi":"Ăn trưa đi."},{"text":"Did your phone ring?","chunks":["Did your","phone ring?"],"linkPhrase":"did your","linkRespell":"di-jur","linkIpa":"/dɪ‿dʒʊr/","linkType":"TJ","vi":"Điện thoại bạn reo à?"},{"text":"Won't you join?","chunks":["Won't you join?"],"linkPhrase":"won't you","linkRespell":"won-chu","linkIpa":"/woʊn‿tʃu/","linkType":"TJ","vi":"Bạn không tham gia à?"},{"text":"Aren't you tired?","chunks":["Aren't you tired?"],"linkPhrase":"aren't you","linkRespell":"arn-chu","linkIpa":"/ɑːrn‿tʃu/","linkType":"TJ","vi":"Bạn không mệt à?"},{"text":"Wasn't your fault.","chunks":["Wasn't your fault."],"linkPhrase":"wasn't your","linkRespell":"wazn-chur","linkIpa":"/wɒzn‿tʃʊr/","linkType":"TJ","vi":"Không phải lỗi của bạn."},{"text":"Bet you can't.","chunks":["Bet you can't."],"linkPhrase":"bet you","linkRespell":"be-chu","linkIpa":"/be‿tʃu/","linkType":"TJ","vi":"Cá là bạn không thể."},{"text":"Let you know soon.","chunks":["Let you","know soon."],"linkPhrase":"let you","linkRespell":"le-chu","linkIpa":"/le‿tʃu/","linkType":"TJ","vi":"Sẽ báo bạn sớm."},{"text":"Treat you well.","chunks":["Treat you well."],"linkPhrase":"treat you","linkRespell":"tree-chu","linkIpa":"/triː‿tʃu/","linkType":"TJ","vi":"Đối xử tốt với bạn."},{"text":"Trust you fully.","chunks":["Trust you fully."],"linkPhrase":"trust you","linkRespell":"trus-chu","linkIpa":"/trʌs‿tʃu/","linkType":"TJ","vi":"Tin bạn hoàn toàn."},{"text":"Pass you the salt.","chunks":["Pass you","the salt."],"linkPhrase":"pass you","linkRespell":"pa-shu","linkIpa":"/pæ‿ʃu/","linkType":"TJ","vi":"Đưa bạn lọ muối."},{"text":"Tell you later.","chunks":["Tell you later."],"linkPhrase":"tell you","linkRespell":"te-lyu","linkIpa":"/te‿lju/","linkType":"TJ","vi":"Nói bạn sau."},{"text":"Where's your bag?","chunks":["Where's your bag?"],"linkPhrase":"where's your","linkRespell":"wair-zhur","linkIpa":"/weərz‿ʒʊr/","linkType":"TJ","vi":"Túi bạn đâu?"},{"text":"Did you sleep well?","chunks":["Did you","sleep well?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn ngủ ngon chứ?"},{"text":"Would you wait?","chunks":["Would you wait?"],"linkPhrase":"would you","linkRespell":"woo-dja","linkIpa":"/wʊ‿dʒə/","linkType":"TJ","vi":"Bạn chờ được không?"},{"text":"Could you stay?","chunks":["Could you stay?"],"linkPhrase":"could you","linkRespell":"coo-dja","linkIpa":"/kʊ‿dʒə/","linkType":"TJ","vi":"Bạn ở lại được không?"},{"text":"Should you worry?","chunks":["Should you worry?"],"linkPhrase":"should you","linkRespell":"shoo-ju","linkIpa":"/ʃʊ‿dʒu/","linkType":"TJ","vi":"Bạn có nên lo không?"},{"text":"Has your bus left?","chunks":["Has your","bus left?"],"linkPhrase":"has your","linkRespell":"ha-zhur","linkIpa":"/hæ‿ʒʊr/","linkType":"TJ","vi":"Xe buýt bạn đi chưa?"},{"text":"I miss your smile.","chunks":["I miss","your smile."],"linkPhrase":"miss your","linkRespell":"mi-shur","linkIpa":"/mɪ‿ʃʊr/","linkType":"TJ","vi":"Nhớ nụ cười của bạn."},{"text":"I bless your home.","chunks":["I bless","your home."],"linkPhrase":"bless your","linkRespell":"ble-shur","linkIpa":"/ble‿ʃʊr/","linkType":"TJ","vi":"Cầu phúc cho nhà bạn."},{"text":"Won't your mom call?","chunks":["Won't your","mom call?"],"linkPhrase":"won't your","linkRespell":"won-chur","linkIpa":"/woʊn‿tʃʊr/","linkType":"TJ","vi":"Mẹ bạn không gọi à?"},{"text":"Don't you worry.","chunks":["Don't you worry."],"linkPhrase":"don't you","linkRespell":"don-cha","linkIpa":"/doʊn‿tʃə/","linkType":"TJ","vi":"Đừng lo."},{"text":"Can't you wait?","chunks":["Can't you wait?"],"linkPhrase":"can't you","linkRespell":"can-cha","linkIpa":"/kæn‿tʃə/","linkType":"TJ","vi":"Bạn không chờ được à?"},{"text":"Got your back.","chunks":["Got your back."],"linkPhrase":"got your","linkRespell":"go-chur","linkIpa":"/gɒ‿tʃʊr/","linkType":"TJ","vi":"Có em ở đây."},{"text":"Want your input.","chunks":["Want your input."],"linkPhrase":"want your","linkRespell":"wan-chur","linkIpa":"/wɒn‿tʃʊr/","linkType":"TJ","vi":"Muốn ý kiến của bạn."},{"text":"Did you find it?","chunks":["Did you","find it?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn tìm thấy nó chưa?"},{"text":"Could you repeat?","chunks":["Could you repeat?"],"linkPhrase":"could you","linkRespell":"coo-dja","linkIpa":"/kʊ‿dʒə/","linkType":"TJ","vi":"Bạn nhắc lại được không?"},{"text":"Need your advice.","chunks":["Need your advice."],"linkPhrase":"need your","linkRespell":"nee-jur","linkIpa":"/niː‿dʒʊr/","linkType":"TJ","vi":"Cần lời khuyên của bạn."},{"text":"Raise your hand.","chunks":["Raise your hand."],"linkPhrase":"raise your","linkRespell":"ray-zhur","linkIpa":"/reɪ‿ʒʊr/","linkType":"TJ","vi":"Giơ tay lên."},{"text":"Lose your keys?","chunks":["Lose your keys?"],"linkPhrase":"lose your","linkRespell":"loo-zhur","linkIpa":"/luː‿ʒʊr/","linkType":"TJ","vi":"Mất chìa khóa à?"},{"text":"Close your eyes.","chunks":["Close your eyes."],"linkPhrase":"close your","linkRespell":"clo-zhur","linkIpa":"/kloʊ‿ʒʊr/","linkType":"TJ","vi":"Nhắm mắt lại."},{"text":"Use your head.","chunks":["Use your head."],"linkPhrase":"use your","linkRespell":"you-zhur","linkIpa":"/juː‿ʒʊr/","linkType":"TJ","vi":"Dùng cái đầu đi."},{"text":"Choose your seat.","chunks":["Choose your seat."],"linkPhrase":"choose your","linkRespell":"choo-zhur","linkIpa":"/tʃuː‿ʒʊr/","linkType":"TJ","vi":"Chọn chỗ ngồi đi."},{"text":"Get up now.","chunks":["Get up now."],"linkPhrase":"get up","linkRespell":"ge-dup","linkIpa":"/ge‿ɾʌp/","linkType":"FLAP","vi":"Dậy đi."},{"text":"Sit up straight.","chunks":["Sit up straight."],"linkPhrase":"sit up","linkRespell":"si-dup","linkIpa":"/sɪ‿ɾʌp/","linkType":"FLAP","vi":"Ngồi thẳng lên."},{"text":"Shut up please.","chunks":["Shut up please."],"linkPhrase":"shut up","linkRespell":"shu-dup","linkIpa":"/ʃʌ‿ɾʌp/","linkType":"FLAP","vi":"Im đi."},{"text":"Put it away.","chunks":["Put it away."],"linkPhrase":"put it","linkRespell":"pu-dit","linkIpa":"/pʊ‿ɾɪt/","linkType":"FLAP","vi":"Cất nó đi."},{"text":"Set up the room.","chunks":["Set up","the room."],"linkPhrase":"set up","linkRespell":"se-dup","linkIpa":"/se‿ɾʌp/","linkType":"FLAP","vi":"Sắp xếp phòng."},{"text":"Cut it short.","chunks":["Cut it short."],"linkPhrase":"cut it","linkRespell":"cu-dit","linkIpa":"/kʌ‿ɾɪt/","linkType":"FLAP","vi":"Cắt ngắn đi."},{"text":"Let it go.","chunks":["Let it go."],"linkPhrase":"let it","linkRespell":"le-dit","linkIpa":"/le‿ɾɪt/","linkType":"FLAP","vi":"Buông bỏ đi."},{"text":"Got a minute?","chunks":["Got a minute?"],"linkPhrase":"got a","linkRespell":"go-da","linkIpa":"/gɒ‿ɾə/","linkType":"FLAP","vi":"Có rảnh không?"},{"text":"Lot of time.","chunks":["Lot of time."],"linkPhrase":"lot of","linkRespell":"lo-dov","linkIpa":"/lɒ‿ɾəv/","linkType":"FLAP","vi":"Có nhiều thời gian."},{"text":"Better off now.","chunks":["Better off now."],"linkPhrase":"better off","linkRespell":"be-der-off","linkIpa":"/be‿ɾər ɒf/","linkType":"FLAP","vi":"Khá hơn rồi."},{"text":"Water it daily.","chunks":["Water it daily."],"linkPhrase":"water it","linkRespell":"wa-der-it","linkIpa":"/wɔː‿ɾər ɪt/","linkType":"FLAP","vi":"Tưới nó mỗi ngày."},{"text":"Wait a moment.","chunks":["Wait a moment."],"linkPhrase":"wait a","linkRespell":"way-da","linkIpa":"/weɪ‿ɾə/","linkType":"FLAP","vi":"Đợi một lát."},{"text":"Eat a little.","chunks":["Eat a little."],"linkPhrase":"eat a","linkRespell":"ee-da","linkIpa":"/iː‿ɾə/","linkType":"FLAP","vi":"Ăn một chút."},{"text":"Beat it fast.","chunks":["Beat it fast."],"linkPhrase":"beat it","linkRespell":"bee-dit","linkIpa":"/biː‿ɾɪt/","linkType":"FLAP","vi":"Đánh bại nó nhanh."},{"text":"Heat it slowly.","chunks":["Heat it slowly."],"linkPhrase":"heat it","linkRespell":"hee-dit","linkIpa":"/hiː‿ɾɪt/","linkType":"FLAP","vi":"Hâm nó từ từ."},{"text":"Meet up later.","chunks":["Meet up later."],"linkPhrase":"meet up","linkRespell":"mee-dup","linkIpa":"/miː‿ɾʌp/","linkType":"FLAP","vi":"Gặp nhau sau."},{"text":"Note it down.","chunks":["Note it down."],"linkPhrase":"note it","linkRespell":"no-dit","linkIpa":"/noʊ‿ɾɪt/","linkType":"FLAP","vi":"Ghi chú lại."},{"text":"Quit it now.","chunks":["Quit it now."],"linkPhrase":"quit it","linkRespell":"qui-dit","linkIpa":"/kwɪ‿ɾɪt/","linkType":"FLAP","vi":"Dừng lại ngay."},{"text":"Hit it hard.","chunks":["Hit it hard."],"linkPhrase":"hit it","linkRespell":"hi-dit","linkIpa":"/hɪ‿ɾɪt/","linkType":"FLAP","vi":"Đánh mạnh vào."},{"text":"Fit it in.","chunks":["Fit it in."],"linkPhrase":"fit it","linkRespell":"fi-dit","linkIpa":"/fɪ‿ɾɪt/","linkType":"FLAP","vi":"Nhét nó vừa vào."},{"text":"Bought a gift.","chunks":["Bought a gift."],"linkPhrase":"bought a","linkRespell":"bo-da","linkIpa":"/bɔː‿ɾə/","linkType":"FLAP","vi":"Mua một món quà."},{"text":"Caught a cold.","chunks":["Caught a cold."],"linkPhrase":"caught a","linkRespell":"co-da","linkIpa":"/kɔː‿ɾə/","linkType":"FLAP","vi":"Bị cảm rồi."},{"text":"That is it.","chunks":["That is it."],"linkPhrase":"that is","linkRespell":"tha-diz","linkIpa":"/ðæ‿ɾɪz/","linkType":"FLAP","vi":"Vậy đó."},{"text":"What a day!","chunks":["What a day!"],"linkPhrase":"what a","linkRespell":"wo-da","linkIpa":"/wʌ‿ɾə/","linkType":"FLAP","vi":"Một ngày gì vậy!"},{"text":"Not a chance.","chunks":["Not a chance."],"linkPhrase":"not a","linkRespell":"no-da","linkIpa":"/nɒ‿ɾə/","linkType":"FLAP","vi":"Không có cơ hội."},{"text":"Out of order.","chunks":["Out of order."],"linkPhrase":"out of","linkRespell":"ow-dov","linkIpa":"/aʊ‿ɾəv/","linkType":"FLAP","vi":"Hỏng rồi."},{"text":"Sort of okay.","chunks":["Sort of okay."],"linkPhrase":"sort of","linkRespell":"sor-dov","linkIpa":"/sɔːr‿ɾəv/","linkType":"FLAP","vi":"Tạm ổn."},{"text":"Kind of nice.","chunks":["Kind of nice."],"linkPhrase":"kind of","linkRespell":"kine-da","linkIpa":"/kaɪn‿ɾə/","linkType":"FLAP","vi":"Cũng khá ổn."},{"text":"Plenty of room.","chunks":["Plenty of room."],"linkPhrase":"plenty of","linkRespell":"plen-dee-ov","linkIpa":"/plen‿ɾi əv/","linkType":"FLAP","vi":"Còn nhiều chỗ."},{"text":"Forty or fifty.","chunks":["Forty or fifty."],"linkPhrase":"forty or","linkRespell":"for-dee-or","linkIpa":"/fɔːr‿ɾi ɔːr/","linkType":"FLAP","vi":"Bốn mươi hay năm mươi."},{"text":"Pretty open space.","chunks":["Pretty open space."],"linkPhrase":"pretty open","linkRespell":"pri-dee-open","linkIpa":"/prɪ‿ɾi oʊpən/","linkType":"FLAP","vi":"Không gian khá thoáng."},{"text":"City of lights.","chunks":["City of lights."],"linkPhrase":"city of","linkRespell":"si-dee-ov","linkIpa":"/sɪ‿ɾi əv/","linkType":"FLAP","vi":"Thành phố ánh sáng."},{"text":"Party at noon.","chunks":["Party at noon."],"linkPhrase":"party at","linkRespell":"par-dee-at","linkIpa":"/pɑːr‿ɾi æt/","linkType":"FLAP","vi":"Tiệc lúc trưa."},{"text":"Thirty apples left.","chunks":["Thirty apples left."],"linkPhrase":"thirty apples","linkRespell":"thur-dee-apples","linkIpa":"/θɜːr‿ɾi æpəlz/","linkType":"FLAP","vi":"Còn ba mươi quả táo."},{"text":"Dirty old shoes.","chunks":["Dirty old shoes."],"linkPhrase":"dirty old","linkRespell":"dur-dee-old","linkIpa":"/dɜːr‿ɾi oʊld/","linkType":"FLAP","vi":"Giày cũ bẩn."},{"text":"Empty it out.","chunks":["Empty it out."],"linkPhrase":"empty it","linkRespell":"emp-dee-it","linkIpa":"/emp‿ɾi ɪt/","linkType":"FLAP","vi":"Đổ nó ra hết."},{"text":"Pat it dry.","chunks":["Pat it dry."],"linkPhrase":"pat it","linkRespell":"pa-dit","linkIpa":"/pæ‿ɾɪt/","linkType":"FLAP","vi":"Thấm nó khô."},{"text":"Spot it early.","chunks":["Spot it early."],"linkPhrase":"spot it","linkRespell":"spo-dit","linkIpa":"/spɒ‿ɾɪt/","linkType":"FLAP","vi":"Phát hiện sớm."},{"text":"Edit it twice.","chunks":["Edit it twice."],"linkPhrase":"edit it","linkRespell":"e-di-dit","linkIpa":"/e‿ɾɪ‿ɾɪt/","linkType":"FLAP","vi":"Sửa nó hai lần."},{"text":"Rate it high.","chunks":["Rate it high."],"linkPhrase":"rate it","linkRespell":"ray-dit","linkIpa":"/reɪ‿ɾɪt/","linkType":"FLAP","vi":"Đánh giá cao."},{"text":"Treat it gently.","chunks":["Treat it gently."],"linkPhrase":"treat it","linkRespell":"tree-dit","linkIpa":"/triː‿ɾɪt/","linkType":"FLAP","vi":"Nhẹ tay với nó."},{"text":"Vote in time.","chunks":["Vote in time."],"linkPhrase":"vote in","linkRespell":"vo-din","linkIpa":"/voʊ‿ɾɪn/","linkType":"FLAP","vi":"Bỏ phiếu kịp giờ."},{"text":"Wrote a letter.","chunks":["Wrote a letter."],"linkPhrase":"wrote a","linkRespell":"ro-da","linkIpa":"/roʊ‿ɾə/","linkType":"FLAP","vi":"Viết một lá thư."},{"text":"Update it soon.","chunks":["Update it soon."],"linkPhrase":"update it","linkRespell":"up-day-dit","linkIpa":"/ʌpdeɪ‿ɾɪt/","linkType":"FLAP","vi":"Cập nhật nó sớm."},{"text":"Repeat it once.","chunks":["Repeat it once."],"linkPhrase":"repeat it","linkRespell":"re-pee-dit","linkIpa":"/rɪpiː‿ɾɪt/","linkType":"FLAP","vi":"Lặp lại một lần."},{"text":"Greet a guest.","chunks":["Greet a guest."],"linkPhrase":"greet a","linkRespell":"gree-da","linkIpa":"/griː‿ɾə/","linkType":"FLAP","vi":"Chào một vị khách."},{"text":"Float a boat.","chunks":["Float a boat."],"linkPhrase":"float a","linkRespell":"flo-da","linkIpa":"/floʊ‿ɾə/","linkType":"FLAP","vi":"Thả một con thuyền."},{"text":"Quote it back.","chunks":["Quote it back."],"linkPhrase":"quote it","linkRespell":"quo-dit","linkIpa":"/kwoʊ‿ɾɪt/","linkType":"FLAP","vi":"Trích lại nó."},{"text":"Skate around town.","chunks":["Skate around town."],"linkPhrase":"skate around","linkRespell":"skay-da-round","linkIpa":"/skeɪ‿ɾə raʊnd/","linkType":"FLAP","vi":"Trượt quanh phố."},{"text":"Wait it out.","chunks":["Wait it out."],"linkPhrase":"wait it","linkRespell":"way-dit","linkIpa":"/weɪ‿ɾɪt/","linkType":"FLAP","vi":"Chờ cho qua."},{"text":"Snap it shut.","chunks":["Snap it shut."],"linkPhrase":"snap it","linkRespell":"sna-pit","linkIpa":"/snæ‿pɪt/","linkType":"CV","vi":"Đóng sập nó."},{"text":"Flip it around.","chunks":["Flip it around."],"linkPhrase":"flip it","linkRespell":"fli-pit","linkIpa":"/flɪ‿pɪt/","linkType":"CV","vi":"Lật nó lại."},{"text":"Rip it apart.","chunks":["Rip it apart."],"linkPhrase":"rip it","linkRespell":"ri-pit","linkIpa":"/rɪ‿pɪt/","linkType":"CV","vi":"Xé toạc nó."},{"text":"Zip it closed.","chunks":["Zip it closed."],"linkPhrase":"zip it","linkRespell":"zi-pit","linkIpa":"/zɪ‿pɪt/","linkType":"CV","vi":"Kéo khóa nó lại."},{"text":"Rub it in.","chunks":["Rub it in."],"linkPhrase":"rub it","linkRespell":"ru-bit","linkIpa":"/rʌ‿bɪt/","linkType":"CV","vi":"Thoa nó vào."},{"text":"Scan it now.","chunks":["Scan it now."],"linkPhrase":"scan it","linkRespell":"sca-nit","linkIpa":"/skæ‿nɪt/","linkType":"CV","vi":"Quét nó ngay."},{"text":"Trim it short.","chunks":["Trim it short."],"linkPhrase":"trim it","linkRespell":"tri-mit","linkIpa":"/trɪ‿mɪt/","linkType":"CV","vi":"Tỉa nó ngắn."},{"text":"Shape it well.","chunks":["Shape it well."],"linkPhrase":"shape it","linkRespell":"shay-pit","linkIpa":"/ʃeɪ‿pɪt/","linkType":"CV","vi":"Tạo dáng nó."},{"text":"Trace it out.","chunks":["Trace it out."],"linkPhrase":"trace it","linkRespell":"tray-sit","linkIpa":"/treɪ‿sɪt/","linkType":"CV","vi":"Vẽ theo nó."},{"text":"Frame it nicely.","chunks":["Frame it nicely."],"linkPhrase":"frame it","linkRespell":"fray-mit","linkIpa":"/freɪ‿mɪt/","linkType":"CV","vi":"Đóng khung đẹp."},{"text":"Blend it smooth.","chunks":["Blend it smooth."],"linkPhrase":"blend it","linkRespell":"blen-dit","linkIpa":"/blen‿dɪt/","linkType":"CV","vi":"Trộn cho mịn."},{"text":"Guide it gently.","chunks":["Guide it gently."],"linkPhrase":"guide it","linkRespell":"gy-dit","linkIpa":"/gaɪ‿dɪt/","linkType":"CV","vi":"Dẫn nó nhẹ nhàng."},{"text":"Name it later.","chunks":["Name it later."],"linkPhrase":"name it","linkRespell":"nay-mit","linkIpa":"/neɪ‿mɪt/","linkType":"CV","vi":"Đặt tên sau."},{"text":"Rank it higher.","chunks":["Rank it higher."],"linkPhrase":"rank it","linkRespell":"ran-kit","linkIpa":"/ræŋ‿kɪt/","linkType":"CV","vi":"Xếp hạng cao hơn."},{"text":"Slice it thin.","chunks":["Slice it thin."],"linkPhrase":"slice it","linkRespell":"sly-sit","linkIpa":"/slaɪ‿sɪt/","linkType":"CV","vi":"Cắt nó mỏng."},{"text":"Test it first.","chunks":["Test it first."],"linkPhrase":"test it","linkRespell":"tes-tit","linkIpa":"/tes‿tɪt/","linkType":"CV","vi":"Thử nó trước."},{"text":"Post it online.","chunks":["Post it online."],"linkPhrase":"post it","linkRespell":"pos-tit","linkIpa":"/poʊs‿tɪt/","linkType":"CV","vi":"Đăng nó lên mạng."},{"text":"Draft it quickly.","chunks":["Draft it quickly."],"linkPhrase":"draft it","linkRespell":"draf-tit","linkIpa":"/drɑːf‿tɪt/","linkType":"CV","vi":"Soạn nó nhanh."},{"text":"Treat it kindly.","chunks":["Treat it kindly."],"linkPhrase":"treat it","linkRespell":"tree-tit","linkIpa":"/triː‿tɪt/","linkType":"CV","vi":"Đối xử tốt với nó."},{"text":"Grab an orange.","chunks":["Grab an orange."],"linkPhrase":"grab an","linkRespell":"gra-ban","linkIpa":"/græ‿bæn/","linkType":"CV","vi":"Lấy một quả cam."},{"text":"Hold an idea.","chunks":["Hold an idea."],"linkPhrase":"hold an","linkRespell":"hol-dan","linkIpa":"/hoʊl‿dæn/","linkType":"CV","vi":"Giữ một ý tưởng."},{"text":"Catch an early bus.","chunks":["Catch an","early bus."],"linkPhrase":"catch an","linkRespell":"ca-chan","linkIpa":"/kæ‿tʃæn/","linkType":"CV","vi":"Bắt xe buýt sớm."},{"text":"Pick an option.","chunks":["Pick an option."],"linkPhrase":"pick an","linkRespell":"pi-kan","linkIpa":"/pɪ‿kæn/","linkType":"CV","vi":"Chọn một lựa chọn."},{"text":"Mail it today.","chunks":["Mail it today."],"linkPhrase":"mail it","linkRespell":"may-lit","linkIpa":"/meɪ‿lɪt/","linkType":"CV","vi":"Gửi nó hôm nay."},{"text":"Solve it soon.","chunks":["Solve it soon."],"linkPhrase":"solve it","linkRespell":"sol-vit","linkIpa":"/sɒl‿vɪt/","linkType":"CV","vi":"Giải nó sớm."},{"text":"Earn it back.","chunks":["Earn it back."],"linkPhrase":"earn it","linkRespell":"ear-nit","linkIpa":"/ɜːr‿nɪt/","linkType":"CV","vi":"Giành lại nó."},{"text":"Learn it well.","chunks":["Learn it well."],"linkPhrase":"learn it","linkRespell":"lear-nit","linkIpa":"/lɜːr‿nɪt/","linkType":"CV","vi":"Học cho kỹ."},{"text":"Spin it around.","chunks":["Spin it around."],"linkPhrase":"spin it","linkRespell":"spi-nit","linkIpa":"/spɪ‿nɪt/","linkType":"CV","vi":"Xoay nó tròn."},{"text":"Drain it out.","chunks":["Drain it out."],"linkPhrase":"drain it","linkRespell":"dray-nit","linkIpa":"/dreɪ‿nɪt/","linkType":"CV","vi":"Xả nó ra."},{"text":"Aim it higher.","chunks":["Aim it higher."],"linkPhrase":"aim it","linkRespell":"ay-mit","linkIpa":"/eɪ‿mɪt/","linkType":"CV","vi":"Nhắm cao hơn."},{"text":"Claim it now.","chunks":["Claim it now."],"linkPhrase":"claim it","linkRespell":"clay-mit","linkIpa":"/kleɪ‿mɪt/","linkType":"CV","vi":"Nhận nó ngay."},{"text":"Sketch it out.","chunks":["Sketch it out."],"linkPhrase":"sketch it","linkRespell":"ske-chit","linkIpa":"/ske‿tʃɪt/","linkType":"CV","vi":"Phác thảo nó."},{"text":"Crush it down.","chunks":["Crush it down."],"linkPhrase":"crush it","linkRespell":"cru-shit","linkIpa":"/krʌ‿ʃɪt/","linkType":"CV","vi":"Nghiền nát nó."},{"text":"Brush it off.","chunks":["Brush it off."],"linkPhrase":"brush it","linkRespell":"bru-shit","linkIpa":"/brʌ‿ʃɪt/","linkType":"CV","vi":"Phủi nó đi."},{"text":"Polish it up.","chunks":["Polish it up."],"linkPhrase":"polish it","linkRespell":"poli-shit","linkIpa":"/pɒlɪ‿ʃɪt/","linkType":"CV","vi":"Đánh bóng nó."},{"text":"Match it well.","chunks":["Match it well."],"linkPhrase":"match it","linkRespell":"ma-chit","linkIpa":"/mæ‿tʃɪt/","linkType":"CV","vi":"Ghép cho hợp."},{"text":"Reach it somehow.","chunks":["Reach it somehow."],"linkPhrase":"reach it","linkRespell":"ree-chit","linkIpa":"/riː‿tʃɪt/","linkType":"CV","vi":"Với tới nó."},{"text":"Teach it slowly.","chunks":["Teach it slowly."],"linkPhrase":"teach it","linkRespell":"tee-chit","linkIpa":"/tiː‿tʃɪt/","linkType":"CV","vi":"Dạy nó từ từ."},{"text":"Watch it closely.","chunks":["Watch it closely."],"linkPhrase":"watch it","linkRespell":"wa-chit","linkIpa":"/wɒ‿tʃɪt/","linkType":"CV","vi":"Theo dõi kỹ."},{"text":"Go ahead now.","chunks":["Go ahead now."],"linkPhrase":"go ahead","linkRespell":"go-wahead","linkIpa":"/goʊ‿wəhed/","linkType":"VV","vi":"Cứ tiến hành."},{"text":"Do everything well.","chunks":["Do everything well."],"linkPhrase":"do everything","linkRespell":"do-weverything","linkIpa":"/duː‿wevriθɪŋ/","linkType":"VV","vi":"Làm tốt mọi thứ."},{"text":"So awesome today.","chunks":["So awesome today."],"linkPhrase":"so awesome","linkRespell":"so-wawesome","linkIpa":"/soʊ‿wɔːsəm/","linkType":"VV","vi":"Hôm nay tuyệt thật."},{"text":"Who else came?","chunks":["Who else came?"],"linkPhrase":"who else","linkRespell":"who-welse","linkIpa":"/huː‿wels/","linkType":"VV","vi":"Còn ai đến nữa?"},{"text":"Now or later?","chunks":["Now or later?"],"linkPhrase":"now or","linkRespell":"now-wor","linkIpa":"/naʊ‿wɔːr/","linkType":"VV","vi":"Bây giờ hay sau?"},{"text":"She always knows.","chunks":["She always knows."],"linkPhrase":"she always","linkRespell":"she-yalways","linkIpa":"/ʃiː‿jɔːlweɪz/","linkType":"VV","vi":"Cô ấy luôn biết."},{"text":"He arrived early.","chunks":["He arrived early."],"linkPhrase":"he arrived","linkRespell":"he-yarrived","linkIpa":"/hiː‿jəraɪvd/","linkType":"VV","vi":"Anh ấy đến sớm."},{"text":"We agreed already.","chunks":["We agreed already."],"linkPhrase":"we agreed","linkRespell":"we-yagreed","linkIpa":"/wiː‿jəgriːd/","linkType":"VV","vi":"Chúng tôi đã đồng ý."},{"text":"Be easy today.","chunks":["Be easy today."],"linkPhrase":"be easy","linkRespell":"be-yeasy","linkIpa":"/biː‿jiːzi/","linkType":"VV","vi":"Hôm nay thoải mái."},{"text":"My own way.","chunks":["My own way."],"linkPhrase":"my own","linkRespell":"my-yown","linkIpa":"/maɪ‿joʊn/","linkType":"VV","vi":"Theo cách của tôi."},{"text":"Try each one.","chunks":["Try each one."],"linkPhrase":"try each","linkRespell":"try-yeach","linkIpa":"/traɪ‿jiːtʃ/","linkType":"VV","vi":"Thử từng cái."},{"text":"Stay alert always.","chunks":["Stay alert always."],"linkPhrase":"stay alert","linkRespell":"stay-yalert","linkIpa":"/steɪ‿jəlɜːrt/","linkType":"VV","vi":"Luôn cảnh giác."},{"text":"Pay up front.","chunks":["Pay up front."],"linkPhrase":"pay up","linkRespell":"pay-yup","linkIpa":"/peɪ‿jʌp/","linkType":"VV","vi":"Trả trước."},{"text":"Play along nicely.","chunks":["Play along nicely."],"linkPhrase":"play along","linkRespell":"play-yalong","linkIpa":"/pleɪ‿jəlɒŋ/","linkType":"VV","vi":"Chơi cùng đi."},{"text":"Fly over there.","chunks":["Fly over there."],"linkPhrase":"fly over","linkRespell":"fly-yover","linkIpa":"/flaɪ‿joʊvər/","linkType":"VV","vi":"Bay qua đó."},{"text":"Three apples here.","chunks":["Three apples here."],"linkPhrase":"three apples","linkRespell":"three-yapples","linkIpa":"/θriː‿jæpəlz/","linkType":"VV","vi":"Ba quả táo đây."},{"text":"Throw up high.","chunks":["Throw up high."],"linkPhrase":"throw up","linkRespell":"throw-wup","linkIpa":"/θroʊ‿wʌp/","linkType":"VV","vi":"Tung lên cao."},{"text":"Follow along closely.","chunks":["Follow along closely."],"linkPhrase":"follow along","linkRespell":"follow-walong","linkIpa":"/fɒloʊ‿wəlɒŋ/","linkType":"VV","vi":"Theo sát cùng."},{"text":"How odd today.","chunks":["How odd today."],"linkPhrase":"how odd","linkRespell":"how-wodd","linkIpa":"/haʊ‿wɒd/","linkType":"VV","vi":"Hôm nay lạ ghê."},{"text":"Show off less.","chunks":["Show off less."],"linkPhrase":"show off","linkRespell":"show-woff","linkIpa":"/ʃoʊ‿wɒf/","linkType":"VV","vi":"Bớt khoe đi."},{"text":"Why ask again?","chunks":["Why ask again?"],"linkPhrase":"why ask","linkRespell":"why-yask","linkIpa":"/waɪ‿jɑːsk/","linkType":"VV","vi":"Sao lại hỏi nữa?"},{"text":"Day off tomorrow.","chunks":["Day off tomorrow."],"linkPhrase":"day off","linkRespell":"day-yoff","linkIpa":"/deɪ‿jɒf/","linkType":"VV","vi":"Ngày mai nghỉ."},{"text":"Way ahead now.","chunks":["Way ahead now."],"linkPhrase":"way ahead","linkRespell":"way-yahead","linkIpa":"/weɪ‿jəhed/","linkType":"VV","vi":"Đi trước rồi."},{"text":"Lay off him.","chunks":["Lay off him."],"linkPhrase":"lay off","linkRespell":"lay-yoff","linkIpa":"/leɪ‿jɒf/","linkType":"VV","vi":"Tha cho anh ấy."},{"text":"Borrow one more.","chunks":["Borrow one more."],"linkPhrase":"borrow one","linkRespell":"borrow-wone","linkIpa":"/bɒroʊ‿wʌn/","linkType":"VV","vi":"Mượn thêm một cái."},{"text":"Two others left.","chunks":["Two others left."],"linkPhrase":"two others","linkRespell":"too-wothers","linkIpa":"/tuː‿wʌðərz/","linkType":"VV","vi":"Còn hai cái khác."},{"text":"Go outside quickly.","chunks":["Go outside quickly."],"linkPhrase":"go outside","linkRespell":"go-woutside","linkIpa":"/goʊ‿waʊtsaɪd/","linkType":"VV","vi":"Ra ngoài nhanh."},{"text":"Do extra work.","chunks":["Do extra work."],"linkPhrase":"do extra","linkRespell":"do-wextra","linkIpa":"/duː‿wekstrə/","linkType":"VV","vi":"Làm thêm việc."},{"text":"Be aware always.","chunks":["Be aware always."],"linkPhrase":"be aware","linkRespell":"be-yaware","linkIpa":"/biː‿jəweər/","linkType":"VV","vi":"Luôn cẩn thận."},{"text":"She asked twice.","chunks":["She asked twice."],"linkPhrase":"she asked","linkRespell":"she-yasked","linkIpa":"/ʃiː‿jɑːskt/","linkType":"VV","vi":"Cô ấy hỏi hai lần."},{"text":"See over there.","chunks":["See over there."],"linkPhrase":"see over","linkRespell":"see-yover","linkIpa":"/siː‿joʊvər/","linkType":"VV","vi":"Nhìn qua đó."},{"text":"No entry here.","chunks":["No entry here."],"linkPhrase":"no entry","linkRespell":"no-wentry","linkIpa":"/noʊ‿wentri/","linkType":"VV","vi":"Cấm vào đây."},{"text":"Stay over tonight.","chunks":["Stay over tonight."],"linkPhrase":"stay over","linkRespell":"stay-yover","linkIpa":"/steɪ‿joʊvər/","linkType":"VV","vi":"Ở lại đêm nay."},{"text":"We ought to.","chunks":["We ought to."],"linkPhrase":"we ought","linkRespell":"we-yought","linkIpa":"/wiː‿jɔːt/","linkType":"VV","vi":"Chúng ta nên."},{"text":"Free again soon.","chunks":["Free again soon."],"linkPhrase":"free again","linkRespell":"free-yagain","linkIpa":"/friː‿jəgen/","linkType":"VV","vi":"Sớm tự do lại."},{"text":"Sky above us.","chunks":["Sky above us."],"linkPhrase":"sky above","linkRespell":"sky-yabove","linkIpa":"/skaɪ‿jəbʌv/","linkType":"VV","vi":"Bầu trời trên đầu."},{"text":"Slow always wins.","chunks":["Slow always wins."],"linkPhrase":"slow always","linkRespell":"slow-walways","linkIpa":"/sloʊ‿wɔːlweɪz/","linkType":"VV","vi":"Chậm mà chắc."},{"text":"So odd really.","chunks":["So odd really."],"linkPhrase":"so odd","linkRespell":"so-wodd","linkIpa":"/soʊ‿wɒd/","linkType":"VV","vi":"Lạ thật đó."},{"text":"Do over again.","chunks":["Do over again."],"linkPhrase":"do over","linkRespell":"do-wover","linkIpa":"/duː‿woʊvər/","linkType":"VV","vi":"Làm lại lần nữa."},{"text":"Go early tomorrow.","chunks":["Go early tomorrow."],"linkPhrase":"go early","linkRespell":"go-wearly","linkIpa":"/goʊ‿wɜːrli/","linkType":"VV","vi":"Mai đi sớm."},{"text":"Big goal ahead.","chunks":["Big goal ahead."],"linkPhrase":"big goal","linkRespell":"bi-goal","linkIpa":"/bɪ‿goʊl/","linkType":"CC","vi":"Mục tiêu lớn."},{"text":"Bad dream again.","chunks":["Bad dream again."],"linkPhrase":"bad dream","linkRespell":"ba-dream","linkIpa":"/bæ‿driːm/","linkType":"CC","vi":"Lại ác mộng."},{"text":"Good deal today.","chunks":["Good deal today."],"linkPhrase":"good deal","linkRespell":"goo-deal","linkIpa":"/gʊ‿diːl/","linkType":"CC","vi":"Hời hôm nay."},{"text":"Red dress now.","chunks":["Red dress now."],"linkPhrase":"red dress","linkRespell":"re-dress","linkIpa":"/re‿dres/","linkType":"CC","vi":"Váy đỏ."},{"text":"Hard day again.","chunks":["Hard day again."],"linkPhrase":"hard day","linkRespell":"har-day","linkIpa":"/hɑːr‿deɪ/","linkType":"CC","vi":"Lại ngày mệt."},{"text":"Cheap pen here.","chunks":["Cheap pen here."],"linkPhrase":"cheap pen","linkRespell":"chee-pen","linkIpa":"/tʃiː‿pen/","linkType":"CC","vi":"Bút rẻ đây."},{"text":"Top pick today.","chunks":["Top pick today."],"linkPhrase":"top pick","linkRespell":"to-pick","linkIpa":"/tɒ‿pɪk/","linkType":"CC","vi":"Chọn hàng đầu."},{"text":"Sharp point there.","chunks":["Sharp point there."],"linkPhrase":"sharp point","linkRespell":"shar-point","linkIpa":"/ʃɑːr‿pɔɪnt/","linkType":"CC","vi":"Điểm nhọn."},{"text":"Hot tea now.","chunks":["Hot tea now."],"linkPhrase":"hot tea","linkRespell":"ho-tea","linkIpa":"/hɒ‿tiː/","linkType":"CC","vi":"Trà nóng."},{"text":"Best team won.","chunks":["Best team won."],"linkPhrase":"best team","linkRespell":"bes-team","linkIpa":"/bes‿tiːm/","linkType":"CC","vi":"Đội mạnh thắng."},{"text":"First try counts.","chunks":["First try counts."],"linkPhrase":"first try","linkRespell":"firs-try","linkIpa":"/fɜːrs‿traɪ/","linkType":"CC","vi":"Lần đầu quan trọng."},{"text":"Next trip soon.","chunks":["Next trip soon."],"linkPhrase":"next trip","linkRespell":"neks-trip","linkIpa":"/neks‿trɪp/","linkType":"CC","vi":"Chuyến tới sắp đến."},{"text":"Quick kick please.","chunks":["Quick kick please."],"linkPhrase":"quick kick","linkRespell":"qui-kick","linkIpa":"/kwɪ‿kɪk/","linkType":"CC","vi":"Đá nhanh nào."},{"text":"Black car outside.","chunks":["Black car outside."],"linkPhrase":"black car","linkRespell":"bla-car","linkIpa":"/blæ‿kɑːr/","linkType":"CC","vi":"Xe đen ngoài kia."},{"text":"Dark corner there.","chunks":["Dark corner there."],"linkPhrase":"dark corner","linkRespell":"dar-corner","linkIpa":"/dɑːr‿kɔːrnər/","linkType":"CC","vi":"Góc tối kia."},{"text":"Some more please.","chunks":["Some more please."],"linkPhrase":"some more","linkRespell":"so-more","linkIpa":"/sʌ‿mɔːr/","linkType":"CC","vi":"Thêm nữa nhé."},{"text":"Warm milk now.","chunks":["Warm milk now."],"linkPhrase":"warm milk","linkRespell":"war-milk","linkIpa":"/wɔːr‿mɪlk/","linkType":"CC","vi":"Sữa ấm."},{"text":"Calm mood today.","chunks":["Calm mood today."],"linkPhrase":"calm mood","linkRespell":"cal-mood","linkIpa":"/kɑː‿muːd/","linkType":"CC","vi":"Tâm trạng êm."},{"text":"Tell Larry now.","chunks":["Tell Larry now."],"linkPhrase":"tell Larry","linkRespell":"te-larry","linkIpa":"/te‿læri/","linkType":"CC","vi":"Báo Larry."},{"text":"Full life ahead.","chunks":["Full life ahead."],"linkPhrase":"full life","linkRespell":"fu-life","linkIpa":"/fʊ‿laɪf/","linkType":"CC","vi":"Cuộc đời trọn vẹn."},{"text":"Small lake nearby.","chunks":["Small lake nearby."],"linkPhrase":"small lake","linkRespell":"sma-lake","linkIpa":"/smɔː‿leɪk/","linkType":"CC","vi":"Hồ nhỏ gần đây."},{"text":"Cool look today.","chunks":["Cool look today."],"linkPhrase":"cool look","linkRespell":"coo-look","linkIpa":"/kuː‿lʊk/","linkType":"CC","vi":"Trông ngầu."},{"text":"Real love matters.","chunks":["Real love matters."],"linkPhrase":"real love","linkRespell":"rea-love","linkIpa":"/riː‿lʌv/","linkType":"CC","vi":"Tình thật quan trọng."},{"text":"Five vans came.","chunks":["Five vans came."],"linkPhrase":"five vans","linkRespell":"fy-vans","linkIpa":"/faɪ‿vænz/","linkType":"CC","vi":"Năm xe tải đến."},{"text":"Nice city indeed.","chunks":["Nice city indeed."],"linkPhrase":"nice city","linkRespell":"ny-city","linkIpa":"/naɪ‿sɪti/","linkType":"CC","vi":"Thành phố đẹp."},{"text":"Fresh sheet ready.","chunks":["Fresh sheet ready."],"linkPhrase":"fresh sheet","linkRespell":"fre-sheet","linkIpa":"/fre‿ʃiːt/","linkType":"CC","vi":"Tấm mới sẵn."},{"text":"Rich cheese here.","chunks":["Rich cheese here."],"linkPhrase":"rich cheese","linkRespell":"ri-cheese","linkIpa":"/rɪ‿tʃiːz/","linkType":"CC","vi":"Phô mai béo."},{"text":"Tough fight ahead.","chunks":["Tough fight ahead."],"linkPhrase":"tough fight","linkRespell":"tu-fight","linkIpa":"/tʌ‿faɪt/","linkType":"CC","vi":"Trận khó phía trước."},{"text":"Safe food only.","chunks":["Safe food only."],"linkPhrase":"safe food","linkRespell":"say-food","linkIpa":"/seɪ‿fuːd/","linkType":"CC","vi":"Chỉ đồ an toàn."},{"text":"Old dog rests.","chunks":["Old dog rests."],"linkPhrase":"old dog","linkRespell":"ol-dog","linkIpa":"/oʊl‿dɒg/","linkType":"CC","vi":"Chó già nghỉ."},{"text":"Loud drum plays.","chunks":["Loud drum plays."],"linkPhrase":"loud drum","linkRespell":"lou-drum","linkIpa":"/laʊ‿drʌm/","linkType":"CC","vi":"Trống to vang."},{"text":"Deep pool there.","chunks":["Deep pool there."],"linkPhrase":"deep pool","linkRespell":"dee-pool","linkIpa":"/diː‿puːl/","linkType":"CC","vi":"Hồ sâu kia."},{"text":"Last time today.","chunks":["Last time today."],"linkPhrase":"last time","linkRespell":"las-time","linkIpa":"/læs‿taɪm/","linkType":"CC","vi":"Lần cuối hôm nay."},{"text":"Great time really.","chunks":["Great time really."],"linkPhrase":"great time","linkRespell":"grea-time","linkIpa":"/greɪ‿taɪm/","linkType":"CC","vi":"Vui thật đó."},{"text":"Pink coat there.","chunks":["Pink coat there."],"linkPhrase":"pink coat","linkRespell":"pin-coat","linkIpa":"/pɪŋ‿koʊt/","linkType":"CC","vi":"Áo hồng kia."},{"text":"Thick crust pizza.","chunks":["Thick crust pizza."],"linkPhrase":"thick crust","linkRespell":"thi-crust","linkIpa":"/θɪ‿krʌst/","linkType":"CC","vi":"Pizza vỏ dày."},{"text":"Live version now.","chunks":["Live version now."],"linkPhrase":"live version","linkRespell":"li-version","linkIpa":"/laɪ‿vɜːrʒən/","linkType":"CC","vi":"Bản trực tiếp."},{"text":"Smooth theme today.","chunks":["Smooth theme today."],"linkPhrase":"smooth theme","linkRespell":"smoo-theme","linkIpa":"/smuː‿θiːm/","linkType":"CC","vi":"Chủ đề mượt."},{"text":"Did you win?","chunks":["Did you win?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn thắng chưa?"},{"text":"Did you try?","chunks":["Did you try?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn thử chưa?"},{"text":"Could you wait?","chunks":["Could you wait?"],"linkPhrase":"could you","linkRespell":"coo-dja","linkIpa":"/kʊ‿dʒə/","linkType":"TJ","vi":"Bạn chờ được không?"},{"text":"Could you check?","chunks":["Could you check?"],"linkPhrase":"could you","linkRespell":"coo-dja","linkIpa":"/kʊ‿dʒə/","linkType":"TJ","vi":"Bạn kiểm tra được không?"},{"text":"Would you stay?","chunks":["Would you stay?"],"linkPhrase":"would you","linkRespell":"woo-dja","linkIpa":"/wʊ‿dʒə/","linkType":"TJ","vi":"Bạn ở lại chứ?"},{"text":"Would you come?","chunks":["Would you come?"],"linkPhrase":"would you","linkRespell":"woo-dja","linkIpa":"/wʊ‿dʒə/","linkType":"TJ","vi":"Bạn đến chứ?"},{"text":"Should you go?","chunks":["Should you go?"],"linkPhrase":"should you","linkRespell":"shoo-dju","linkIpa":"/ʃʊ‿dʒu/","linkType":"TJ","vi":"Bạn có nên đi?"},{"text":"Don't you agree?","chunks":["Don't you agree?"],"linkPhrase":"don't you","linkRespell":"don-cha","linkIpa":"/doʊn‿tʃə/","linkType":"TJ","vi":"Bạn không đồng ý à?"},{"text":"Can't you see?","chunks":["Can't you see?"],"linkPhrase":"can't you","linkRespell":"can-cha","linkIpa":"/kæn‿tʃə/","linkType":"TJ","vi":"Bạn không thấy à?"},{"text":"Won't you try?","chunks":["Won't you try?"],"linkPhrase":"won't you","linkRespell":"won-chu","linkIpa":"/woʊn‿tʃu/","linkType":"TJ","vi":"Bạn không thử à?"},{"text":"Aren't you ready?","chunks":["Aren't you ready?"],"linkPhrase":"aren't you","linkRespell":"arn-chu","linkIpa":"/ɑːrn‿tʃu/","linkType":"TJ","vi":"Bạn chưa sẵn sàng à?"},{"text":"Got you now.","chunks":["Got you now."],"linkPhrase":"got you","linkRespell":"go-chu","linkIpa":"/gɒ‿tʃu/","linkType":"TJ","vi":"Bắt được bạn rồi."},{"text":"Bless you, dear.","chunks":["Bless you, dear."],"linkPhrase":"bless you","linkRespell":"ble-shu","linkIpa":"/ble‿ʃu/","linkType":"TJ","vi":"Chúc bạn khỏe."},{"text":"Miss you lots.","chunks":["Miss you lots."],"linkPhrase":"miss you","linkRespell":"mi-shu","linkIpa":"/mɪ‿ʃu/","linkType":"TJ","vi":"Nhớ bạn nhiều."},{"text":"I need you here.","chunks":["I need","you here."],"linkPhrase":"need you","linkRespell":"nee-ju","linkIpa":"/niː‿dʒu/","linkType":"TJ","vi":"Em cần bạn ở đây."},{"text":"I trust you fully.","chunks":["I trust","you fully."],"linkPhrase":"trust you","linkRespell":"trus-chu","linkIpa":"/trʌs‿tʃu/","linkType":"TJ","vi":"Em tin bạn hoàn toàn."},{"text":"Let you decide.","chunks":["Let you decide."],"linkPhrase":"let you","linkRespell":"le-chu","linkIpa":"/le‿tʃu/","linkType":"TJ","vi":"Để bạn quyết định."},{"text":"Bet you can.","chunks":["Bet you can."],"linkPhrase":"bet you","linkRespell":"be-chu","linkIpa":"/be‿tʃu/","linkType":"TJ","vi":"Cá là bạn làm được."},{"text":"Meet you soon.","chunks":["Meet you soon."],"linkPhrase":"meet you","linkRespell":"mee-chu","linkIpa":"/miː‿tʃu/","linkType":"TJ","vi":"Gặp bạn sớm."},{"text":"Treat you right.","chunks":["Treat you right."],"linkPhrase":"treat you","linkRespell":"tree-chu","linkIpa":"/triː‿tʃu/","linkType":"TJ","vi":"Đối xử tốt với bạn."},{"text":"Is your tea hot?","chunks":["Is your","tea hot?"],"linkPhrase":"is your","linkRespell":"i-zhur","linkIpa":"/ɪ‿ʒʊr/","linkType":"TJ","vi":"Trà bạn nóng chứ?"},{"text":"Was your trip fun?","chunks":["Was your","trip fun?"],"linkPhrase":"was your","linkRespell":"wa-zhur","linkIpa":"/wɒ‿ʒʊr/","linkType":"TJ","vi":"Chuyến đi vui chứ?"},{"text":"Has your bus come?","chunks":["Has your","bus come?"],"linkPhrase":"has your","linkRespell":"ha-zhur","linkIpa":"/hæ‿ʒʊr/","linkType":"TJ","vi":"Xe buýt đến chưa?"},{"text":"Lose your fear.","chunks":["Lose your fear."],"linkPhrase":"lose your","linkRespell":"loo-zhur","linkIpa":"/luː‿ʒʊr/","linkType":"TJ","vi":"Bỏ nỗi sợ."},{"text":"Choose your path.","chunks":["Choose your path."],"linkPhrase":"choose your","linkRespell":"choo-zhur","linkIpa":"/tʃuː‿ʒʊr/","linkType":"TJ","vi":"Chọn con đường."},{"text":"Need your help now.","chunks":["Need your","help now."],"linkPhrase":"need your","linkRespell":"nee-jur","linkIpa":"/niː‿dʒʊr/","linkType":"TJ","vi":"Cần bạn giúp ngay."},{"text":"Send your reply.","chunks":["Send your reply."],"linkPhrase":"send your","linkRespell":"sen-jur","linkIpa":"/sen‿dʒʊr/","linkType":"TJ","vi":"Gửi câu trả lời."},{"text":"Hold your breath.","chunks":["Hold your breath."],"linkPhrase":"hold your","linkRespell":"hol-jur","linkIpa":"/hoʊl‿dʒʊr/","linkType":"TJ","vi":"Nín thở."},{"text":"Mind your words.","chunks":["Mind your words."],"linkPhrase":"mind your","linkRespell":"myn-jur","linkIpa":"/maɪn‿dʒʊr/","linkType":"TJ","vi":"Giữ lời ăn tiếng nói."},{"text":"Find your seat.","chunks":["Find your seat."],"linkPhrase":"find your","linkRespell":"fyn-jur","linkIpa":"/faɪn‿dʒʊr/","linkType":"TJ","vi":"Tìm chỗ ngồi."},{"text":"Meet your match.","chunks":["Meet your match."],"linkPhrase":"meet your","linkRespell":"mee-chur","linkIpa":"/miː‿tʃʊr/","linkType":"TJ","vi":"Gặp đối thủ."},{"text":"Eat your meal.","chunks":["Eat your meal."],"linkPhrase":"eat your","linkRespell":"ee-chur","linkIpa":"/iː‿tʃʊr/","linkType":"TJ","vi":"Ăn bữa của bạn."},{"text":"Trust your gut.","chunks":["Trust your gut."],"linkPhrase":"trust your","linkRespell":"trus-chur","linkIpa":"/trʌs‿tʃʊr/","linkType":"TJ","vi":"Tin trực giác."},{"text":"Press your luck.","chunks":["Press your luck."],"linkPhrase":"press your","linkRespell":"pre-shur","linkIpa":"/pre‿ʃʊr/","linkType":"TJ","vi":"Liều chút nữa."},{"text":"Pass your test.","chunks":["Pass your test."],"linkPhrase":"pass your","linkRespell":"pa-shur","linkIpa":"/pæ‿ʃʊr/","linkType":"TJ","vi":"Đậu bài thi."},{"text":"Bless your heart.","chunks":["Bless your heart."],"linkPhrase":"bless your","linkRespell":"ble-shur","linkIpa":"/ble‿ʃʊr/","linkType":"TJ","vi":"Cảm ơn lòng tốt."},{"text":"Did you hear that?","chunks":["Did you","hear that?"],"linkPhrase":"did you","linkRespell":"di-dja","linkIpa":"/dɪ‿dʒə/","linkType":"TJ","vi":"Bạn nghe thấy không?"},{"text":"Light it up.","chunks":["Light it up."],"linkPhrase":"light it","linkRespell":"ly-dit","linkIpa":"/laɪ‿ɾɪt/","linkType":"FLAP","vi":"Thắp sáng nó."},{"text":"Invite a friend.","chunks":["Invite a friend."],"linkPhrase":"invite a","linkRespell":"invy-da","linkIpa":"/ɪnvaɪ‿ɾə/","linkType":"FLAP","vi":"Mời một người bạn."},{"text":"Shoot it again.","chunks":["Shoot it again."],"linkPhrase":"shoot it","linkRespell":"shoo-dit","linkIpa":"/ʃuː‿ɾɪt/","linkType":"FLAP","vi":"Bắn lại đi."},{"text":"Boot it up.","chunks":["Boot it up."],"linkPhrase":"boot it","linkRespell":"boo-dit","linkIpa":"/buː‿ɾɪt/","linkType":"FLAP","vi":"Khởi động nó."},{"text":"Count it twice.","chunks":["Count it twice."],"linkPhrase":"count it","linkRespell":"coun-dit","linkIpa":"/kaʊn‿ɾɪt/","linkType":"FLAP","vi":"Đếm hai lần."},{"text":"Paint it white.","chunks":["Paint it white."],"linkPhrase":"paint it","linkRespell":"pain-dit","linkIpa":"/peɪn‿ɾɪt/","linkType":"FLAP","vi":"Sơn trắng nó."},{"text":"Get a coffee.","chunks":["Get a coffee."],"linkPhrase":"get a","linkRespell":"ge-da","linkIpa":"/ge‿ɾə/","linkType":"FLAP","vi":"Lấy ly cà phê."},{"text":"Bite a piece.","chunks":["Bite a piece."],"linkPhrase":"bite a","linkRespell":"by-da","linkIpa":"/baɪ‿ɾə/","linkType":"FLAP","vi":"Cắn một miếng."},{"text":"Wait a second.","chunks":["Wait a second."],"linkPhrase":"wait a","linkRespell":"way-da","linkIpa":"/weɪ‿ɾə/","linkType":"FLAP","vi":"Đợi một giây."},{"text":"Got a plan?","chunks":["Got a plan?"],"linkPhrase":"got a","linkRespell":"go-da","linkIpa":"/gɒ‿ɾə/","linkType":"FLAP","vi":"Có kế hoạch không?"},{"text":"Bought a ticket.","chunks":["Bought a ticket."],"linkPhrase":"bought a","linkRespell":"bo-da","linkIpa":"/bɔː‿ɾə/","linkType":"FLAP","vi":"Mua một vé."},{"text":"Caught a fish.","chunks":["Caught a fish."],"linkPhrase":"caught a","linkRespell":"co-da","linkIpa":"/kɔː‿ɾə/","linkType":"FLAP","vi":"Bắt một con cá."},{"text":"Wrote a note.","chunks":["Wrote a note."],"linkPhrase":"wrote a","linkRespell":"ro-da","linkIpa":"/roʊ‿ɾə/","linkType":"FLAP","vi":"Viết một mẩu giấy."},{"text":"Quote a price.","chunks":["Quote a price."],"linkPhrase":"quote a","linkRespell":"quo-da","linkIpa":"/kwoʊ‿ɾə/","linkType":"FLAP","vi":"Báo một giá."},{"text":"Float a loan.","chunks":["Float a loan."],"linkPhrase":"float a","linkRespell":"flo-da","linkIpa":"/floʊ‿ɾə/","linkType":"FLAP","vi":"Tạm ứng một khoản."},{"text":"Set up camp.","chunks":["Set up camp."],"linkPhrase":"set up","linkRespell":"se-dup","linkIpa":"/se‿ɾʌp/","linkType":"FLAP","vi":"Dựng trại."},{"text":"Get up early.","chunks":["Get up early."],"linkPhrase":"get up","linkRespell":"ge-dup","linkIpa":"/ge‿ɾʌp/","linkType":"FLAP","vi":"Dậy sớm."},{"text":"Sit up tall.","chunks":["Sit up tall."],"linkPhrase":"sit up","linkRespell":"si-dup","linkIpa":"/sɪ‿ɾʌp/","linkType":"FLAP","vi":"Ngồi thẳng."},{"text":"Meet up soon.","chunks":["Meet up soon."],"linkPhrase":"meet up","linkRespell":"mee-dup","linkIpa":"/miː‿ɾʌp/","linkType":"FLAP","vi":"Gặp nhau sớm."},{"text":"Heat up dinner.","chunks":["Heat up dinner."],"linkPhrase":"heat up","linkRespell":"hee-dup","linkIpa":"/hiː‿ɾʌp/","linkType":"FLAP","vi":"Hâm bữa tối."},{"text":"Beat up dust.","chunks":["Beat up dust."],"linkPhrase":"beat up","linkRespell":"bee-dup","linkIpa":"/biː‿ɾʌp/","linkType":"FLAP","vi":"Đập bụi ra."},{"text":"Cut it loose.","chunks":["Cut it loose."],"linkPhrase":"cut it","linkRespell":"cu-dit","linkIpa":"/kʌ‿ɾɪt/","linkType":"FLAP","vi":"Cắt đứt nó."},{"text":"Let it rest.","chunks":["Let it rest."],"linkPhrase":"let it","linkRespell":"le-dit","linkIpa":"/le‿ɾɪt/","linkType":"FLAP","vi":"Để nó nghỉ."},{"text":"Put it back.","chunks":["Put it back."],"linkPhrase":"put it","linkRespell":"pu-dit","linkIpa":"/pʊ‿ɾɪt/","linkType":"FLAP","vi":"Để lại chỗ cũ."},{"text":"Treat it well.","chunks":["Treat it well."],"linkPhrase":"treat it","linkRespell":"tree-dit","linkIpa":"/triː‿ɾɪt/","linkType":"FLAP","vi":"Đối xử tốt."},{"text":"Rate it fairly.","chunks":["Rate it fairly."],"linkPhrase":"rate it","linkRespell":"ray-dit","linkIpa":"/reɪ‿ɾɪt/","linkType":"FLAP","vi":"Đánh giá công bằng."},{"text":"Press it please.","chunks":["Press it please."],"linkPhrase":"press it","linkRespell":"pre-sit","linkIpa":"/pre‿sɪt/","linkType":"CV","vi":"Ấn nó đi."},{"text":"Dust it please.","chunks":["Dust it please."],"linkPhrase":"dust it","linkRespell":"du-stit","linkIpa":"/dʌs‿tɪt/","linkType":"CV","vi":"Phủi bụi nó đi."},{"text":"Twist it please.","chunks":["Twist it please."],"linkPhrase":"twist it","linkRespell":"twi-stit","linkIpa":"/twɪs‿tɪt/","linkType":"CV","vi":"Vặn nó đi."},{"text":"Paint it please.","chunks":["Paint it please."],"linkPhrase":"paint it","linkRespell":"pain-tit","linkIpa":"/peɪn‿tɪt/","linkType":"CV","vi":"Sơn nó đi."},{"text":"Count it please.","chunks":["Count it please."],"linkPhrase":"count it","linkRespell":"coun-tit","linkIpa":"/kaʊn‿tɪt/","linkType":"CV","vi":"Đếm nó đi."},{"text":"Melt it please.","chunks":["Melt it please."],"linkPhrase":"melt it","linkRespell":"mel-tit","linkIpa":"/mel‿tɪt/","linkType":"CV","vi":"Làm tan nó đi."},{"text":"Boil it please.","chunks":["Boil it please."],"linkPhrase":"boil it","linkRespell":"boi-lit","linkIpa":"/bɔɪ‿lɪt/","linkType":"CV","vi":"Luộc nó đi."},{"text":"Peel it please.","chunks":["Peel it please."],"linkPhrase":"peel it","linkRespell":"pee-lit","linkIpa":"/piː‿lɪt/","linkType":"CV","vi":"Gọt vỏ nó đi."},{"text":"Seal it please.","chunks":["Seal it please."],"linkPhrase":"seal it","linkRespell":"see-lit","linkIpa":"/siː‿lɪt/","linkType":"CV","vi":"Niêm phong nó đi."},{"text":"Steam it please.","chunks":["Steam it please."],"linkPhrase":"steam it","linkRespell":"stee-mit","linkIpa":"/stiː‿mɪt/","linkType":"CV","vi":"Hấp nó đi."},{"text":"Press it now.","chunks":["Press it now."],"linkPhrase":"press it","linkRespell":"pre-sit","linkIpa":"/pre‿sɪt/","linkType":"CV","vi":"Ấn nó ngay."},{"text":"Dust it now.","chunks":["Dust it now."],"linkPhrase":"dust it","linkRespell":"du-stit","linkIpa":"/dʌs‿tɪt/","linkType":"CV","vi":"Phủi bụi nó ngay."},{"text":"Twist it now.","chunks":["Twist it now."],"linkPhrase":"twist it","linkRespell":"twi-stit","linkIpa":"/twɪs‿tɪt/","linkType":"CV","vi":"Vặn nó ngay."},{"text":"Paint it now.","chunks":["Paint it now."],"linkPhrase":"paint it","linkRespell":"pain-tit","linkIpa":"/peɪn‿tɪt/","linkType":"CV","vi":"Sơn nó ngay."},{"text":"Count it now.","chunks":["Count it now."],"linkPhrase":"count it","linkRespell":"coun-tit","linkIpa":"/kaʊn‿tɪt/","linkType":"CV","vi":"Đếm nó ngay."},{"text":"Melt it now.","chunks":["Melt it now."],"linkPhrase":"melt it","linkRespell":"mel-tit","linkIpa":"/mel‿tɪt/","linkType":"CV","vi":"Làm tan nó ngay."},{"text":"Boil it now.","chunks":["Boil it now."],"linkPhrase":"boil it","linkRespell":"boi-lit","linkIpa":"/bɔɪ‿lɪt/","linkType":"CV","vi":"Luộc nó ngay."},{"text":"Peel it now.","chunks":["Peel it now."],"linkPhrase":"peel it","linkRespell":"pee-lit","linkIpa":"/piː‿lɪt/","linkType":"CV","vi":"Gọt vỏ nó ngay."},{"text":"Seal it now.","chunks":["Seal it now."],"linkPhrase":"seal it","linkRespell":"see-lit","linkIpa":"/siː‿lɪt/","linkType":"CV","vi":"Niêm phong nó ngay."},{"text":"Steam it now.","chunks":["Steam it now."],"linkPhrase":"steam it","linkRespell":"stee-mit","linkIpa":"/stiː‿mɪt/","linkType":"CV","vi":"Hấp nó ngay."},{"text":"Press it quickly.","chunks":["Press it quickly."],"linkPhrase":"press it","linkRespell":"pre-sit","linkIpa":"/pre‿sɪt/","linkType":"CV","vi":"Ấn nó đi."},{"text":"Dust it quickly.","chunks":["Dust it quickly."],"linkPhrase":"dust it","linkRespell":"du-stit","linkIpa":"/dʌs‿tɪt/","linkType":"CV","vi":"Phủi bụi nó đi."},{"text":"Twist it quickly.","chunks":["Twist it quickly."],"linkPhrase":"twist it","linkRespell":"twi-stit","linkIpa":"/twɪs‿tɪt/","linkType":"CV","vi":"Vặn nó đi."},{"text":"Paint it quickly.","chunks":["Paint it quickly."],"linkPhrase":"paint it","linkRespell":"pain-tit","linkIpa":"/peɪn‿tɪt/","linkType":"CV","vi":"Sơn nó đi."},{"text":"Count it quickly.","chunks":["Count it quickly."],"linkPhrase":"count it","linkRespell":"coun-tit","linkIpa":"/kaʊn‿tɪt/","linkType":"CV","vi":"Đếm nó đi."},{"text":"Melt it quickly.","chunks":["Melt it quickly."],"linkPhrase":"melt it","linkRespell":"mel-tit","linkIpa":"/mel‿tɪt/","linkType":"CV","vi":"Làm tan nó đi."},{"text":"Boil it quickly.","chunks":["Boil it quickly."],"linkPhrase":"boil it","linkRespell":"boi-lit","linkIpa":"/bɔɪ‿lɪt/","linkType":"CV","vi":"Luộc nó đi."},{"text":"Peel it quickly.","chunks":["Peel it quickly."],"linkPhrase":"peel it","linkRespell":"pee-lit","linkIpa":"/piː‿lɪt/","linkType":"CV","vi":"Gọt vỏ nó đi."},{"text":"Seal it quickly.","chunks":["Seal it quickly."],"linkPhrase":"seal it","linkRespell":"see-lit","linkIpa":"/siː‿lɪt/","linkType":"CV","vi":"Niêm phong nó đi."},{"text":"Steam it quickly.","chunks":["Steam it quickly."],"linkPhrase":"steam it","linkRespell":"stee-mit","linkIpa":"/stiː‿mɪt/","linkType":"CV","vi":"Hấp nó đi."},{"text":"Press it soon.","chunks":["Press it soon."],"linkPhrase":"press it","linkRespell":"pre-sit","linkIpa":"/pre‿sɪt/","linkType":"CV","vi":"Ấn nó đi."}];
+
+/* ============================================================
+   Settings
+   ============================================================ */
+let timerSeconds = 7;
+let streakGoal = 2;
+let sentenceCount = 20;
+let allowTypos = false;
+let autoKeyboard = true;
+let activeTypes = new Set(['CV','VV','CC','TJ','FLAP']);
+
+const TYPE_LABEL = {
+  CV: 'Consonant → Vowel', VV: 'Vowel → Vowel', CC: 'Same consonant',
+  TJ: '/t,d,s,z/ + /y/', FLAP: 'Flap-T'
+};
+
+/* ============================================================
+   Session state
+   ============================================================ */
+let deck = [];            // the selected sentences, each augmented with drill state
+let current = null;
+let drillSection = 1;
+let totalAttempts = 0;
+let drillAttempts = [];   // export log
+let isAnswered = false;
+let timerId = null, timerStart = 0, countdownIntervalId = null;
+
+/* ============================================================
+   Utility
+   ============================================================ */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function gotoStage(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+function filteredPool() {
+  return POOL.filter(s => activeTypes.has(s.linkType));
+}
+function pickSentences(n) {
+  return shuffle(filteredPool()).slice(0, n).map(s => ({
+    ...s, streak: 0, seen: false, missedInA: false, gradOnFirstTry: false
+  }));
+}
+
+/* ============================================================
+   Word-diff grading (sentence-level, adapted from Section 3 dictation)
+   ============================================================ */
+function normalize(s) { return s.trim().toLowerCase(); }
+function stripPunct(s) { return s.replace(/[.,!?;:'"\-]/g, ''); }
+function tokenize(s) {
+  return stripPunct(normalize(s)).split(/\s+/).filter(Boolean);
+}
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+  for (let i=0;i<=m;i++) dp[i][0]=i;
+  for (let j=0;j<=n;j++) dp[0][j]=j;
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++) {
+    dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1] + (a[i-1]===b[j-1]?0:1));
+  }
+  return dp[m][n];
+}
+const HOMOPHONES = [
+  ['by','bye','buy'],['to','too','two'],['their','there','theyre'],['your','youre'],
+  ['its','its'],['no','know'],['hour','our'],['one','won'],['for','four'],['be','bee'],
+  ['i','eye'],['right','write'],['see','sea'],['hi','high'],['hear','here']
+];
+const HOMO_INDEX = (function(){
+  const m = new Map();
+  HOMOPHONES.forEach((g,i)=>g.forEach(w=>m.set(w,i)));
+  return m;
+})();
+function wordsMatch(typed, target) {
+  const t = stripPunct(normalize(typed)), w = stripPunct(normalize(target));
+  if (t === w) return true;
+  const gt = HOMO_INDEX.get(t), gw = HOMO_INDEX.get(w);
+  if (gt != null && gt === gw) return true;
+  if (allowTypos) {
+    if (Math.abs(t.length - w.length) <= 2) {
+      const d = levenshtein(t, w);
+      const limit = w.length <= 4 ? 0 : (w.length <= 7 ? 1 : 2);
+      if (d > 0 && d <= limit) return true;
+    }
+  }
+  return false;
+}
+// Greedy alignment of typed vs target tokens; returns html + counts.
+function diffSentence(target, typed) {
+  const tgt = tokenize(target);
+  const usr = tokenize(typed);
+  // simple LCS-style alignment
+  const m = tgt.length, n = usr.length;
+  const dp = Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++) {
+    if (wordsMatch(usr[j-1], tgt[i-1])) dp[i][j] = dp[i-1][j-1]+1;
+    else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+  }
+  // backtrack to mark matches
+  let i=m, j=n; const matchedTgt = new Array(m).fill(false);
+  while (i>0 && j>0) {
+    if (wordsMatch(usr[j-1], tgt[i-1])) { matchedTgt[i-1]=true; i--; j--; }
+    else if (dp[i-1][j] >= dp[i][j-1]) i--; else j--;
+  }
+  const correct = matchedTgt.filter(Boolean).length;
+  // build html over the ORIGINAL target words (keep punctuation/caps)
+  const origWords = target.trim().split(/\s+/);
+  // map each original word to a tgt-token index in order
+  let ti = 0;
+  const html = origWords.map(ow => {
+    const tok = stripPunct(normalize(ow));
+    if (!tok) return escapeHtml(ow);
+    const idx = ti; ti++;
+    const ok = matchedTgt[idx];
+    return '<span class="' + (ok ? 'word-right' : 'word-missing') + '">' + escapeHtml(ow) + '</span>';
+  }).join(' ');
+  const accuracy = m === 0 ? 0 : Math.round((correct / m) * 100);
+  const allRight = correct === m && n >= m; // every target word present
+  return { html, correct, total: m, accuracy, allRight };
+}
+
+/* ============================================================
+   TTS
+   ============================================================ */
+let englishVoice = null;
+const COMPARE_GAP_MS = 450;
+let pendingComparisonTimeout = null;
+function pickVoice() {
+  if (!('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  const ranked = [/Google US English/i, /Microsoft.*(Aria|Jenny|Guy|Davis|Emma)/i, /Samantha/i, /en-US/i, /en-GB/i, /^en/i];
+  for (const p of ranked) {
+    const v = voices.find(x => p.test(x.name) || p.test(x.lang));
+    if (v) { englishVoice = v; return; }
+  }
+  englishVoice = voices.find(v => /^en/i.test(v.lang)) || null;
+}
+if ('speechSynthesis' in window) { pickVoice(); window.speechSynthesis.onvoiceschanged = pickVoice; }
+
+function cancelAllPlayback() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (pendingComparisonTimeout) { clearTimeout(pendingComparisonTimeout); pendingComparisonTimeout = null; }
+  clearComparisonHighlight();
+}
+function speakAt(text, btn, rate, onDone) {
+  if (!('speechSynthesis' in window)) { if (onDone) onDone(); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = rate; u.pitch = 1;
+  if (englishVoice) u.voice = englishVoice;
+  if (btn) {
+    btn.classList.add('playing');
+    u.onend = u.onerror = () => { btn.classList.remove('playing'); if (onDone) onDone(); };
+  } else if (onDone) { u.onend = u.onerror = onDone; }
+  window.speechSynthesis.speak(u);
+}
+// After a miss: play the LINKED PHRASE slowly, then the full sentence at natural speed,
+// so the learner hears the blend in isolation and then in context.
+function playLinkComparison(linkPhrase, fullSentence) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  if (pendingComparisonTimeout) { clearTimeout(pendingComparisonTimeout); pendingComparisonTimeout = null; }
+  clearComparisonHighlight();
+  const u1 = new SpeechSynthesisUtterance(linkPhrase);
+  u1.lang = 'en-US'; u1.rate = 0.6; u1.pitch = 1;
+  if (englishVoice) u1.voice = englishVoice;
+  u1.onstart = () => highlightCompare('link');
+  u1.onend = () => {
+    unhighlightCompare('link');
+    pendingComparisonTimeout = setTimeout(() => {
+      pendingComparisonTimeout = null;
+      const u2 = new SpeechSynthesisUtterance(fullSentence);
+      u2.lang = 'en-US'; u2.rate = 0.9; u2.pitch = 1;
+      if (englishVoice) u2.voice = englishVoice;
+      u2.onstart = () => highlightCompare('full');
+      u2.onend = u2.onerror = () => unhighlightCompare('full');
+      window.speechSynthesis.speak(u2);
+    }, COMPARE_GAP_MS);
+  };
+  u1.onerror = () => unhighlightCompare('link');
+  window.speechSynthesis.speak(u1);
+}
+function highlightCompare(which) {
+  const el = document.getElementById('compare-' + which);
+  if (el) el.classList.add('now-playing');
+}
+function unhighlightCompare(which) {
+  const el = document.getElementById('compare-' + which);
+  if (el) el.classList.remove('now-playing');
+}
+function clearComparisonHighlight() {
+  ['compare-link','compare-full'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.classList.remove('now-playing');
+  });
+}
+
+/* ============================================================
+   Intro wiring
+   ============================================================ */
+function updateRefreshInfo() {
+  document.getElementById('pick-count').textContent = sentenceCount;
+  document.getElementById('pool-count').textContent = filteredPool().length;
+}
+updateRefreshInfo();
+document.getElementById('refresh-btn').addEventListener('click', () => {
+  updateRefreshInfo();
+  const btn = document.getElementById('refresh-btn');
+  btn.textContent = '↻ Refreshed';
+  setTimeout(() => btn.textContent = '↻ Refresh', 800);
+});
+
+// Type chips
+document.getElementById('type-chips').addEventListener('click', (e) => {
+  const chip = e.target.closest('.type-chip');
+  if (!chip) return;
+  const t = chip.dataset.type;
+  if (activeTypes.has(t)) {
+    if (activeTypes.size === 1) return; // keep at least one
+    activeTypes.delete(t); chip.classList.remove('active');
+  } else {
+    activeTypes.add(t); chip.classList.add('active');
+  }
+  updateRefreshInfo();
+});
+
+function attachStepper(id, valueId, min, max, initial, onChange) {
+  let value = initial;
+  const display = document.getElementById(valueId);
+  const down = document.getElementById(id + '-down');
+  const up = document.getElementById(id + '-up');
+  function update() {
+    display.textContent = value;
+    down.disabled = value <= min;
+    up.disabled = value >= max;
+    onChange(value);
+  }
+  down.addEventListener('click', () => { if (value > min) { value--; update(); } });
+  up.addEventListener('click', () => { if (value < max) { value++; update(); } });
+  update();
+}
+attachStepper('timer', 'timer-value', 3, 15, 7, v => { timerSeconds = v; });
+attachStepper('streak', 'streak-value', 2, 5, 2, v => { streakGoal = v; });
+attachStepper('count', 'count-value', 3, 30, 20, v => { sentenceCount = v; updateRefreshInfo(); });
+
+document.getElementById('typo-strict').addEventListener('click', () => {
+  allowTypos = false;
+  document.getElementById('typo-strict').classList.add('active');
+  document.getElementById('typo-lenient').classList.remove('active');
+});
+document.getElementById('typo-lenient').addEventListener('click', () => {
+  allowTypos = true;
+  document.getElementById('typo-lenient').classList.add('active');
+  document.getElementById('typo-strict').classList.remove('active');
+});
+document.getElementById('kbd-auto-on').addEventListener('click', () => {
+  autoKeyboard = true;
+  document.getElementById('kbd-auto-on').classList.add('active');
+  document.getElementById('kbd-auto-off').classList.remove('active');
+});
+document.getElementById('kbd-auto-off').addEventListener('click', () => {
+  autoKeyboard = false;
+  document.getElementById('kbd-auto-off').classList.add('active');
+  document.getElementById('kbd-auto-on').classList.remove('active');
+});
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  deck = pickSentences(sentenceCount);
+  drillSection = 1;
+  totalAttempts = 0;
+  drillAttempts = [];
+  gotoStage('stage-drill');
+  startDrill();
+});
+
+/* ============================================================
+   Drill (Section 1 & 2)
+   ============================================================ */
+function updateDrillHeader() {
+  const totalGrad = deck.filter(d => d.streak >= streakGoal).length;
+  let total;
+  if (drillSection === 1) {
+    document.getElementById('drill-section-label').textContent = 'Section 01';
+    total = deck.length;
+  } else {
+    document.getElementById('drill-section-label').textContent = 'Section 02';
+    total = deck.filter(d => d.missedInA).length;
+  }
+  document.getElementById('drill-graduated').textContent = totalGrad;
+  document.getElementById('drill-total').textContent = deck.length;
+  document.getElementById('drill-attempts').textContent = totalAttempts;
+}
+
+let phaseAIndex = 0;
+function pickNextSentence() {
+  if (drillSection === 1) {
+    // first pass: go through each sentence once, in order
+    if (phaseAIndex >= deck.length) return null;
+    return deck[phaseAIndex++];
+  }
+  // Section 2: weighted random over missed sentences still under streakGoal
+  const candidates = deck.filter(d => d.missedInA && d.streak < streakGoal);
+  if (candidates.length === 0) return null;
+  // avoid repeating the same one back-to-back if possible
+  let pick = candidates[Math.floor(Math.random() * candidates.length)];
+  if (candidates.length > 1 && pick === current) {
+    pick = candidates[(candidates.indexOf(pick) + 1) % candidates.length];
+  }
+  return pick;
+}
+
+function startDrill() {
+  updateDrillHeader();
+  nextDrillCard();
+}
+
+function nextDrillCard() {
+  current = pickNextSentence();
+  if (!current) {
+    if (drillSection === 1) {
+      const missedCount = deck.filter(d => d.missedInA && d.streak < streakGoal).length;
+      if (missedCount === 0) { showSummary(); return; }
+      drillSection = 2;
+      totalAttempts = 0;
+      updateDrillHeader();
+      nextDrillCard();
+      return;
+    }
+    showSummary();
+    return;
+  }
+
+  isAnswered = false;
+  updateDrillHeader();
+  hideFeedback();
+  document.getElementById('drill-next-floater').classList.remove('show');
+  resetTimerUI();
+
+  const card = document.getElementById('drill-card');
+  card.classList.remove('flip-in'); void card.offsetWidth; card.classList.add('flip-in');
+
+  const input = document.getElementById('word-input');
+  input.value = '';
+  input.readOnly = false; input.disabled = false;
+  input.className = 'word-input';
+  document.getElementById('check-btn').disabled = true;
+  document.getElementById('idk-btn').disabled = false;
+  document.getElementById('idk-btn').textContent = 'Replay';
+  if (autoKeyboard) input.focus();
+
+  document.getElementById('drill-play-btn').disabled = true;
+  setTimeout(() => {
+    speakAt(current.text, document.getElementById('drill-play-btn'), 0.9, () => {
+      document.getElementById('drill-play-btn').disabled = false;
+      if (!isAnswered) {
+        startTimer();
+        if (autoKeyboard) input.focus();
+      }
+    });
+  }, 250);
+}
+
+function resetTimerUI() {
+  const fill = document.getElementById('timer-fill');
+  fill.classList.remove('running');
+  fill.style.animation = 'none'; void fill.offsetWidth; fill.style.animation = '';
+  fill.style.animationDuration = timerSeconds + 's';
+  document.getElementById('timer-seconds').textContent = timerSeconds + 's';
+  document.getElementById('timer-row').classList.add('idle');
+}
+function startTimer() {
+  resetTimerUI();
+  document.getElementById('timer-row').classList.remove('idle');
+  const fill = document.getElementById('timer-fill');
+  fill.style.animationDuration = timerSeconds + 's';
+  fill.classList.add('running');
+  timerStart = Date.now();
+  countdownIntervalId = setInterval(() => {
+    const elapsed = Date.now() - timerStart;
+    const remaining = Math.max(0, timerSeconds * 1000 - elapsed);
+    document.getElementById('timer-seconds').textContent = Math.ceil(remaining / 1000) + 's';
+  }, 100);
+  timerId = setTimeout(() => {
+    if (isAnswered) return;
+    const typed = document.getElementById('word-input').value;
+    if (typed.trim().length > 0) handleAnswer(typed);
+    else handleTimeout();
+  }, timerSeconds * 1000);
+}
+function stopTimer() {
+  if (timerId) { clearTimeout(timerId); timerId = null; }
+  if (countdownIntervalId) { clearInterval(countdownIntervalId); countdownIntervalId = null; }
+}
+
+function hideFeedback() {
+  const fb = document.getElementById('drill-feedback');
+  fb.className = 'feedback'; fb.innerHTML = '';
+}
+function showNext() {
+  document.getElementById('drill-next-floater').classList.add('show');
+}
+
+// Build the linking reveal block (linked phrase underlined, respelling, IPA, VI)
+function buildLinkReveal(s) {
+  // underline the linked phrase inside the full sentence (case-insensitive, first match)
+  const re = new RegExp('(' + s.linkPhrase.replace(/[.*+?^$()|[\]\\]/g, '\\$&') + ')', 'i');
+  const sentenceHtml = escapeHtml(s.text).replace(re, '<span class="linked">$1</span>');
+  return '<div class="link-reveal">' +
+    '<div class="link-reveal-row" id="compare-full">' +
+      '<span class="link-reveal-label">Sentence</span>' +
+      '<span class="link-sentence-full">' + sentenceHtml + '</span>' +
+    '</div>' +
+    '<div class="link-reveal-row" id="compare-link">' +
+      '<span class="link-reveal-label">Linked sound</span>' +
+      '<span class="link-respell">' + escapeHtml(s.linkRespell) + '</span>' +
+      '<span class="link-ipa">' + escapeHtml(s.linkIpa) + '</span>' +
+      '<button class="link-play-mini" id="replay-link-btn"><span class="dot"></span>Hear blend</button>' +
+    '</div>' +
+    '<div class="link-reveal-row">' +
+      '<span class="link-reveal-label">Meaning</span>' +
+      '<span class="link-vi">' + escapeHtml(s.vi) + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function handleTimeout() {
+  if (isAnswered) return;
+  isAnswered = true;
+  stopTimer();
+  totalAttempts++;
+  current.seen = true;
+  if (drillSection === 1) current.missedInA = true;
+  current.streak = 0;
+  const typed = document.getElementById('word-input').value;
+  const input = document.getElementById('word-input');
+  input.readOnly = true; input.classList.add('timeout');
+  document.getElementById('check-btn').disabled = true;
+  document.getElementById('idk-btn').disabled = false;
+  document.getElementById('idk-btn').textContent = 'Replay';
+
+  const diff = diffSentence(current.text, typed);
+  const fb = document.getElementById('drill-feedback');
+  fb.classList.add('show', 'timeout');
+  fb.innerHTML =
+    '<div class="feedback-line1"><strong>Out of time.</strong> <span class="link-tag">' + current.linkType + '</span></div>' +
+    (typed.trim() ? '<div class="result-diff" style="margin-top:8px">' + diff.html + '</div>' : '') +
+    buildLinkReveal(current);
+  drillAttempts.push(logRow(current, typed, false, 'timeout', diff));
+  playLinkComparison(current.linkPhrase, current.text);
+  updateDrillHeader();
+  showNext();
+}
+
+function handleAnswer(typed) {
+  if (isAnswered) return;
+  isAnswered = true;
+  stopTimer();
+  totalAttempts++;
+  const wasFirst = !current.seen;
+  current.seen = true;
+
+  const diff = diffSentence(current.text, typed);
+  const correct = diff.allRight;
+
+  const input = document.getElementById('word-input');
+  input.readOnly = true;
+  document.getElementById('check-btn').disabled = true;
+  document.getElementById('idk-btn').disabled = false;
+  document.getElementById('idk-btn').textContent = 'Replay';
+
+  const fb = document.getElementById('drill-feedback');
+  if (correct) {
+    if (drillSection === 1 && wasFirst) { current.gradOnFirstTry = true; current.streak = streakGoal; }
+    else current.streak++;
+    input.classList.add('right');
+    fb.classList.add('show', 'right');
+    let line1;
+    if (drillSection === 1 && wasFirst) line1 = '<strong>Got it on first try.</strong> Graduated.';
+    else if (current.streak >= streakGoal) line1 = '<strong>Graduated.</strong> ' + streakGoal + ' in a row.';
+    else line1 = '<strong>Correct.</strong> Streak ' + current.streak + ' / ' + streakGoal + '.';
+    fb.innerHTML = '<div class="feedback-line1">' + line1 + ' <span class="link-tag">' + current.linkType + '</span></div>' +
+      buildLinkReveal(current);
+  } else {
+    if (drillSection === 1) current.missedInA = true;
+    current.streak = 0;
+    input.classList.add('wrong');
+    fb.classList.add('show', 'wrong');
+    fb.innerHTML =
+      '<div class="feedback-line1"><strong>Not quite — ' + diff.accuracy + '% of the words.</strong> <span class="link-tag">' + current.linkType + '</span></div>' +
+      '<div class="result-diff" style="margin-top:8px">' + diff.html + '</div>' +
+      buildLinkReveal(current);
+    playLinkComparison(current.linkPhrase, current.text);
+  }
+  drillAttempts.push(logRow(current, typed, correct, correct ? 'correct' : 'wrong', diff));
+  updateDrillHeader();
+  showNext();
+}
+
+function logRow(s, typed, correct, reason, diff) {
+  return {
+    section: drillSection, sentence: s.text, linkPhrase: s.linkPhrase,
+    respell: s.linkRespell, ipa: s.linkIpa, type: s.linkType, vi: s.vi,
+    typed: typed.trim(), correct, reason, accuracy: diff ? diff.accuracy : 0
+  };
+}
+
+// ---- Drill events ----
+document.getElementById('drill-play-btn').addEventListener('click', () => {
+  if (isAnswered) {
+    // replay full sentence after answering
+    speakAt(current.text, document.getElementById('drill-play-btn'), 0.9, null);
+    return;
+  }
+  // replay before answering: do NOT reset the timer (single-listen spirit, but allow replay)
+  speakAt(current.text, document.getElementById('drill-play-btn'), 0.9, null);
+});
+document.getElementById('word-input').addEventListener('input', (e) => {
+  document.getElementById('check-btn').disabled = e.target.value.trim().length === 0;
+});
+document.getElementById('word-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (!isAnswered) {
+      const v = document.getElementById('word-input').value;
+      if (v.trim().length > 0) handleAnswer(v);
+    } else {
+      nextDrillCard();
+    }
+  }
+});
+document.getElementById('check-btn').addEventListener('click', () => {
+  const v = document.getElementById('word-input').value;
+  if (v.trim().length > 0) handleAnswer(v);
+});
+document.getElementById('idk-btn').addEventListener('click', () => {
+  // "Replay" — replays the sentence; if already answered, replays too
+  speakAt(current.text, document.getElementById('drill-play-btn'), 0.85, null);
+});
+document.getElementById('drill-next-btn').addEventListener('click', () => {
+  cancelAllPlayback();
+  nextDrillCard();
+});
+document.getElementById('skip-from-drill').addEventListener('click', () => {
+  cancelAllPlayback(); stopTimer(); showSummary();
+});
+// Tap the reveal's "Hear blend" button (delegated)
+document.getElementById('drill-feedback').addEventListener('click', (e) => {
+  if (e.target.closest('#replay-link-btn')) {
+    playLinkComparison(current.linkPhrase, current.text);
+  }
+  // tap a comparison row to replay that part
+  const fullRow = e.target.closest('#compare-full');
+  const linkRow = e.target.closest('#compare-link');
+  if (linkRow && !e.target.closest('#replay-link-btn')) {
+    speakAt(current.linkPhrase, null, 0.6, null);
+    highlightCompare('link'); setTimeout(()=>unhighlightCompare('link'), 900);
+  } else if (fullRow) {
+    speakAt(current.text, null, 0.9, null);
+    highlightCompare('full'); setTimeout(()=>unhighlightCompare('full'), 1200);
+  }
+});
+
+/* ============================================================
+   Summary
+   ============================================================ */
+function showSummary() {
+  cancelAllPlayback();
+  gotoStage('stage-summary');
+
+  const gradFirst = deck.filter(d => d.gradOnFirstTry);
+  const gradReview = deck.filter(d => !d.gradOnFirstTry && d.streak >= streakGoal);
+  const still = deck.filter(d => d.streak < streakGoal);
+
+  const counts = document.getElementById('summary-counts');
+  counts.innerHTML =
+    countCard('s-grad-first', gradFirst.length, 'First-try graduates') +
+    countCard('s-grad-review', gradReview.length, 'Graduated after review') +
+    countCard('s-still', still.length, 'Still learning') +
+    countCard('s-unseen', deck.length, 'Sentences this session');
+
+  const groups = document.getElementById('summary-groups');
+  groups.innerHTML = '';
+  groups.appendChild(groupBlock('g-first', 'First-try graduates', gradFirst));
+  groups.appendChild(groupBlock('g-review', 'Graduated after review', gradReview));
+  if (still.length) groups.appendChild(groupBlock('g-still', 'Still learning', still));
+}
+function countCard(cls, num, label) {
+  return '<div class="summary-count ' + cls + '">' +
+    '<div class="summary-count-num">' + num + '</div>' +
+    '<div class="summary-count-label">' + label + '</div></div>';
+}
+function groupBlock(cls, title, items) {
+  const div = document.createElement('div');
+  div.className = 'summary-group ' + cls;
+  let html = '<div class="summary-group-header">' +
+    '<span class="summary-group-title">' + title + '</span>' +
+    '<span class="summary-group-count">' + items.length + '</span></div>';
+  if (items.length === 0) {
+    html += '<div class="summary-item"><div class="summary-item-en" style="grid-column:1/-1">None.</div></div>';
+  } else {
+    items.forEach(s => {
+      html += '<div class="summary-item" style="grid-template-columns:1fr">' +
+        '<div>' +
+          '<span class="summary-item-word">' + escapeHtml(s.text) + '</span>' +
+          ' <span class="link-tag">' + s.linkType + '</span>' +
+          '<span class="summary-item-ipa">' + escapeHtml(s.linkRespell) + '  ' + escapeHtml(s.linkIpa) + '</span>' +
+          '<span class="summary-item-en">' + escapeHtml(s.vi) + '</span>' +
+        '</div></div>';
+    });
+  }
+  div.innerHTML = html;
+  return div;
+}
+document.getElementById('summary-restart').addEventListener('click', () => {
+  gotoStage('stage-intro');
+});
+document.getElementById('summary-export-btn').addEventListener('click', () => {
+  const rows = [['section','sentence','linkPhrase','respelling','ipa','type','typed','correct','reason','accuracy','vi']];
+  drillAttempts.forEach(a => rows.push([
+    a.section, a.sentence, a.linkPhrase, a.respell, a.ipa, a.type, a.typed,
+    a.correct, a.reason, a.accuracy, a.vi
+  ]));
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'linking-lab-results.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
