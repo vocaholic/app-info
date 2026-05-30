@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phonetic Learning Prototype</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --surface-2: #f3f1ec;
+    --text: #1a1a1a;
+    --text-2: #5a5a55;
+    --text-3: #8a8a85;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.18);
+    --info-bg: #e6f1fb;
+    --info-text: #185fa5;
+    --info-border: rgba(24, 95, 165, 0.25);
+    --success-bg: #eaf3de;
+    --success-text: #3b6d11;
+    --success-border: rgba(59, 109, 17, 0.25);
+    --danger-bg: #fcebeb;
+    --danger-text: #a32d2d;
+    --danger-border: rgba(163, 45, 45, 0.25);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --surface: #242422;
+      --surface-2: #2e2e2c;
+      --text: #f0f0ec;
+      --text-2: #b0b0a8;
+      --text-3: #80807a;
+      --border: rgba(255,255,255,0.1);
+      --border-strong: rgba(255,255,255,0.22);
+      --info-bg: #042c53;
+      --info-text: #85b7eb;
+      --info-border: rgba(133, 183, 235, 0.3);
+      --success-bg: #173404;
+      --success-text: #97c459;
+      --success-border: rgba(151, 196, 89, 0.3);
+      --danger-bg: #501313;
+      --danger-text: #f09595;
+      --danger-border: rgba(240, 149, 149, 0.3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .app-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .app-title {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .app-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+    justify-content: center;
+  }
+  .tab {
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .tab:hover { border-color: var(--border-strong); }
+  .tab.active {
+    background: var(--info-bg);
+    color: var(--info-text);
+    border-color: var(--info-border);
+  }
+  .tab.mix {
+    background: var(--surface-2);
+  }
+  .tab.mix.active {
+    background: var(--info-bg);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .lesson-title { font-size: 15px; font-weight: 500; }
+  .progress { font-size: 12px; color: var(--text-3); }
+  .ipa {
+    font-family: var(--font-mono);
+    color: var(--info-text);
+  }
+
+  .prompt {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+  .instruction {
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 14px;
+  }
+  .play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: 0.5px solid var(--info-border);
+    background: var(--info-bg);
+    color: var(--info-text);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .play-btn:hover { opacity: 0.85; }
+  .play-btn svg { width: 20px; height: 20px; }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 1rem;
+  }
+  .option {
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text);
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .option:hover { border-color: var(--border-strong); }
+  .option.correct {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+  }
+  .option.wrong {
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+    color: var(--danger-text);
+  }
+  .option.disabled { cursor: default; pointer-events: none; }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+  }
+  .feedback-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .check-icon, .x-icon { width: 16px; height: 16px; }
+  .check-icon { color: var(--success-text); }
+  .x-icon { color: var(--danger-text); }
+
+  .tip-row {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .tip-label {
+    color: var(--text-3);
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+  .tip-val { color: var(--text); }
+
+  .actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn-primary {
+    background: var(--info-bg);
+    color: var(--info-text);
+    border-color: var(--info-border);
+  }
+
+  .done {
+    text-align: center;
+    padding: 2rem 0 1rem;
+  }
+  .done-icon { width: 40px; height: 40px; color: var(--info-text); margin-bottom: 8px; }
+  .done-stat {
+    font-size: 32px;
+    font-weight: 500;
+    margin: 8px 0;
+  }
+  .done-pct {
+    color: var(--text-2);
+    font-size: 13px;
+    margin-bottom: 1.25rem;
+  }
+
+  .footer-note {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  @media (max-width: 480px) {
+    .app { padding: 1rem 0.75rem 3rem; }
+    .card { padding: 1rem; }
+    .options { gap: 8px; }
+    .option { padding: 14px; font-size: 16px; }
+    .tip-label { min-width: 80px; font-size: 12px; }
+    .tip-val { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <h1 class="app-title">Phonetic Learning</h1>
+    <p class="app-sub">Listen and pick the word you hear · For Vietnamese learners</p>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="card" id="card"></div>
+  <div class="footer-note">Tip: Use Chrome, Edge or Safari for best audio quality. Headphones recommended.</div>
+</div>
+
+<script>
+const lessons = [
+  {
+    id: 's', label: '/s/', ipa: 's', spelling: 's, ss, ce, ci',
+    vn: 'giống âm "x" trong tiếng Việt (xa, xinh)',
+    tip: 'Đầu lưỡi gần nướu sau răng trên, hơi thoát ra như tiếng rắn nhỏ. Môi thả lỏng, hơi mỉm cười. Không tròn môi.',
+    mistake: 'Không thay bằng âm "sh" /ʃ/ — đừng tròn môi khi phát âm.',
+    pairs: [
+      { target: 'see', distractor: 'she' },
+      { target: 'so', distractor: 'show' },
+      { target: 'sip', distractor: 'ship' },
+      { target: 'save', distractor: 'shave' },
+      { target: 'sock', distractor: 'shock' }
+    ]
+  },
+  {
+    id: 'sh', label: '/ʃ/ (sh)', ipa: 'ʃ', spelling: 'sh, ti (nation), ssi, ch (chef)',
+    vn: 'không có trong tiếng Việt chuẩn (gần giống "s" miền Bắc nhưng tròn môi hơn)',
+    tip: 'Lưỡi kéo lùi về sau một chút, môi tròn và hơi đẩy ra trước (như khi suỵt suỵt im lặng). Hơi thoát ra rộng, mềm hơn /s/.',
+    mistake: 'Người Việt thường phát âm thành /s/ vì không tròn môi. Hãy nhớ: tròn môi = "sh".',
+    pairs: [
+      { target: 'she', distractor: 'see' },
+      { target: 'show', distractor: 'so' },
+      { target: 'ship', distractor: 'sip' },
+      { target: 'shave', distractor: 'save' },
+      { target: 'sheet', distractor: 'seat' }
+    ]
+  },
+  {
+    id: 'short-i', label: '/ɪ/ short i', ipa: 'ɪ', spelling: 'i (sit), y (gym)',
+    vn: 'KHÔNG có âm tương đương chính xác trong tiếng Việt. Nằm giữa "i" và "ê" — gần "i" trong "ít, in" nhưng thả lỏng và thấp hơn một chút.',
+    tip: 'Miệng mở nhẹ hơn khi nói "i", lưỡi thả lỏng ở vị trí giữa (không cao như /iː/, không thấp như /e/). Âm ngắn, dứt khoát, không kéo dài. Cơ hàm và lưỡi thả lỏng hoàn toàn.',
+    mistake: 'Lỗi 1: Kéo dài thành /iː/ — "ship" thành "sheep". Lỗi 2: Phát âm như "iê" tiếng Việt (tiên, biển) — đây là nguyên âm đôi, sai hoàn toàn. /ɪ/ là một âm đơn, không lượn.',
+    pairs: [
+      { target: 'ship', distractor: 'sheep' },
+      { target: 'bit', distractor: 'beat' },
+      { target: 'fit', distractor: 'feet' },
+      { target: 'sit', distractor: 'seat' },
+      { target: 'live', distractor: 'leave' }
+    ]
+  },
+  {
+    id: 'long-i', label: '/iː/ long ee', ipa: 'iː', spelling: 'ee, ea, e (be), ie',
+    vn: 'giống "i" dài và căng trong "im" kéo dài, hoặc như "ee" trong "tee"',
+    tip: 'Kéo dài âm i, lưỡi đẩy lên cao và ra phía trước. Môi căng, hơi mỉm cười. Cơ mặt căng hơn /ɪ/.',
+    mistake: 'Phải dài hơn và căng hơn "i" tiếng Việt. Nếu không kéo dài, nghe như /ɪ/.',
+    pairs: [
+      { target: 'sheep', distractor: 'ship' },
+      { target: 'beat', distractor: 'bit' },
+      { target: 'feet', distractor: 'fit' },
+      { target: 'seat', distractor: 'sit' },
+      { target: 'leave', distractor: 'live' }
+    ]
+  },
+  {
+    id: 't', label: '/t/', ipa: 't', spelling: 't, tt, ed (after voiceless)',
+    vn: 'giống âm "th" trong tiếng Việt (thư, thanh) — bật hơi mạnh',
+    tip: 'Đầu lưỡi chạm nướu sau răng trên, bật ra với một luồng hơi nhỏ. Quan trọng: phải BẬT âm /t/ ở cuối từ — "cat" không phải "ca".',
+    mistake: 'Người Việt thường nuốt /t/ ở cuối từ. Phải bật ra rõ ràng. Cũng đừng nhầm với /θ/ (think).',
+    pairs: [
+      { target: 'tin', distractor: 'thin' },
+      { target: 'tank', distractor: 'thank' },
+      { target: 'tree', distractor: 'three' },
+      { target: 'taught', distractor: 'thought' },
+      { target: 'boat', distractor: 'both' }
+    ]
+  },
+  {
+    id: 'theta', label: '/θ/ (th vô thanh)', ipa: 'θ', spelling: 'th (think, bath)',
+    vn: 'KHÔNG có trong tiếng Việt — phải học cách phát âm mới',
+    tip: 'Đặt đầu lưỡi nhẹ giữa hai hàm răng (lưỡi nhô ra một chút). Thổi hơi qua khe răng. KHÔNG rung dây thanh — chỉ có hơi.',
+    mistake: 'Người Việt thường thay bằng /t/ (tin) hoặc /f/ (fin). Phải thấy lưỡi giữa răng. Đặt tay lên cổ — không rung.',
+    pairs: [
+      { target: 'thin', distractor: 'tin' },
+      { target: 'thank', distractor: 'tank' },
+      { target: 'three', distractor: 'tree' },
+      { target: 'thought', distractor: 'taught' },
+      { target: 'both', distractor: 'boat' }
+    ]
+  },
+  {
+    id: 'eth', label: '/ð/ (th hữu thanh)', ipa: 'ð', spelling: 'th (this, mother, breathe)',
+    vn: 'KHÔNG có trong tiếng Việt — phải học cách phát âm mới',
+    tip: 'Vị trí lưỡi giống /θ/ (giữa hai hàm răng), nhưng RUNG dây thanh. Đặt tay lên cổ — phải cảm thấy rung. Giống /θ/ + giọng nói.',
+    mistake: 'Người Việt thường thay bằng /d/ (day) hoặc /z/. Phải thấy lưỡi giữa răng VÀ rung cổ họng.',
+    pairs: [
+      { target: 'they', distractor: 'day' },
+      { target: 'then', distractor: 'den' },
+      { target: 'though', distractor: 'dough' },
+      { target: 'there', distractor: 'dare' },
+      { target: 'those', distractor: 'doze' }
+    ]
+  }
+];
+
+// Build mixed review pool from all lessons
+function buildMixedPool() {
+  const pool = [];
+  lessons.forEach(lesson => {
+    lesson.pairs.forEach(pair => {
+      pool.push({
+        target: pair.target,
+        distractor: pair.distractor,
+        lessonId: lesson.id
+      });
+      // Also include reverse direction so the distractor can be the answer
+      pool.push({
+        target: pair.distractor,
+        distractor: pair.target,
+        lessonId: findLessonForWord(pair.distractor) || lesson.id
+      });
+    });
+  });
+  return pool;
+}
+
+function findLessonForWord(word) {
+  // Map words to their primary lesson based on which sound they contain
+  const wordSoundMap = {
+    'she': 'sh', 'show': 'sh', 'ship': 'sh', 'shave': 'sh', 'sheet': 'sh', 'shock': 'sh',
+    'see': 's', 'so': 's', 'sip': 's', 'save': 's', 'seat': 's', 'sock': 's',
+    'sheep': 'long-i', 'beat': 'long-i', 'feet': 'long-i', 'leave': 'long-i',
+    'bit': 'short-i', 'fit': 'short-i', 'sit': 'short-i', 'live': 'short-i',
+    'tin': 't', 'tank': 't', 'tree': 't', 'taught': 't', 'boat': 't',
+    'thin': 'theta', 'thank': 'theta', 'three': 'theta', 'thought': 'theta', 'both': 'theta',
+    'they': 'eth', 'then': 'eth', 'though': 'eth', 'there': 'eth', 'those': 'eth',
+    'day': 't', 'den': 't', 'dough': 't', 'dare': 't', 'doze': 't'
+  };
+  return wordSoundMap[word];
+}
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+let currentLessonIdx = 0; // index into lessons array, or -1 for mixed
+let isMixedMode = false;
+let questions = [];
+let currentQuestion = 0;
+let correctAnswer = null;
+let answered = false;
+let score = 0;
+const MIXED_QUESTION_COUNT = 12;
+
+const tabsEl = document.getElementById('tabs');
+const cardEl = document.getElementById('card');
+
+function renderTabs() {
+  const lessonTabs = lessons.map((l, i) =>
+    `<button class="tab ${!isMixedMode && i === currentLessonIdx ? 'active' : ''}" data-idx="${i}">${l.label}</button>`
+  ).join('');
+  const mixedTab = `<button class="tab mix ${isMixedMode ? 'active' : ''}" data-mixed="true">🎲 Mixed review</button>`;
+  tabsEl.innerHTML = lessonTabs + mixedTab;
+
+  tabsEl.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.mixed) {
+        startMixed();
+      } else {
+        startLesson(parseInt(btn.dataset.idx));
+      }
+    });
+  });
+}
+
+function startLesson(idx) {
+  currentLessonIdx = idx;
+  isMixedMode = false;
+  questions = lessons[idx].pairs.map(p => ({
+    target: p.target,
+    distractor: p.distractor,
+    lessonId: lessons[idx].id
+  }));
+  currentQuestion = 0;
+  score = 0;
+  renderTabs();
+  renderQuestion();
+}
+
+function startMixed() {
+  isMixedMode = true;
+  currentLessonIdx = -1;
+  const pool = buildMixedPool();
+  questions = shuffle(pool).slice(0, MIXED_QUESTION_COUNT);
+  currentQuestion = 0;
+  score = 0;
+  renderTabs();
+  renderQuestion();
+}
+
+function speak(word) {
+  if (!('speechSynthesis' in window)) {
+    alert('Trình duyệt không hỗ trợ phát âm. Hãy thử Chrome, Edge hoặc Safari.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(word);
+  utter.lang = 'en-US';
+  utter.rate = 0.85;
+
+  // Try to pick a higher-quality voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v =>
+    v.lang.startsWith('en-US') && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel'))
+  ) || voices.find(v => v.lang.startsWith('en'));
+  if (preferred) utter.voice = preferred;
+
+  window.speechSynthesis.speak(utter);
+}
+
+function getLessonById(id) {
+  return lessons.find(l => l.id === id);
+}
+
+function renderQuestion() {
+  if (currentQuestion >= questions.length) {
+    renderDone();
+    return;
+  }
+
+  const q = questions[currentQuestion];
+  correctAnswer = q.target;
+  answered = false;
+
+  const showFirst = Math.random() > 0.5 ? q.target : q.distractor;
+  const showSecond = showFirst === q.target ? q.distractor : q.target;
+
+  const titleText = isMixedMode
+    ? '🎲 Mixed review'
+    : `Bài học: ${lessons[currentLessonIdx].label} <span class="ipa">[${lessons[currentLessonIdx].ipa}]</span>`;
+
+  cardEl.innerHTML = `
+    <div class="header-row">
+      <div class="lesson-title">${titleText}</div>
+      <div class="progress">Câu ${currentQuestion + 1} / ${questions.length} · Điểm: ${score}</div>
+    </div>
+    <div class="prompt">
+      <div class="instruction">Nghe và chọn từ bạn nghe được</div>
+      <button class="play-btn" id="play">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        Nghe phát âm
+      </button>
+    </div>
+    <div class="options">
+      <button class="option" data-word="${showFirst}">${showFirst}</button>
+      <button class="option" data-word="${showSecond}">${showSecond}</button>
+    </div>
+    <div id="feedback-slot"></div>
+  `;
+
+  document.getElementById('play').addEventListener('click', () => speak(correctAnswer));
+  cardEl.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => handleAnswer(btn));
+  });
+
+  setTimeout(() => speak(correctAnswer), 350);
+}
+
+function handleAnswer(btn) {
+  if (answered) return;
+  answered = true;
+  const chosen = btn.dataset.word;
+  const isCorrect = chosen === correctAnswer;
+  if (isCorrect) score++;
+
+  cardEl.querySelectorAll('.option').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.word === correctAnswer) b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+
+  cardEl.querySelector('.progress').textContent =
+    `Câu ${currentQuestion + 1} / ${questions.length} · Điểm: ${score}`;
+
+  renderFeedback(isCorrect);
+}
+
+function renderFeedback(isCorrect) {
+  const q = questions[currentQuestion];
+  const lesson = getLessonById(q.lessonId);
+  const slot = document.getElementById('feedback-slot');
+
+  const checkSvg = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  const xSvg = '<svg class="x-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+  const statusIcon = isCorrect ? checkSvg : xSvg;
+  const statusText = isCorrect ? 'Đúng rồi!' : `Đáp án đúng: <strong>${correctAnswer}</strong>`;
+
+  const lessonLabel = isMixedMode ? `<div class="tip-row"><div class="tip-label">Âm này là</div><div class="tip-val">${lesson.label} <span class="ipa">[${lesson.ipa}]</span></div></div>` : '';
+
+  slot.innerHTML = `
+    <div class="feedback">
+      <div class="feedback-title">${statusIcon} ${statusText}</div>
+      ${lessonLabel}
+      <div class="tip-row">
+        <div class="tip-label">Âm tương đương</div>
+        <div class="tip-val">${lesson.vn}</div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-label">Cách viết</div>
+        <div class="tip-val"><span class="ipa">[${lesson.ipa}]</span> → ${lesson.spelling}</div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-label">Cách phát âm</div>
+        <div class="tip-val">${lesson.tip}</div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-label">Lỗi thường gặp</div>
+        <div class="tip-val">${lesson.mistake}</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="replay-btn">🔊 Nghe lại</button>
+        <button class="btn btn-primary" id="next-btn">
+          ${currentQuestion + 1 >= questions.length ? 'Hoàn thành →' : 'Câu tiếp →'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('replay-btn').addEventListener('click', () => speak(correctAnswer));
+  document.getElementById('next-btn').addEventListener('click', () => {
+    currentQuestion++;
+    renderQuestion();
+  });
+}
+
+function renderDone() {
+  const pct = Math.round((score / questions.length) * 100);
+  const trophySvg = '<svg class="done-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>';
+
+  const isLastLesson = !isMixedMode && currentLessonIdx === lessons.length - 1;
+  const nextLabel = isMixedMode
+    ? 'Quay về bài đầu'
+    : isLastLesson ? '🎲 Thử mixed review' : 'Bài tiếp →';
+
+  cardEl.innerHTML = `
+    <div class="done">
+      ${trophySvg}
+      <div class="done-stat">${score} / ${questions.length}</div>
+      <div class="done-pct">Bạn đúng ${pct}%${isMixedMode ? ' bài tổng hợp' : ''}</div>
+      <div class="actions" style="justify-content: center;">
+        <button class="btn" id="restart-btn">↻ Làm lại</button>
+        <button class="btn btn-primary" id="next-section-btn">${nextLabel}</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    if (isMixedMode) startMixed();
+    else startLesson(currentLessonIdx);
+  });
+  document.getElementById('next-section-btn').addEventListener('click', () => {
+    if (isMixedMode) startLesson(0);
+    else if (isLastLesson) startMixed();
+    else startLesson(currentLessonIdx + 1);
+  });
+}
+
+// Init voices (some browsers load asynchronously)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+renderTabs();
+startLesson(0);
+</script>
+</body>
+</html>
