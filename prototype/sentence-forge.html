@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentence Forge — chẩn đoán kỹ năng dịch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F8F6; --card:#FFFFFF; --line:#E3E7E2; --line2:#CDD4CC;
+  --ink:#1A211C; --ink2:#5C665E; --ink3:#9AA39B;
+  --grass:#2F7D52; --grassbg:#E7F2EA; --grassline:#BCDCC8;
+  --rust:#B4452F; --rustbg:#F8E7E2; --rustline:#E8C4B9;
+  --gold:#9A7A1E; --goldbg:#F6EFD8;
+  --plum:#5A4A7A;
+  --disp:'Spectral',Georgia,serif;
+  --sans:'Inter','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.55; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:680px; margin:0 auto; padding:30px 18px 90px;}
+
+/* compact top bar (always visible) + collapsible settings block */
+.topbar{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+.topbar-title{font-family:var(--disp); font-weight:600; font-size:1.2rem;}
+.topbar-title em{font-style:italic; color:var(--grass);}
+.topbar-progress{font-family:var(--mono); font-size:0.74rem; color:var(--ink3); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.topbar-toggle{padding:6px 12px; font-size:0.85rem;}
+#topcollapse.collapsed{display:none;}
+
+header{margin-bottom:8px;}
+.eyebrow{font-family:var(--mono); font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--grass); margin-bottom:8px;}
+h1{font-family:var(--disp); font-weight:600; font-size:2.1rem; line-height:1.05; letter-spacing:-0.01em;}
+h1 em{font-style:italic; color:var(--grass);}
+.sub{color:var(--ink2); font-size:0.96rem; margin-top:8px; max-width:52ch;}
+
+.counter{font-family:var(--mono); font-size:0.78rem; color:var(--ink3); margin:22px 0 8px;}
+
+.modelbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px;}
+.modelbar-label{font-family:var(--mono); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink3);}
+#model-sel{
+  font-family:var(--sans); font-size:0.9rem; font-weight:500; color:var(--ink);
+  background:var(--card); border:1.5px solid var(--line2); border-radius:9px;
+  padding:7px 11px; cursor:pointer;
+}
+#model-sel:focus{outline:none; border-color:var(--grass);}
+.modelbar-cost{font-family:var(--mono); font-size:0.76rem; color:var(--ink2);}
+.skilltgl{display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:0.72rem; color:var(--ink3); cursor:pointer; margin-left:auto;}
+.skilltgl input{cursor:pointer;}
+
+/* email / identity bar (no login yet — email identifies the learner) */
+.idbar{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:12px; padding:11px 13px; background:var(--grassbg); border:1px solid var(--grassline); border-radius:11px;}
+.idbar-label{font-family:var(--mono); font-size:0.78rem; color:var(--grass); font-weight:600;}
+#emailin{flex:1; min-width:200px; font-family:var(--mono); font-size:0.82rem; padding:7px 10px; border:1.5px solid var(--line2); border-radius:8px; background:#fff;}
+#emailin:focus{outline:none; border-color:var(--grass);}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:0 1px 2px rgba(20,30,22,0.03);}
+
+.vn-label{font-family:var(--mono); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink3); margin-bottom:8px;}
+.vn{font-family:var(--disp); font-size:1.5rem; line-height:1.3; color:var(--ink); margin-bottom:18px;}
+
+textarea{
+  width:100%; font-family:var(--sans); font-size:1.05rem; line-height:1.5;
+  color:var(--ink); background:var(--paper); border:1.5px solid var(--line2);
+  border-radius:11px; padding:13px 15px; resize:vertical; min-height:74px;
+  transition:border-color .15s;
+}
+textarea:focus{outline:none; border-color:var(--grass); background:#fff;}
+textarea:disabled{opacity:0.7; background:var(--paper);}
+
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px;}
+.btn{
+  font-family:var(--sans); font-weight:600; font-size:0.95rem;
+  border:1.5px solid var(--ink); background:var(--ink); color:#fff;
+  border-radius:10px; padding:10px 20px; cursor:pointer; transition:transform .05s, opacity .15s;
+}
+.btn:hover{opacity:0.9;}
+.btn:active{transform:translateY(1px);}
+.btn.ghost{background:transparent; color:var(--ink); border-color:var(--line2);}
+.btn:disabled{opacity:0.4; cursor:default;}
+
+.checking{display:flex; align-items:center; gap:10px; color:var(--ink2); font-size:0.95rem; padding:8px 0;}
+.spinner{width:16px; height:16px; border:2px solid var(--grassline); border-top-color:var(--grass); border-radius:50%; animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---- skill panel ---- */
+.skills{margin-top:24px;}
+.skills-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:4px;}
+.skills-title{font-family:var(--disp); font-size:1.15rem; font-weight:600;}
+.skills-tally{font-family:var(--mono); font-size:0.82rem; color:var(--ink2);}
+.skills-tally b{color:var(--grass);}
+.skills-note{font-size:0.86rem; color:var(--ink2); margin-bottom:14px;}
+
+.skill-group{margin-top:16px;}
+.skill-group h4{font-family:var(--mono); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink3); margin-bottom:9px;}
+.skill-list{display:flex; flex-direction:column; gap:7px;}
+
+.skill{
+  display:flex; align-items:flex-start; gap:11px; padding:11px 13px;
+  border-radius:11px; border:1px solid var(--line); background:var(--card);
+  animation:rise .35s cubic-bezier(.2,.7,.3,1) both;
+}
+@keyframes rise{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+.skill.done{background:var(--grassbg); border-color:var(--grassline);}
+.skill.miss{background:var(--rustbg); border-color:var(--rustline);}
+
+.skill .mark{
+  flex-shrink:0; width:22px; height:22px; border-radius:50%; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.8rem; font-weight:800; color:#fff;
+}
+.skill.done .mark{background:var(--grass);}
+.skill.miss .mark{background:var(--rust);}
+
+.skill .body{flex:1; min-width:0;}
+.skill .desc{font-size:0.96rem; color:var(--ink); font-weight:500;}
+.skill .meta{font-size:0.8rem; color:var(--ink2); margin-top:2px;}
+.skill .why{font-size:0.82rem; color:var(--ink2); margin-top:5px; font-style:italic; line-height:1.4;}
+.skill .sub-used{color:var(--grass); font-style:normal; font-weight:500;}
+
+.refined{margin-top:22px; padding:15px 17px; background:var(--grassbg); border:1px solid var(--grassline); border-radius:12px;}
+.refined .rl{font-family:var(--mono); font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--grass); margin-bottom:6px;}
+.refined .rt{font-family:var(--disp); font-size:1.15rem; color:var(--ink);}
+
+.err{margin-top:16px; padding:13px 15px; background:var(--rustbg); border:1px solid var(--rustline); border-radius:11px; color:var(--rust); font-size:0.9rem;}
+
+footer{margin-top:40px; font-size:0.8rem; color:var(--ink3); line-height:1.6;}
+/* rail */
+.rail{display:flex; gap:6px; margin:18px 0 22px;}
+.step{flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+  font-family:var(--sans); font-size:0.82rem; font-weight:600; color:var(--ink3);
+  background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 6px; cursor:default;}
+.step .rn{display:inline-flex; width:19px; height:19px; border-radius:50%; background:var(--line);
+  color:var(--ink2); align-items:center; justify-content:center; font-size:0.72rem; font-weight:700;}
+.step.on{color:var(--grass); border-color:var(--grassline); background:var(--grassbg);}
+.step.on .rn{background:var(--grass); color:#fff;}
+.step.done{color:var(--ink2);}
+.step.done .rn{background:var(--grass); color:#fff;}
+
+/* score line */
+.scoreline{display:flex; gap:15px; align-items:center; margin-top:20px;}
+.mini-ring{--pct:0; --ring:var(--grass); width:60px; height:60px; border-radius:50%; flex-shrink:0;
+  background:conic-gradient(var(--ring) calc(var(--pct)*1%), var(--line) 0);
+  display:flex; align-items:center; justify-content:center; position:relative;}
+.mini-ring::after{content:""; position:absolute; inset:6px; background:var(--card); border-radius:50%;}
+.mini-ring span{position:relative; z-index:1; font-family:var(--mono); font-size:0.82rem; font-weight:600; color:var(--ink);}
+.scoremeta{flex:1; min-width:0;}
+.scorehead{font-family:var(--mono); font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink3); margin-bottom:4px;}
+
+.done-msg{font-family:var(--disp); font-size:1.3rem; color:var(--grass); font-weight:600;}
+.soon{margin-top:10px; font-size:0.95rem; color:var(--ink2);}
+
+/* ---- drills (Section 2) ---- */
+.tag{font-family:var(--mono); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border-radius:5px; vertical-align:middle;}
+.tag.grammar{background:var(--goldbg); color:var(--gold);}
+.tag.vocabulary{background:#EDE9F4; color:var(--plum);}
+.drill-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.drill-count{font-family:var(--mono); font-size:0.74rem; color:var(--ink3);}
+.cloze{font-family:var(--disp); font-size:1.35rem; line-height:1.4; color:var(--ink); margin-bottom:8px;}
+.blank{color:var(--grass); font-weight:700; letter-spacing:1px;}
+.blank.filled{color:var(--ink); background:var(--grassbg); border-radius:5px; padding:1px 7px; letter-spacing:0; border-bottom:2px solid var(--grass);}
+/* grammar-drill empty slot: a plain gap (no underscores) waiting for word chips */
+.blank-ph{display:inline-block; min-width:64px; height:1.05em; vertical-align:middle; border-bottom:2px dashed var(--grassline); border-radius:4px;}
+.blank-input{font-family:var(--disp); font-size:1.35rem; color:var(--ink); text-align:center;
+  border:none; border-bottom:2px solid var(--grass); background:var(--grassbg); border-radius:5px 5px 0 0;
+  padding:0 6px; margin:0 2px; min-width:60px; outline:none;}
+.blank-input::placeholder{color:var(--ink3); font-weight:400;}
+.blank-input:disabled{background:transparent; color:var(--ink);}
+.blank-chips{display:inline-flex; flex-wrap:wrap; gap:5px; vertical-align:middle;}
+.pchip{font-family:var(--sans); font-size:0.95rem; font-weight:600; padding:3px 11px; border-radius:7px;
+  border:none; background:var(--grass); color:#fff; cursor:pointer; vertical-align:middle;}
+.pchip:hover{background:var(--grass); opacity:0.85;}
+.pchip:disabled{opacity:1; cursor:default;}
+.hint{font-size:0.95rem; color:var(--ink2); margin-bottom:16px;}
+/* vocabulary drill blank: a single typing box with an underscore mask behind it.
+   The typed letters cover the leading "_"; the remaining "_" show letters left. */
+.typebox{position:relative; display:inline-block; font-family:var(--disp); font-size:1.35rem; line-height:1.3;
+  vertical-align:baseline; border-bottom:2px solid var(--grass);}
+.typebox-mask{white-space:pre; letter-spacing:1px; color:var(--ink); padding:0 2px;}
+.typebox-mask .rem{color:var(--ink3);}
+.typebox-input{position:absolute; left:0; top:0; width:100%; height:100%; box-sizing:border-box;
+  font:inherit; letter-spacing:1px; padding:0 2px; margin:0; border:none; outline:none;
+  background:transparent; color:transparent; caret-color:var(--grass);}
+.dfb{margin-top:12px; font-size:0.98rem; font-weight:600;}
+.dfb.ok{color:var(--grass);}
+.dfb.no{color:var(--rust);}
+.dfb.warn{color:var(--gold);}
+.dfb.warn b{color:var(--ink);}
+.dfb.no b{color:var(--ink);}
+.wordbank{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:6px;}
+.chip{font-family:var(--sans); font-size:0.96rem; font-weight:500; padding:8px 14px; border-radius:9px;
+  border:1.5px solid var(--line2); background:var(--card); color:var(--ink); cursor:pointer;}
+.chip:hover{border-color:var(--grass);}
+.chip.in{background:var(--grassbg); border-color:var(--grassline); color:var(--grass);}
+/* picked word: stays in its slot (so options don't shift) but reads as taken */
+.chip.used{background:var(--paper); border-color:var(--line); color:var(--ink3); opacity:0.5;}
+.chip:disabled{cursor:default;}
+
+/* ---- comparison (Section 3) ---- */
+.cmp{display:flex; gap:12px; margin-top:18px;}
+.cmp .col{flex:1; text-align:center; padding:14px 10px; border:1px solid var(--line); border-radius:12px; background:var(--card);}
+.cmp .col.now{background:var(--grassbg); border-color:var(--grassline);}
+.cmp h4{font-family:var(--mono); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink3); margin-bottom:10px;}
+.cmp .mini-ring{margin:0 auto 10px;}
+.cmp .col.now .mini-ring::after{background:#F2FBF5;}
+.cans{font-size:0.86rem; color:var(--ink2); line-height:1.4;}
+.sum-skip{font-family:var(--mono); font-size:0.72rem; color:var(--grass); margin-top:6px;}
+/* user-vs-refined word diff (shown for 0-miss sentences in the Section 1 summary) */
+.diff-line{font-size:0.92rem; color:var(--ink); line-height:1.6; margin-top:4px;}
+.diff-lbl{font-family:var(--mono); font-size:0.64rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink3); margin-right:8px;}
+.diff-ins{background:var(--grassbg); border-bottom:2px solid var(--grass); border-radius:3px; padding:0 3px;}
+.diff-del{background:var(--rustbg); color:var(--rust); text-decoration:line-through; border-radius:3px; padding:0 3px;}
+/* vertical comparison stack (Section 3 result / final summary) */
+.vstack{display:flex; flex-direction:column; gap:9px; margin-top:12px;}
+.vrow{display:flex; gap:10px; align-items:flex-start;}
+.vlbl{flex:0 0 120px; display:flex; flex-direction:row; align-items:center; gap:6px; font-family:var(--mono); font-size:0.63rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); line-height:1.5;}
+.vscore{flex:none; font-family:var(--mono); font-weight:700; font-size:0.7rem; color:#fff; padding:1px 6px; border-radius:6px; letter-spacing:0; text-transform:none;}
+.vtxt{flex:1; min-width:0; font-size:0.96rem; color:var(--ink); line-height:1.5;}
+.vrow.best .vlbl{color:var(--grass);}
+.vskip{color:var(--ink3); font-style:italic;}
+.delta{text-align:center; margin-top:14px; font-size:0.95rem;}
+.up{color:var(--grass); font-weight:700;} .down{color:var(--rust); font-weight:700;} .flat{color:var(--ink2);}
+.enh{font-size:0.95rem; color:var(--ink); line-height:1.45;}
+.enh-l{font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--grass); margin-right:6px;}
+.enh-block{margin-top:16px; padding:13px 15px; background:var(--grassbg); border:1px solid var(--grassline); border-radius:11px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Always-visible compact bar: title + progress + a toggle for the settings block -->
+<div class="topbar">
+  <span class="topbar-title">Sentence <em>Forge</em></span>
+  <span class="topbar-progress" id="topProgress"></span>
+  <button class="btn ghost topbar-toggle" id="toggleTop">Cài đặt ▾</button>
+</div>
+
+<div id="topcollapse">
+<header>
+  <div class="eyebrow">VN → EN · chẩn đoán kỹ năng</div>
+  <h1>Sentence <em>Forge</em></h1>
+  <p class="sub">Dịch câu tiếng Việt sang tiếng Anh. AI sẽ xem câu của bạn và cho biết bạn đã dùng đúng những kỹ năng nào, và kỹ năng nào còn thiếu cần cải thiện.</p>
+</header>
+
+<div class="modelbar">
+  <span class="modelbar-label">Mô hình AI</span>
+  <select id="model-sel"></select>
+  <span class="modelbar-cost" id="model-cost"></span>
+  <label class="skilltgl"><input type="checkbox" id="skill-tgl"> chi tiết kỹ năng</label>
+  <label class="skilltgl" style="margin-left:14px"><input type="checkbox" id="fast-tgl"> chấm sau (nhanh)</label>
+</div>
+
+<!-- No login yet: the learner's email identifies them and is sent on every call. -->
+<div class="idbar">
+  <span class="idbar-label">✉️ Email</span>
+  <input type="email" id="emailin" placeholder="you@example.com" autocomplete="email">
+  <button class="btn" id="startbtn">Bắt đầu phiên →</button>
+</div>
+
+<div class="counter" id="counter"></div>
+</div><!-- /topcollapse -->
+
+<div class="rail">
+  <button class="step on"><span class="rn">1</span> Dịch</button>
+  <button class="step"><span class="rn">2</span> Luyện</button>
+  <button class="step"><span class="rn">3</span> Dịch lại</button>
+</div>
+
+<div id="stage"></div>
+
+<footer>
+  Bản thử nghiệm · 3 phần: Dịch → Luyện tập → Dịch lại. Mỗi câu đi kèm danh sách kỹ năng (từ vựng + ngữ pháp) do backend cung cấp. AI đánh dấu ✓ kỹ năng bạn đã thể hiện (kể cả khi bạn dùng từ thay thế hợp lệ) và ✗ kỹ năng còn thiếu; những kỹ năng thiếu sẽ được luyện ở phần 2.
+</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ===================== BACKEND CONFIG =====================
+   The FE talks ONLY to our backend. It never sees the Anthropic API key and
+   never touches the DB. Point this at wherever main.py (Flask) is running. */
+const BACKEND = "https://engine-ca.blueriver-5203a765.eastus.azurecontainerapps.io";
+/* ========================================================== */
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* selectable models — the model string is sent to the BE as claude_model */
+const MODELS = [
+  { id:"claude-haiku-4-5-20251001", label:"Haiku 4.5 — nhanh, rẻ nhất", cost:"≈ $1.4 / 1.000 lần" },
+  { id:"claude-sonnet-4-6",         label:"Sonnet 4.6 — cân bằng",       cost:"≈ $4 / 1.000 lần" },
+  { id:"claude-opus-4-8",           label:"Opus 4.8 — mạnh nhất",        cost:"≈ $7 / 1.000 lần" }
+];
+let currentModel = MODELS[1].id;   // default to Sonnet
+
+function renderModelPicker(){
+  const sel = $("model-sel");
+  sel.innerHTML = MODELS.map(m=>`<option value="${m.id}"${m.id===currentModel?" selected":""}>${esc(m.label)}</option>`).join("");
+  const updateCost = ()=>{ const m=MODELS.find(x=>x.id===currentModel); $("model-cost").textContent = m?m.cost:""; };
+  updateCost();
+  sel.onchange = ()=>{ currentModel = sel.value; updateCost(); };
+}
+
+/* ---------- BE calls ---------- */
+async function apiPost(path, body){
+  const resp = await fetch(BACKEND + path, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(body)
+  });
+  let data = null;
+  try{ data = await resp.json(); }catch(e){}
+  if(!resp.ok || !data || data.success === false){
+    const msg = (data && data.message) ? data.message : ("HTTP "+resp.status);
+    throw new Error(msg);
+  }
+  return data.data;   // BE envelope: {code, data, success, ...}
+}
+
+/* Section 1 — Step A: load this session's sentences + sessionid */
+async function startSection1(email){
+  return apiPost("/api/section1/start", { email });   // -> {sen_data:[{vn_sen,sentenceid}], sessionid}
+}
+/* Section 1 — Step B: evaluate one translation */
+async function evaluateSection1(payload){
+  return apiPost("/api/section1/evaluate", payload);  // -> {score, refined, gaps, sessionid}
+}
+/* Section 2 — fetch drills for the session's skill gaps */
+async function startSection2(){
+  return apiPost("/api/section2/start", { email:S.email, session_id:S.sessionid }); // -> {status, drill_data}
+}
+/* Section 2 — log one drill attempt (non-blocking) */
+async function logDrill(payload){
+  return apiPost("/api/section2/log", payload);       // -> ""
+}
+/* Section 3 — re-evaluate a translation (logged as section_3 server-side) */
+async function evaluateSection3(payload){
+  return apiPost("/api/section3/evaluate", payload);  // -> {score, refined, gaps, sessionid}
+}
+
+/* ===================== session state =====================
+   A session = the sentences the DB returns. Section 1: translate each (scored,
+   skill-checked). The skill ✓/✗ panel is gated by a top toggle (default off);
+   the skill-check still runs regardless — its gaps drive Section 2 later. */
+const S = { sec:0, sessionid:null, email:"", batch:[], pos:0, showSkills:false, fast:true,
+            drillQueue:[], drillPos:0, _picked:[], pending:[], drillsServed:false, retest:[] };
+/* retest = batch indices to re-do in Section 3 (sentences scoring > 90% are excluded). */
+/* fast (defer-grading) mode: submitting a translation fires the LLM check in the
+   background and jumps to the next sentence immediately. Pending checks are
+   collected in S.pending and awaited at the Section 1→2 boundary (so drills are
+   fetched only after logs land) and again at the end of Section 3 (summary). */
+/* batch[i] = { vn_sen, sentenceid,
+     first:{text,refined,score,gaps}  | null,   // Section 1
+     second:{text,refined,score}      | null }  // Section 3
+   drillQueue[i] = current batch: { answer, en_sen, vn_sen, skill_id, exercise_type, sentence_id } */
+
+async function startSession(){
+  const email = ($("emailin").value || "").trim();
+  if(!email){ $("emailin").focus(); return; }
+  S.email = email;
+  try{ localStorage.setItem("sf_email", email); }catch(e){}   // remember for later sessions
+  $("startbtn").disabled = true;
+  $("stage").innerHTML = `<div class="card"><div class="checking"><div class="spinner"></div>Đang tải câu hỏi…</div></div>`;
+  try{
+    const res = await startSection1(email);
+    S.sessionid = res.sessionid;
+    S.batch = (res.sen_data || []).map(s => ({ vn_sen:s.vn_sen, sentenceid:s.sentenceid, first:null, second:null }));
+    S.pos = 0; S.sec = 0; S.pending = []; S.drillsServed = false; S.retest = [];
+  }catch(e){
+    $("startbtn").disabled = false;
+    $("stage").innerHTML = `<div class="card"><div class="err">Không tải được phiên: ${esc(e.message)}. Kiểm tra backend rồi thử lại.</div></div>`;
+    return;
+  }
+  $("startbtn").disabled = false;
+  if(!S.batch.length){
+    $("stage").innerHTML = `<div class="card"><div class="err">Không có câu nào cho email này.</div></div>`;
+    return;
+  }
+  setTopCollapsed(true);   // collapse settings to save vertical space during practice
+  render();
+}
+
+function setStep(n){
+  document.querySelectorAll(".rail .step").forEach((b,i)=>{
+    b.classList.toggle("on", i===n);
+    b.classList.toggle("done", i<n);
+  });
+}
+function ringColor(p){ return p>=80?"var(--grass)":p>=50?"var(--gold)":"var(--rust)"; }
+function pct(score01){ return Math.round((score01||0)*100); }   // 0..1 float -> percentage
+/* a Section 1 sentence "passed clean" = its skill judge found at least one skill
+   and none were missed (all exact/alt). Such sentences are not retested in Sec 3. */
+function noMissSec1(rec){
+  const g = rec && rec.first && rec.first.gaps;
+  return Array.isArray(g) && g.length > 0 && g.every(x=>x.status !== "miss");
+}
+
+/* word-level LCS diff between the learner's sentence (a) and the refined one (b).
+   Returns ops: {t:'eq'|'del'|'ins', w}. Matching ignores case/punctuation. */
+function wordDiff(aStr, bStr){
+  const nrm = w=>w.toLowerCase().replace(/[.,!?;:'"]/g,"");
+  const a=(aStr||"").split(/\s+/).filter(Boolean), b=(bStr||"").split(/\s+/).filter(Boolean);
+  const n=a.length, m=b.length;
+  const dp=Array.from({length:n+1}, ()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--){
+    dp[i][j] = (nrm(a[i])===nrm(b[j])) ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  }
+  const ops=[]; let i=0,j=0;
+  while(i<n && j<m){
+    if(nrm(a[i])===nrm(b[j])){ ops.push({t:"eq", w:b[j]}); i++; j++; }
+    else if(dp[i+1][j] >= dp[i][j+1]){ ops.push({t:"del", w:a[i]}); i++; }
+    else { ops.push({t:"ins", w:b[j]}); j++; }
+  }
+  while(i<n){ ops.push({t:"del", w:a[i]}); i++; }
+  while(j<m){ ops.push({t:"ins", w:b[j]}); j++; }
+  return ops;
+}
+/* HTML for the two diff lines: learner's line (deletions marked), refined line (insertions marked) */
+function diffLines(userText, refined){
+  const ops = wordDiff(userText, refined);
+  const userHtml = ops.filter(o=>o.t!=="ins").map(o=> o.t==="del" ? `<span class="diff-del">${esc(o.w)}</span>` : esc(o.w)).join(" ");
+  const refHtml  = ops.filter(o=>o.t!=="del").map(o=> o.t==="ins" ? `<span class="diff-ins">${esc(o.w)}</span>` : esc(o.w)).join(" ");
+  return { user: userHtml, refined: refHtml };
+}
+/* refined sentence with words that differ from `base` highlighted (insertions only) */
+function refinedDiff(base, refined){
+  if(!refined) return "";
+  return diffLines(base, refined).refined;
+}
+
+/* vertical comparison for one sentence: Section 1 input, Section 3 input,
+   refined (minimal / "as is"), refined (best / "to be"). The two refined lines
+   are diffed against the learner's latest attempt so changes stand out. */
+function sentenceComparisonRows(rec){
+  const last = rec.second || rec.first || {};
+  const base = last.text || "";
+  const a1 = (rec.first && rec.first.score!=null) ? pct(rec.first.score) : null;
+  const a2 = (rec.second && rec.second.score!=null) ? pct(rec.second.score) : null;
+  const retested = !!rec.second;
+  const badge = p => p!=null ? `<span class="vscore" style="background:${ringColor(p)}">${p}%</span>` : "";
+  const rows = [];
+  rows.push(`<div class="vrow"><span class="vlbl">Phần 1${badge(a1)}</span><span class="vtxt">${(rec.first&&rec.first.text)?esc(rec.first.text):"—"}</span></div>`);
+  rows.push(`<div class="vrow"><span class="vlbl">Phần 3${badge(a2)}</span><span class="vtxt">${retested?esc(rec.second.text):`<span class="vskip">không dịch lại (đủ kỹ năng)</span>`}</span></div>`);
+  if(last.refined) rows.push(`<div class="vrow"><span class="vlbl">Sửa tối thiểu</span><span class="vtxt">${refinedDiff(base, last.refined)}</span></div>`);
+  if(last.refined_best) rows.push(`<div class="vrow best"><span class="vlbl">Câu tốt nhất</span><span class="vtxt">${refinedDiff(base, last.refined_best)}</span></div>`);
+  return `<div class="vstack">${rows.join("")}</div>`;
+}
+
+function render(){
+  if(S.sec===0) renderSec1();
+  else if(S.sec===1) renderSec2();
+  else renderSec3();
+}
+
+/* ---------------- SECTION 1: translate each sentence ---------------- */
+function renderSec1(){
+  setStep(0);
+  const rec = S.batch[S.pos];
+  const lastSentence = S.pos >= S.batch.length-1;
+  const btnLabel = S.fast ? (lastSentence ? "Xong phần 1 →" : "Câu tiếp →") : "Kiểm tra →";
+  $("counter").textContent = `Phần 1 · Dịch · câu ${S.pos+1} / ${S.batch.length}`;
+  $("stage").innerHTML = `
+    <div class="card">
+      <div class="vn-label">Dịch sang tiếng Anh</div>
+      <div class="vn">${esc(rec.vn_sen)}</div>
+      <textarea id="ans" placeholder="Nhập bản dịch tiếng Anh của bạn…" autocomplete="off" autocapitalize="off" spellcheck="false">${(rec.first&&rec.first.text)?esc(rec.first.text):""}</textarea>
+      <div class="row">
+        <button class="btn" id="check">${btnLabel}</button>
+      </div>
+      <div id="result"></div>
+    </div>`;
+  $("check").onclick = checkSec1;
+  $("ans").addEventListener("keydown", e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){e.preventDefault();checkSec1();} });
+  // In fast mode we never show per-sentence results here (shown in the Section 3 summary).
+  if(!S.fast && rec.first){ $("ans").disabled=true; $("check").disabled=true; renderSec1Result(); }
+  else $("ans").focus();
+}
+
+async function checkSec1(){
+  const rec = S.batch[S.pos];
+  const ans = $("ans").value.trim();
+  if(!ans){ $("ans").focus(); return; }
+  const lastSentence = S.pos >= S.batch.length-1;
+  const payload = {
+    email: S.email,
+    sentenceid: rec.sentenceid,
+    vn_sen: rec.vn_sen,
+    en_sen_learner_input: ans,
+    claude_model: currentModel,
+    sessionid: S.sessionid
+  };
+
+  if(S.fast){
+    // fire grading in the background; jump to the next sentence immediately.
+    rec.first = { text:ans, refined:null, score:null, gaps:[], pending:true };
+    const p = evaluateSection1(payload)
+      .then(res=>{ rec.first = { text:ans, refined:res.refined, refined_best:res.refined_best, score:res.score, gaps:res.gaps || [] }; })
+      .catch(e=>{ rec.first = { text:ans, refined:null, refined_best:null, score:0, gaps:[], error:e.message }; });
+    S.pending.push(p);
+    if(lastSentence) endSection1();     // endSection1() awaits S.pending, then shows the summary
+    else { S.pos++; renderSec1(); }
+    return;
+  }
+
+  // normal mode: wait for the check and show the per-sentence result.
+  $("check").disabled=true; $("ans").disabled=true;
+  $("result").innerHTML = `<div class="checking"><div class="spinner"></div>Đang phân tích câu của bạn…</div>`;
+  try{
+    const res = await evaluateSection1(payload);
+    rec.first = { text:ans, refined:res.refined, refined_best:res.refined_best, score:res.score, gaps:res.gaps || [] };
+  }catch(e){
+    $("result").innerHTML = `<div class="err">Lỗi khi chấm: ${esc(e.message)}.</div>
+      <div class="row"><button class="btn" id="retry">Thử lại</button></div>`;
+    $("retry").onclick=()=>{ $("check").disabled=false; $("ans").disabled=false; checkSec1(); };
+    return;
+  }
+  renderSec1Result();
+}
+
+function renderSec1Result(){
+  const rec = S.batch[S.pos], f = rec.first;
+  const p = pct(f.score);
+  const skillPanel = S.showSkills ? skillPanelHtml(f.gaps) : "";
+  const lastSentence = S.pos >= S.batch.length-1;
+  $("result").innerHTML = `
+    <div class="scoreline">
+      <div class="mini-ring" style="--ring:${ringColor(p)}; --pct:${p}"><span>${p}%</span></div>
+      <div class="scoremeta">
+        <div class="scorehead">Mức khớp với câu chuẩn</div>
+      </div>
+    </div>
+    <!-- Refined sentence intentionally NOT shown in Section 1 — it would spoil
+         the answer the learner needs to retry in Section 3. -->
+    ${skillPanel}
+    <div class="row" style="margin-top:20px">
+      <button class="btn" id="nextSentence">${lastSentence?"Xong phần 1 →":"Câu tiếp →"}</button>
+    </div>`;
+  $("nextSentence").onclick=()=>{
+    if(lastSentence){ endSection1(); }          // -> Section 1 summary, then drills
+    else { S.pos++; renderSec1(); }
+  };
+}
+
+/* skill panel driven by the BE 'gaps' list: [{skill_id,skill_type,skill_description,status,used,why}] */
+function skillPanelHtml(gaps){
+  gaps = gaps || [];
+  const total = gaps.length;
+  const done = gaps.filter(g=>g.status!=="miss").length;   // exact + alt
+  const group=(type,label)=>{
+    const list = gaps.filter(g=>g.skill_type===type);
+    if(!list.length) return "";
+    const rows = list.map(g=>{
+      const ok = g.status!=="miss";
+      const used = (g.status==="alt" && g.used && g.used.trim()) ? `<div class="why sub-used">↳ dùng từ thay thế: “${esc(g.used)}”</div>` : "";
+      const why = (!ok && g.why) ? `<div class="why">${esc(g.why)}</div>` : "";
+      return `<div class="skill ${ok?"done":"miss"}"><div class="mark">${ok?"✓":"✗"}</div>
+        <div class="body"><div class="desc">${esc(g.skill_description)}</div>${used}${why}</div></div>`;
+    }).join("");
+    return `<div class="skill-group"><h4>${label}</h4><div class="skill-list">${rows}</div></div>`;
+  };
+  return `<div class="skills">
+      <div class="skills-head"><div class="skills-title">Kỹ năng (đánh giá của AI)</div>
+        <div class="skills-tally"><b>${done}</b> / ${total} đã thể hiện</div></div>
+      <div class="skills-note">✓ = đã dùng đúng (kể cả từ thay thế) · ✗ = còn thiếu, sẽ luyện ở phần 2</div>
+      ${group("grammar","Ngữ pháp")}${group("vocabulary","Từ vựng")}
+    </div>`;
+}
+
+/* ================= SECTION 2: drills =================
+   Fully API-driven and batched. Fetch a batch from the BE
+   (gateway.v2_speak_get_drill_gw), complete every drill in it (logging each via
+   gateway.v2_speak_log_drill_gw), then fetch the next batch. Repeat until the
+   API returns status "done". No client-side re-queuing — what to show and when
+   to stop is entirely the API's decision.
+   exercise_type "vocabulary" → free-type the blank; "grammar" → rearrange the
+   words broken out of the `answer` field into the blank. */
+async function startDrills(){
+  S.sec = 1;
+  // In fast mode, wait for the deferred Section 1 checks to finish (and their
+  // logs to land) before asking the API for drills — the drill set is derived
+  // from the logged Section 1 gaps.
+  if(S.pending.length){
+    setStep(1);
+    $("counter").textContent = "Phần 2 · Luyện tập";
+    $("stage").innerHTML = `<div class="card"><div class="checking"><div class="spinner"></div>Đang chấm các câu ở phần 1…</div></div>`;
+    try{ await Promise.all(S.pending); }catch(e){}
+    S.pending = [];
+  }
+  loadDrillBatch();
+}
+
+async function loadDrillBatch(){
+  setStep(1);
+  $("counter").textContent = "Phần 2 · Luyện tập";
+  $("stage").innerHTML = `<div class="card"><div class="checking"><div class="spinner"></div>Đang tải bài luyện tập…</div></div>`;
+  let res;
+  try{
+    res = await startSection2();   // {status, drill_data}
+  }catch(e){
+    $("stage").innerHTML = `<div class="card"><div class="err">Không tải được bài luyện: ${esc(e.message)}.</div>
+      <div class="row"><button class="btn" id="dretry">Thử lại</button>
+      <button class="btn ghost" id="dskip">Bỏ qua → Dịch lại</button></div></div>`;
+    $("dretry").onclick = loadDrillBatch;
+    $("dskip").onclick = startSection3;
+    return;
+  }
+  const data = (res && res.drill_data) || [];
+  const isDone = (res && res.status === "done") || !data.length;
+  if(isDone){
+    // "done" on the very first fetch → Section 1 was perfect (no gaps to drill)
+    if(!S.drillsServed){ renderPerfect(); return; }
+    // "done" after completing drills → Section 3 (retest, skipping >90% sentences)
+    startSection3(); return;
+  }
+  S.drillsServed = true;
+  S.drillQueue = data.map(d=>({
+    answer: d.answer,
+    en_sen: d.en_sen,
+    vn_sen: d.vn_sen,
+    skill_id: d.skill_id,
+    exercise_type: d.exercise_type || d.excercise_type,   // API field is 'excercise_type'
+    sentence_id: (d.sentence_id !== undefined ? d.sentence_id : null)
+  }));
+  S.drillPos = 0;
+  renderSec2();
+}
+
+function renderSec2(){
+  setStep(1);
+  $("counter").textContent = "Phần 2 · Luyện tập";
+  // finished this batch → ask the API for the next one (it decides done vs more)
+  if(S.drillPos >= S.drillQueue.length){ loadDrillBatch(); return; }
+  const cur = S.drillQueue[S.drillPos];
+  const remaining = S.drillQueue.length - S.drillPos;   // within the current batch
+  if(cur.exercise_type === "grammar") renderRearrange(cur, remaining);
+  else renderType(cur, remaining);
+}
+
+/* Section 1 was perfect: the drill API returned "done" before serving any drill,
+   so there are no gaps to practice. Celebrate and let the learner load a fresh
+   Section 1 (a new set of sentences) instead of going on to the retest. */
+function renderPerfect(){
+  setStep(0);
+  $("counter").textContent = "Phần 1 · Hoàn hảo";
+  $("stage").innerHTML = `<div class="card">
+    <div class="done-msg">🎉 Phần 1 rất tốt!</div>
+    <div class="soon">Bạn chưa cần luyện tập thêm. Tải một bộ câu mới để tiếp tục.</div>
+    <div class="row" style="margin-top:16px"><button class="btn" id="reloadSec1">Tải câu mới →</button></div>
+  </div>`;
+  $("reloadSec1").onclick = startSession;   // load Section 1 again with new sentences
+}
+
+/* ================= end of SECTION 1: score summary =================
+   Shown after the last Section 1 sentence. Displays each sentence's score (no
+   refined sentence — that would spoil the Section 3 retry). Sentences scoring
+   > 90% are flagged as skipped in Section 3. Continue → drills. */
+async function endSection1(){
+  // fast mode defers grading; make sure every Section 1 check has resolved first
+  if(S.pending.length){
+    setStep(0);
+    $("counter").textContent = "Phần 1 · Đang chấm…";
+    $("stage").innerHTML = `<div class="card"><div class="checking"><div class="spinner"></div>Đang chấm các câu…</div></div>`;
+    try{ await Promise.all(S.pending); }catch(e){}
+    S.pending = [];
+  }
+  renderSec1Summary();
+}
+
+function renderSec1Summary(){
+  setStep(0);
+  $("counter").textContent = `Phần 1 · Kết quả · ${S.batch.length} câu`;
+  const rows = S.batch.map((rec,i)=>{
+    const p = (rec.first && rec.first.score!=null) ? pct(rec.first.score) : null;
+    const skip = noMissSec1(rec);   // 0 missed skills → not retested in Section 3
+    let answerBlock;
+    if(skip && rec.first && rec.first.refined){
+      // won't be retested → safe to reveal the refined sentence with a diff
+      const d = diffLines(rec.first.text, rec.first.refined);
+      answerBlock = `<div class="diff-line"><span class="diff-lbl">Bạn</span>${d.user}</div>
+        <div class="diff-line"><span class="diff-lbl">Chuẩn</span>${d.refined}</div>`;
+    } else {
+      answerBlock = `<div class="cans" style="margin-top:3px">${(rec.first&&rec.first.text)?esc(rec.first.text):""}</div>`;
+    }
+    return `<div class="card" style="margin-top:12px">
+      <div class="scoreline">
+        <div class="mini-ring" style="--ring:${ringColor(p||0)}; --pct:${p||0}"><span>${p==null?"–":p+"%"}</span></div>
+        <div class="scoremeta">
+          <div style="font-family:var(--disp); font-size:1.05rem; color:var(--ink)">${esc(rec.vn_sen)}</div>
+          ${answerBlock}
+          ${skip?`<div class="sum-skip">✓ Không thiếu kỹ năng — sẽ không dịch lại ở phần 3</div>`:""}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  $("stage").innerHTML = `<div class="card">
+      <div class="skills-title">Kết quả phần 1</div>
+      <div class="skills-note">Điểm khớp cho từng câu. Câu không thiếu kỹ năng nào sẽ được bỏ qua khi dịch lại ở phần 3.</div>
+    </div>${rows}
+    <div class="row" style="margin-top:18px"><button class="btn" id="toSec2">Tiếp tục → Luyện tập</button></div>`;
+  $("toSec2").onclick = startDrills;
+}
+
+/* ================= enter SECTION 3 =================
+   Build the retest list: Section 1 sentences that scored <= 90% (those over 90%
+   are considered good enough and skipped). If none remain, go straight to the
+   final summary. */
+function startSection3(){
+  S.sec = 2; S.pos = 0;
+  // retest only sentences that had at least one missed skill in Section 1
+  S.retest = S.batch.map((_,i)=>i).filter(i=> !noMissSec1(S.batch[i]));
+  if(!S.retest.length){ renderSummary(); return; }   // every sentence had 0 miss → nothing to retest
+  renderSec3();
+}
+
+/* lenient match: "exact" | "form" (right word, wrong inflection) | "wrong" */
+function stem(w){
+  w = w.toLowerCase().replace(/[^a-z]/g,"");
+  const irr={children:"child",men:"man",women:"woman",people:"person",feet:"foot",teeth:"tooth",
+    went:"go",gone:"go",saw:"see",seen:"see",ate:"eat",eaten:"eat",bought:"buy",made:"make",
+    knew:"know",known:"know",had:"have",was:"be",were:"be",better:"good",best:"good",worse:"bad",
+    mice:"mouse",geese:"goose",left:"leave",told:"tell",said:"say",heard:"hear"};
+  if(irr[w]) return irr[w];
+  return w.replace(/(ies)$/,"y").replace(/(es|s)$/,"").replace(/(ed|ing)$/,"").replace(/(er|est)$/,"");
+}
+function matchAnswer(input, answer){
+  const a=input.trim().toLowerCase().replace(/\s+/g," ");
+  const b=answer.trim().toLowerCase();
+  if(a===b) return "exact";
+  const aw=a.split(" "), bw=b.split(" ");
+  if(aw.length===bw.length && aw.every((w,i)=>stem(w)===stem(bw[i])) && aw.join(" ")!==bw.join(" ")) return "form";
+  if(aw.length===1 && bw.length===1 && stem(a)===stem(b)) return "form";
+  return "wrong";
+}
+
+/* build the cloze frame: replace "__" in en_sen with `inner`; if no "__",
+   replace the answer word occurrence; if neither, just return inner. */
+function frameWith(d, inner){
+  if(d.en_sen && d.en_sen.includes("__")) return d.en_sen.replace(/__+/, inner);
+  if(d.en_sen){
+    const re = new RegExp("\\b"+d.answer.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i");
+    if(re.test(d.en_sen)) return d.en_sen.replace(re, inner);
+    return d.en_sen + " " + inner;
+  }
+  return inner;
+}
+function clozeFilled(d, typed){
+  const fill = (typed && typed.trim())
+    ? `<span class="blank filled">${esc(typed)}</span>`
+    : `<span class="blank">_____</span>`;
+  return frameWith(d, fill);
+}
+
+/* vocabulary → a single typing box. Behind the text sits a mask of "_" (one per
+   character of the answer). As the learner types, each typed character covers a
+   leading "_"; the remaining "_" show how many characters are still expected. */
+function renderType(cur, remaining){
+  const d = cur;
+  const targetLen = d.answer.length;   // total chars incl. spaces/punctuation
+  const boxHtml = `<span class="typebox"><span class="typebox-mask" id="mask"></span>`
+    + `<input class="typebox-input" id="din" maxlength="${targetLen}" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"></span>`;
+  $("stage").innerHTML = `<div class="card">
+    <div class="drill-top"><span class="tag vocabulary">từ vựng</span><span class="drill-count">còn ${remaining} mục</span></div>
+    <div class="cloze" id="cloze">${frameWith(d, boxHtml)}</div>
+    <div class="hint">${esc(d.vn_sen)}</div>
+    <div class="row"><button class="btn" id="dcheck">Kiểm tra</button><button class="btn ghost" id="dclr">Xóa</button></div>
+    <div id="dfb"></div></div>`;
+  const inp=$("din"), mask=$("mask");
+  function paintMask(){
+    const v = inp.value;
+    const rem = Math.max(0, targetLen - v.length);
+    mask.innerHTML = esc(v) + `<span class="rem">${"_".repeat(rem)}</span>`;
+  }
+  paintMask();
+  requestAnimationFrame(()=> inp.focus());
+  inp.addEventListener("input", paintMask);
+  const go=()=>{
+    const val=inp.value.trim();
+    if(!val) return;
+    const m = matchAnswer(val, d.answer);
+    inp.disabled=true; $("dcheck").disabled=true; $("dclr").disabled=true;
+    finishDrill(cur, val, m);
+  };
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } });
+  $("dclr").onclick=()=>{ inp.value=""; paintMask(); inp.focus(); };
+  $("dcheck").onclick=go;
+}
+
+/* grammar → rearrange the words of `answer` into the blank */
+function renderRearrange(cur, remaining){
+  const d = cur;
+  const words = d.answer.split(" ");
+  const scrambled = shuffle(words.map((w,i)=>({w,i})));
+  if(scrambled.every((x,i)=>x.i===i) && words.length>1){ scrambled.push(scrambled.shift()); }
+  S._picked = [];
+  $("stage").innerHTML = `<div class="card">
+    <div class="drill-top"><span class="tag grammar">ngữ pháp</span><span class="drill-count">còn ${remaining} mục</span></div>
+    <div class="cloze" id="cloze"></div>
+    <div class="hint">${esc(d.vn_sen)}</div>
+    <div class="wordbank" id="wordbank"></div>
+    <div class="row"><button class="btn" id="dcheck" disabled>Kiểm tra</button><button class="btn ghost" id="dclear">Xóa</button></div>
+    <div id="dfb"></div></div>`;
+  const bank=$("wordbank");
+  const currentText=()=>S._picked.map(bi=>scrambled[bi].w).join(" ");
+  function blankInner(){
+    if(!S._picked.length) return '<span class="blank-ph"></span>';   // empty slot, no underscores
+    return '<span class="blank-chips">'+S._picked.map((bi,ai)=>`<button class="pchip" data-ai="${ai}">${esc(scrambled[bi].w)}</button>`).join("")+'</span>';
+  }
+  function paint(){
+    // Always render every chip in its original slot; a picked word is disabled in
+    // place (not removed) so the remaining options never shift position.
+    bank.innerHTML = scrambled.map((x,bi)=> `<button class="chip${x.used?" used":""}" data-bi="${bi}"${x.used?" disabled":""}>${esc(x.w)}</button>`).join("");
+    $("cloze").innerHTML = frameWith(d, blankInner());
+    $("dcheck").disabled = S._picked.length!==words.length;
+    bank.querySelectorAll(".chip:not([disabled])").forEach(b=>b.onclick=()=>{ const bi=+b.dataset.bi; scrambled[bi].used=true; S._picked.push(bi); paint(); });
+    $("cloze").querySelectorAll(".pchip").forEach(b=>b.onclick=()=>{ const ai=+b.dataset.ai; const bi=S._picked[ai]; scrambled[bi].used=false; S._picked.splice(ai,1); paint(); });
+  }
+  paint();
+  $("dclear").onclick=()=>{ S._picked.forEach(bi=>scrambled[bi].used=false); S._picked=[]; paint(); };
+  $("dcheck").onclick=()=>{
+    const val=currentText();
+    const m=matchAnswer(val, d.answer);
+    bank.querySelectorAll(".chip").forEach(b=>b.disabled=true);
+    $("cloze").querySelectorAll(".pchip").forEach(b=>b.disabled=true);
+    $("dcheck").disabled=true; $("dclear").disabled=true;
+    finishDrill(cur, val, m);
+  };
+}
+
+/* shared: show feedback, log the attempt to BE, offer next */
+function finishDrill(cur, userAnswer, m){
+  const d = cur;
+  const isCorrect = (m !== "wrong");   // "exact" and "form" both pass
+  if(m==="exact"){
+    $("dfb").innerHTML=`<div class="dfb ok">✓ đúng</div>`;
+  } else if(m==="form"){
+    $("cloze").innerHTML = clozeFilled(d, d.answer);
+    $("dfb").innerHTML=`<div class="dfb warn">≈ gần đúng — sai dạng từ. Dạng đúng: <b>${esc(d.answer)}</b></div>`;
+  } else {
+    $("cloze").innerHTML = clozeFilled(d, d.answer);
+    $("dfb").innerHTML=`<div class="dfb no">✗ chưa đúng — đáp án: <b>${esc(d.answer)}</b></div>`;
+  }
+  // log the attempt (non-blocking — a log failure must not stop the drill)
+  logDrill({
+    session_id: S.sessionid,
+    email: S.email,
+    sentence_id: cur.sentence_id,
+    skill_id: cur.skill_id,
+    exercise_type: cur.exercise_type,
+    answer_correct: cur.answer,
+    answer_user: userAnswer,
+    is_correct: isCorrect
+  }).catch(err=>{ console.warn("drill log failed:", err.message); });
+  advanceDrill();
+}
+
+/* Advance to the next drill in the batch. When the batch runs out, renderSec2()
+   fetches the next batch (or ends at the API's status "done"). */
+function advanceDrill(){
+  setTimeout(()=>{
+    const rowEl = $("stage").querySelector(".row");
+    if(rowEl) rowEl.insertAdjacentHTML("beforeend", `<button class="btn" id="dnext">Tiếp →</button>`);
+    const nx = $("dnext");
+    if(nx) nx.onclick=()=>{ S.drillPos++; renderSec2(); };
+  }, 200);
+}
+
+/* ================= SECTION 3: retranslate =================
+   Reuses the Section 1 sentences the FE already holds (S.batch). Same LLM check
+   as Section 1, logged server-side as section_3. Shows before/after scores; here
+   the refined sentence IS shown (it's the end of the loop, no longer a spoiler). */
+function renderSec3(){
+  setStep(2);
+  const rec = S.batch[S.retest[S.pos]];
+  const lastSentence = S.pos >= S.retest.length-1;
+  const btnLabel = S.fast ? (lastSentence ? "Xem kết quả →" : "Câu tiếp →") : "Kiểm tra";
+  $("counter").textContent = `Phần 3 · Dịch lại · câu ${S.pos+1} / ${S.retest.length}`;
+  $("stage").innerHTML = `<div class="card">
+    <div class="vn-label">Dịch lại sang tiếng Anh</div>
+    <div class="vn">${esc(rec.vn_sen)}</div>
+    <textarea id="ans2" placeholder="Nhập lại bản dịch tiếng Anh…" autocomplete="off" autocapitalize="off" spellcheck="false">${(rec.second&&rec.second.text)?esc(rec.second.text):""}</textarea>
+    <div class="row"><button class="btn" id="check2">${btnLabel}</button></div>
+    <div id="result2"></div></div>`;
+  $("check2").onclick=checkSec3;
+  $("ans2").addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){e.preventDefault();checkSec3();} });
+  // In fast mode, results are shown only in the final summary (not per sentence).
+  if(!S.fast && rec.second){ $("ans2").disabled=true; $("check2").disabled=true; renderSec3Result(); }
+  else $("ans2").focus();
+}
+
+async function checkSec3(){
+  const rec = S.batch[S.retest[S.pos]];
+  const ans = $("ans2").value.trim();
+  if(!ans){ $("ans2").focus(); return; }
+  const lastSentence = S.pos >= S.retest.length-1;
+  const payload = {
+    email: S.email,
+    sentenceid: rec.sentenceid,
+    vn_sen: rec.vn_sen,
+    en_sen_learner_input: ans,
+    claude_model: currentModel,
+    sessionid: S.sessionid
+  };
+
+  if(S.fast){
+    rec.second = { text:ans, refined:null, score:null, pending:true };
+    const p = evaluateSection3(payload)
+      .then(res=>{ rec.second = { text:ans, refined:res.refined, refined_best:res.refined_best, score:res.score }; })
+      .catch(e=>{ rec.second = { text:ans, refined:null, refined_best:null, score:0, error:e.message }; });
+    S.pending.push(p);
+    if(lastSentence) finishSection3();  // await all pending → summary
+    else { S.pos++; renderSec3(); }
+    return;
+  }
+
+  $("check2").disabled=true; $("ans2").disabled=true;
+  $("result2").innerHTML=`<div class="checking"><div class="spinner"></div>Đang chấm…</div>`;
+  try{
+    const res = await evaluateSection3(payload);
+    rec.second = { text:ans, refined:res.refined, refined_best:res.refined_best, score:res.score };
+  }catch(e){
+    $("result2").innerHTML=`<div class="err">Lỗi khi chấm: ${esc(e.message)}.</div>
+      <div class="row"><button class="btn" id="retry2">Thử lại</button></div>`;
+    $("retry2").onclick=()=>{ $("check2").disabled=false; $("ans2").disabled=false; checkSec3(); };
+    return;
+  }
+  renderSec3Result();
+}
+
+function renderSec3Result(){
+  const rec = S.batch[S.retest[S.pos]];
+  const a1 = rec.first ? pct(rec.first.score) : null;
+  const a2 = pct(rec.second.score);
+  let delta="";
+  if(a1!==null){
+    if(a2>a1) delta=`<span class="up">↑ ${a2-a1} điểm — tiến bộ</span>`;
+    else if(a2<a1) delta=`<span class="down">↓ ${a1-a2} điểm</span>`;
+    else delta=`<span class="flat">giữ nguyên</span>`;
+  }
+  const lastSentence = S.pos >= S.retest.length-1;
+  $("result2").innerHTML=`
+    ${sentenceComparisonRows(rec)}
+    ${delta?`<div class="delta" style="text-align:left; margin-top:10px">${delta}</div>`:""}
+    <div class="row" style="margin-top:18px">
+      <button class="btn" id="nextRe">${lastSentence?"Phiên mới — câu khác →":"Câu tiếp →"}</button>
+    </div>`;
+  $("nextRe").onclick=()=>{
+    if(lastSentence) startSession();
+    else { S.pos++; renderSec3(); }
+  };
+}
+
+/* fast mode: after the last Section 3 sentence, wait for every deferred check
+   (Section 1 + Section 3) to resolve, then show all scores + LLM info at once. */
+async function finishSection3(){
+  setStep(2);
+  $("counter").textContent = "Phần 3 · Kết quả";
+  $("stage").innerHTML = `<div class="card"><div class="checking"><div class="spinner"></div>Đang chấm các câu…</div></div>`;
+  try{ await Promise.all(S.pending); }catch(e){}
+  S.pending = [];
+  renderSummary();
+}
+
+function renderSummary(){
+  setStep(2);
+  $("counter").textContent = `Kết quả · ${S.batch.length} câu`;
+  const cards = S.batch.map((rec,i)=>{
+    const a1 = (rec.first && rec.first.score!=null) ? pct(rec.first.score) : null;
+    const a2 = (rec.second && rec.second.score!=null) ? pct(rec.second.score) : null;
+    let delta="";
+    if(a1!=null && a2!=null){
+      if(a2>a1) delta=`<span class="up">↑ ${a2-a1} điểm — tiến bộ</span>`;
+      else if(a2<a1) delta=`<span class="down">↓ ${a1-a2} điểm</span>`;
+      else delta=`<span class="flat">giữ nguyên</span>`;
+    }
+    return `<div class="card" style="margin-top:14px">
+      <div class="vn-label">Câu ${i+1}</div>
+      <div class="vn" style="font-size:1.15rem">${esc(rec.vn_sen)}</div>
+      ${sentenceComparisonRows(rec)}
+      ${delta?`<div class="delta" style="text-align:left; margin-top:10px">${delta}</div>`:""}
+    </div>`;
+  }).join("");
+  $("stage").innerHTML = cards + `<div class="row" style="margin-top:18px"><button class="btn" id="nextRe">Phiên mới →</button></div>`;
+  $("nextRe").onclick = startSession;
+}
+
+function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+
+/* ---------------- boot ---------------- */
+renderModelPicker();
+const stgl=$("skill-tgl");
+stgl.checked = false;
+stgl.onchange = ()=>{ S.showSkills = stgl.checked; if(!S.fast && S.batch.length && S.sec===0 && S.batch[S.pos].first) renderSec1Result(); };
+const ftgl=$("fast-tgl");
+ftgl.checked = true;                               // fast (defer-grading) mode ON by default
+ftgl.onchange = ()=>{ S.fast = ftgl.checked; };   // defer grading, jump immediately; results shown at end
+
+/* collapse/expand the settings block above the progress bar */
+function setTopCollapsed(collapsed){
+  $("topcollapse").classList.toggle("collapsed", collapsed);
+  $("toggleTop").textContent = collapsed ? "Cài đặt ▾" : "Ẩn cài đặt ▴";
+  $("topProgress").style.display = collapsed ? "" : "none";
+}
+$("toggleTop").onclick = ()=> setTopCollapsed(!$("topcollapse").classList.contains("collapsed"));
+setTopCollapsed(false);   // expanded on first load so email + start are visible
+// mirror the counter (e.g. "Phần 2 · Luyện tập") into the always-visible top bar
+new MutationObserver(()=>{ $("topProgress").textContent = $("counter").textContent; })
+  .observe($("counter"), { childList:true, characterData:true, subtree:true });
+
+// prefill the email only from a previously used one (empty on the very first open)
+try{ $("emailin").value = localStorage.getItem("sf_email") || ""; }catch(e){}
+$("startbtn").onclick = startSession;
+$("emailin").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); startSession(); } });
+$("stage").innerHTML = `<div class="card"><div class="vn-label">Sẵn sàng</div><div class="soon">Nhập email và bấm “Bắt đầu phiên” để tải câu hỏi từ backend.</div></div>`;
+</script>
+</body>
+</html>
