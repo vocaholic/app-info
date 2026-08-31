@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentence Bank Trainer — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF5EC; --paper2:#F2EADB; --ink:#221E17; --ink2:#6B6253;
+  --line:#D9CDB8; --accent:#C4572E; --accent2:#8A3D20;
+  --good:#2E7D4F; --goodbg:#E3F0E7; --bad:#B3402E; --badbg:#F7E4DE;
+  --warn:#8A6D1F; --warnbg:#F5EDD2; --blue:#2E5F8A; --bluebg:#E5EEF5;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Atkinson Hyperlegible', 'Segoe UI', sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  min-height:100vh; font-size:16px; line-height:1.5;
+  background-image:radial-gradient(var(--line) 0.6px, transparent 0.6px);
+  background-size:26px 26px;
+}
+.wrap{max-width:820px; margin:0 auto; padding:28px 20px 80px;}
+header{margin-bottom:8px;}
+h1{font-family:var(--serif); font-weight:900; font-size:1.9rem; letter-spacing:-0.01em;}
+.sub{color:var(--ink2); font-size:0.94rem; margin-top:2px;}
+nav{display:flex; gap:4px; flex-wrap:wrap; border-bottom:2px solid var(--ink); margin:20px 0 22px;}
+nav button{
+  font-family:var(--serif); font-weight:700; font-size:0.95rem;
+  background:none; border:none; padding:10px 14px 8px; cursor:pointer; color:var(--ink2);
+  border-bottom:4px solid transparent; margin-bottom:-2px;
+}
+nav button.active{color:var(--accent2); border-bottom-color:var(--accent);}
+nav button:not(:disabled):hover{color:var(--ink);}
+nav button:disabled{color:var(--line); cursor:not-allowed;}
+nav button .chk{color:var(--good); margin-left:4px;}
+.tab{display:none;}
+.tab.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+.card{
+  background:#fff; border:1.5px solid var(--line); border-radius:14px;
+  padding:22px; box-shadow:4px 4px 0 var(--paper2); margin-bottom:18px;
+}
+.btn{
+  font-family:var(--sans); font-weight:700; font-size:0.92rem;
+  border:1.5px solid var(--ink); border-radius:9px; background:#fff; color:var(--ink);
+  padding:8px 16px; cursor:pointer; transition:transform .06s ease, background .12s;
+}
+.btn:hover{background:var(--paper2);}
+.btn:active{transform:translate(1px,1px);}
+.btn.primary{background:var(--accent); border-color:var(--accent2); color:#fff;}
+.btn.primary:hover{background:var(--accent2);}
+.btn:disabled{opacity:0.4; cursor:default;}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px;}
+.vi{font-family:var(--serif); font-weight:700; font-size:1.15rem; color:var(--accent2); margin-bottom:8px;}
+.answer{
+  width:100%; font-size:1.05rem; padding:12px 14px; margin:8px 0;
+  border:1.5px solid var(--line); border-radius:10px; font-family:var(--sans);
+  background:var(--paper); resize:vertical; min-height:52px;
+}
+.answer:focus{outline:2px solid var(--accent); border-color:var(--accent);}
+.pill{
+  display:inline-block; background:var(--paper2); border:1px solid var(--line);
+  border-radius:99px; padding:1px 10px; font-size:0.78rem; color:var(--ink2); font-weight:700;
+}
+.progress{font-size:0.88rem; color:var(--ink2); font-weight:700; margin-bottom:14px;}
+.progress b{color:var(--ink); font-family:var(--serif); font-size:1rem;}
+.gnote{font-size:0.88rem; color:var(--ink2); margin-bottom:16px; line-height:1.5;}
+.savedTag{color:var(--good); font-weight:700; font-size:0.85rem;}
+
+/* section 1 & 4 — baseline / compare list */
+.qitem{border-bottom:1px solid var(--line); padding:14px 0;}
+.qitem:last-child{border-bottom:none;}
+.qmeta{display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;}
+.qmeta .savedTag{visibility:hidden;}
+.qmeta.saved .savedTag{visibility:visible;}
+
+/* diff */
+.diffblock{margin-top:6px; font-size:1rem; line-height:1.9;}
+.diffblock .lbl{display:inline-block; width:64px; color:var(--ink2); font-size:0.78rem; font-weight:700; vertical-align:top;}
+.d-same{padding:1px 4px;}
+.d-removed{background:var(--badbg); color:var(--bad); text-decoration:line-through; padding:1px 6px; border-radius:6px; margin:0 2px;}
+.d-added{background:var(--goodbg); color:var(--good); font-weight:700; padding:1px 6px; border-radius:6px; margin:0 2px;}
+.refBox{margin-top:10px; padding:10px 12px; background:var(--bluebg); border-radius:8px; font-size:0.92rem; color:var(--blue);}
+
+/* flashcard (section 2) */
+.flash{text-align:center; padding:10px 0 4px;}
+.flash .word{font-family:var(--serif); font-weight:900; font-size:2rem; color:var(--accent2);}
+.flash .ctx{color:var(--ink2); font-size:0.95rem; margin-top:6px; font-style:italic;}
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+@media (max-width:480px){ .opts{grid-template-columns:1fr;} }
+.opt{
+  font-family:var(--sans); font-size:1rem; font-weight:700; text-align:left;
+  border:1.5px solid var(--line); border-radius:10px; background:var(--paper);
+  padding:12px 14px; cursor:pointer; transition:background .12s, border-color .12s;
+}
+.opt:hover{background:var(--paper2);}
+.opt.correct{background:var(--goodbg); border-color:var(--good); color:var(--good);}
+.opt.wrong{background:var(--badbg); border-color:var(--bad); color:var(--bad);}
+.opt:disabled{cursor:default;}
+.masteredList{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;}
+.chip-done{background:var(--goodbg); color:var(--good); border-radius:8px; padding:2px 9px; font-size:0.82rem; font-weight:700;}
+.donePanel{text-align:center; padding:20px 0;}
+
+/* reorder (section 3) */
+.pool, .strip{display:flex; flex-wrap:wrap; gap:8px; min-height:44px; padding:10px; border-radius:10px;}
+.pool{background:var(--paper); border:1.5px dashed var(--line); margin-top:6px;}
+.strip{background:var(--paper2); border:1.5px solid var(--line); margin-top:10px;}
+.tok{
+  font-family:var(--sans); font-weight:700; font-size:0.98rem;
+  border:1.5px solid var(--ink); border-radius:8px; background:#fff; color:var(--ink);
+  padding:6px 12px; cursor:pointer; transition:transform .06s, background .12s;
+}
+.tok:hover{background:var(--paper2);}
+.tok.used{visibility:hidden;}
+.tok.correct{background:var(--goodbg); border-color:var(--good); color:var(--good); cursor:default;}
+.tok.wrong{background:var(--badbg); border-color:var(--bad); color:var(--bad); cursor:default;}
+.strip:empty::before{content:"tap words below, in order"; color:var(--ink2); font-size:0.85rem; font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Sentence Bank Trainer</h1>
+  <div class="sub">1 baseline → 2 learn the hard word → 3 rebuild the sentence → 4 compare your before &amp; after</div>
+</header>
+
+<nav>
+  <button data-tab="s1" class="active">1 · Baseline</button>
+  <button data-tab="s2" disabled>2 · Vocab</button>
+  <button data-tab="s3" disabled>3 · Reorder</button>
+  <button data-tab="s4" disabled>4 · Compare</button>
+</nav>
+
+<!-- ===== SECTION 1 : BASELINE (no scoring) ===== -->
+<div class="tab active" id="s1">
+  <div class="gnote">Translate each sentence into English as best you can. There's no scoring here — this is just a record of where you're starting from, so you can see your own progress in Section 4.</div>
+  <div class="card" id="s1-list"></div>
+  <div class="row">
+    <button class="btn primary" id="s1-save">Save answers &amp; continue →</button>
+  </div>
+</div>
+
+<!-- ===== SECTION 2 : VOCAB FLASHCARDS ===== -->
+<div class="tab" id="s2">
+  <div class="gnote">Each sentence has one hard word. You'll see its Vietnamese meaning — pick the matching English word. Get it right on your <b>first try</b> and it's mastered immediately — miss it once, and you'll need <b>two correct in a row</b> afterward.</div>
+  <div class="progress">mastered: <b id="s2-done">0</b> / <b id="s2-total">0</b></div>
+  <div class="card" id="s2-card"></div>
+  <div class="row">
+    <button class="btn primary" id="s2-continue" disabled>Continue to Section 3 →</button>
+  </div>
+</div>
+
+<!-- ===== SECTION 3 : REORDER ===== -->
+<div class="tab" id="s3">
+  <div class="gnote">Tap the English words in the correct order to rebuild the sentence. Get it right on your <b>first try</b> and it's cleared immediately — miss it once, and you'll need <b>two correct in a row</b> afterward.</div>
+  <div class="progress">cleared: <b id="s3-done">0</b> / <b id="s3-total">0</b></div>
+  <div class="card" id="s3-card"></div>
+  <div class="row">
+    <button class="btn primary" id="s3-continue" disabled>Continue to Section 4 →</button>
+  </div>
+</div>
+
+<!-- ===== SECTION 4 : COMPARE ===== -->
+<div class="tab" id="s4">
+  <div class="gnote">Translate the same sentences from Section 1 one more time. See what changed between your before and after.</div>
+  <div class="card" id="s4-list"></div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+"use strict";
+/* ================= DATA-START =================
+   To add a new sentence: append one object to SENTENCE_BANK.
+   Fields:
+     en   - the English sentence (used for reorder + reference)
+     vi   - Vietnamese translation shown as the translation prompt
+     hard - an ARRAY of hard-word entries for this sentence (Section 2 pulls
+            every entry from every sentence in the bank, deduped by English
+            word — if two sentences share a hard word like "found" or
+            "kept", only the first occurrence becomes a flashcard). Each entry:
+              { en: <the hard word, exactly as it appears in `en`>,
+                correct: <its Vietnamese meaning, shown as the Section 2 prompt>,
+                enDistractors: [<3 wrong English words for the Section 2 options>] }
+   IMPORTANT for enDistractors: pick words that are unambiguously wrong for
+   this word's meaning — not near-synonyms, and not other hard words from
+   this bank that could double as a valid answer to the same VN prompt
+   (e.g. "found" vs "considered" are both plausible for "cảm thấy" — never
+   pair them). This build draws all distractors from a neutral filler list
+   below so that risk doesn't come up; keep doing that when you add words.
+   TEST_COUNT sentences from the END of the array become Sections 1 & 4.
+   Everything before that becomes the Section 3 reorder set. Section 2
+   always covers every hard word in the whole bank.
+================================================== */
+const TEST_COUNT = 3; // how many sentences (from the end) go to Sections 1 & 4
+
+const SENTENCE_BANK = [
+  { en: "She found the book interesting.", vi: "Cô ấy thấy cuốn sách thú vị.",
+    hard: [
+      { en: "found", correct: "thấy (cảm thấy)", enDistractors: ["written", "painted", "measured"] },
+      { en: "interesting", correct: "thú vị", enDistractors: ["narrow", "heavy", "quiet"] }
+    ] },
+  { en: "She made the room cozy.", vi: "Cô ấy làm cho căn phòng ấm cúng.",
+    hard: [
+      { en: "made", correct: "làm cho (khiến trở nên)", enDistractors: ["collected", "shallow", "bright"] },
+      { en: "cozy", correct: "ấm cúng", enDistractors: ["distant", "friendly", "rough"] }
+    ] },
+  { en: "She kept the secret safe.", vi: "Cô ấy giữ bí mật an toàn.",
+    hard: [
+      { en: "kept", correct: "giữ (cho vẫn như vậy)", enDistractors: ["ancient", "hollow", "sudden"] },
+      { en: "safe", correct: "an toàn", enDistractors: ["tiny", "wide", "plain"] }
+    ] },
+  { en: "They left the window open.", vi: "Họ để cửa sổ mở.",
+    hard: [
+      { en: "left", correct: "để (cho vẫn ở trạng thái đó)", enDistractors: ["fresh", "large", "square"] },
+      { en: "open", correct: "mở", enDistractors: ["silent", "chilly", "gentle"] }
+    ] },
+  { en: "He considered the movie boring.", vi: "Anh ấy cho rằng bộ phim chán.",
+    hard: [
+      { en: "considered", correct: "cho rằng", enDistractors: ["curious", "written", "narrow"] },
+      { en: "boring", correct: "chán", enDistractors: ["heavy", "quiet", "shallow"] }
+    ] },
+  { en: "We found the test difficult.", vi: "Chúng tôi thấy bài kiểm tra khó.",
+    hard: [
+      { en: "found", correct: "thấy (cảm thấy)", enDistractors: ["bright", "collected", "distant"] },
+      { en: "difficult", correct: "khó", enDistractors: ["friendly", "rough", "ancient"] }
+    ] },
+  { en: "He made the room dark.", vi: "Anh ấy làm cho căn phòng tối.",
+    hard: [
+      { en: "made", correct: "làm cho (khiến trở nên)", enDistractors: ["hollow", "sudden", "tiny"] },
+      { en: "dark", correct: "tối", enDistractors: ["wide", "plain", "fresh"] }
+    ] },
+  { en: "They washed the car clean.", vi: "Họ rửa xe sạch sẽ.",
+    hard: [
+      { en: "washed", correct: "rửa", enDistractors: ["large", "square", "silent"] },
+      { en: "clean", correct: "sạch sẽ", enDistractors: ["chilly", "gentle", "curious"] }
+    ] },
+  { en: "We found the music loud.", vi: "Chúng tôi thấy nhạc ồn ào.",
+    hard: [
+      { en: "found", correct: "thấy (cảm thấy)", enDistractors: ["written", "narrow", "heavy"] },
+      { en: "loud", correct: "ồn ào", enDistractors: ["quiet", "shallow", "bright"] }
+    ] },
+  { en: "They called the idea crazy.", vi: "Họ cho rằng ý tưởng đó điên rồ.",
+    hard: [
+      { en: "called", correct: "gọi là / cho là", enDistractors: ["collected", "distant", "friendly"] },
+      { en: "crazy", correct: "điên rồ", enDistractors: ["rough", "ancient", "hollow"] }
+    ] },
+  { en: "He found the food tasty.", vi: "Anh ấy thấy đồ ăn ngon.",
+    hard: [
+      { en: "found", correct: "thấy (cảm thấy)", enDistractors: ["sudden", "tiny", "wide"] },
+      { en: "tasty", correct: "ngon", enDistractors: ["plain", "fresh", "large"] }
+    ] },
+  { en: "He kept the room clean.", vi: "Anh ấy giữ căn phòng sạch sẽ.",
+    hard: [
+      { en: "kept", correct: "giữ (cho vẫn như vậy)", enDistractors: ["square", "silent", "chilly"] },
+      { en: "clean", correct: "sạch sẽ", enDistractors: ["gentle", "curious", "written"] }
+    ] },
+  { en: "They consider the project important.", vi: "Họ cho rằng dự án quan trọng.",
+    hard: [
+      { en: "consider", correct: "cho rằng", enDistractors: ["distant", "friendly", "rough"] },
+      { en: "important", correct: "quan trọng", enDistractors: ["ancient", "hollow", "sudden"] }
+    ] }
+];
+/* ================= DATA-END ================= */
+
+const $ = id => document.getElementById(id);
+function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffle(a){
+  const x = a.slice();
+  for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; }
+  return x;
+}
+function tokenize(s){ return s.trim().split(/\s+/); }
+function normWord(w){ return w.toLowerCase().replace(/[.,!?;:]/g,""); }
+/* strips trailing punctuation for chip display only — otherwise the one
+   token ending in a period visibly gives away that it's the last word. */
+function stripTrailingPunct(w){ return w.replace(/[.,!?;:]+$/,""); }
+
+/* assign stable ids + compute the baseline/reorder split */
+SENTENCE_BANK.forEach((s,i)=> s.id = i);
+const N = SENTENCE_BANK.length;
+const testSet   = SENTENCE_BANK.slice(N - TEST_COUNT);   // last TEST_COUNT -> Sections 1 & 4
+const learnSet  = SENTENCE_BANK.slice(0, N - TEST_COUNT); // everything else -> Section 3
+
+/* alignment / diff helper (LCS-based), reused for the before/after compare */
+function alignWords(exp, got){
+  const n=exp.length, m=got.length;
+  const dp = Array.from({length:n+1}, ()=> new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--)
+    dp[i][j] = exp[i]===got[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  const ops=[]; let i=0,j=0;
+  while(i<n && j<m){
+    if(exp[i]===got[j]){ ops.push({t:"same", w:exp[i]}); i++; j++; }
+    else if(dp[i+1][j] >= dp[i][j+1]){ ops.push({t:"removed", w:exp[i]}); i++; }
+    else { ops.push({t:"added", w:got[j]}); j++; }
+  }
+  while(i<n){ ops.push({t:"removed", w:exp[i]}); i++; }
+  while(j<m){ ops.push({t:"added", w:got[j]}); j++; }
+  return ops;
+}
+function renderDiff(ops){
+  return ops.map(o=>{
+    const w = escapeHtml(o.w);
+    if(o.t==="same") return `<span class="d-same">${w}</span>`;
+    if(o.t==="removed") return `<span class="d-removed">${w}</span>`;
+    return `<span class="d-added">${w}</span>`;
+  }).join(" ");
+}
+
+/* ---------- nav / tab gating ---------- */
+const unlocked = {s1:true, s2:false, s3:false, s4:false};
+function setActive(tabId){
+  document.querySelectorAll("nav button").forEach(b=> b.classList.toggle("active", b.dataset.tab===tabId));
+  document.querySelectorAll(".tab").forEach(t=> t.classList.toggle("active", t.id===tabId));
+}
+function unlock(tabId){
+  unlocked[tabId] = true;
+  document.querySelector(`nav button[data-tab="${tabId}"]`).disabled = false;
+}
+function markDone(tabId){
+  const b = document.querySelector(`nav button[data-tab="${tabId}"]`);
+  if(!b.querySelector(".chk")){
+    const c = document.createElement("span"); c.className="chk"; c.textContent="✓";
+    b.appendChild(c);
+  }
+}
+document.querySelectorAll("nav button").forEach(b=>{
+  b.addEventListener("click", ()=>{ if(!b.disabled) setActive(b.dataset.tab); });
+});
+
+/* ================= SECTION 1 : BASELINE ================= */
+const baselineAnswers = {}; // id -> text
+(function buildS1(){
+  const root = $("s1-list");
+  root.innerHTML = testSet.map(s => `
+    <div class="qitem">
+      <div class="vi">${escapeHtml(s.vi)}</div>
+      <textarea class="answer" id="s1-in-${s.id}" placeholder="Type your English translation…"></textarea>
+    </div>`).join("");
+  $("s1-save").onclick = () => {
+    testSet.forEach(s => { baselineAnswers[s.id] = $("s1-in-"+s.id).value.trim(); });
+    $("s1-save").textContent = "Saved ✓";
+    $("s1-save").disabled = true;
+    unlock("s2");
+    markDone("s1");
+    buildS2Card();
+    setActive("s2");
+  };
+})();
+
+/* ================= SECTION 2 : VOCAB FLASHCARDS ================= */
+/* one flashcard item per UNIQUE hard word (by English form) across the
+   whole bank — several sentences reuse the same word (e.g. "found",
+   "kept", "made", "clean"); only the first occurrence becomes a card. */
+function flattenHardWords(bank){
+  const seen = new Set();
+  const items = [];
+  bank.forEach(s => {
+    s.hard.forEach(h => {
+      const key = h.en.toLowerCase();
+      if(seen.has(key)) return;
+      seen.add(key);
+      items.push({ sentenceId:s.id, en:h.en, correct:h.correct, enDistractors:h.enDistractors,
+                   attempted:false, streak:0, mastered:false });
+    });
+  });
+  return items;
+}
+const vocabItems = flattenHardWords(SENTENCE_BANK);
+let vocabQueue = shuffle(vocabItems.slice());
+let vocabCur = null;
+$("s2-total").textContent = vocabItems.length;
+
+function vocabUpdateBar(){ $("s2-done").textContent = vocabItems.filter(v=>v.mastered).length; }
+/* fallback only: used if a word is added without 3 curated enDistractors.
+   Pulls other words' English forms from the flattened list — can risk
+   near-synonym collisions (e.g. "found" vs "considered"), so curated
+   enDistractors on every entry is always preferred. */
+function autoPickDistractorWords(excludeEn, count){
+  const pool = vocabItems.filter(v => v.en !== excludeEn).map(v => v.en);
+  const picked = shuffle(pool).slice(0, count);
+  while(picked.length < count && pool.length){ picked.push(pool[picked.length % pool.length]); }
+  return picked;
+}
+function distractorsFor(item){
+  if(item.enDistractors && item.enDistractors.length >= 3) return shuffle(item.enDistractors).slice(0,3);
+  return autoPickDistractorWords(item.en, 3);
+}
+function buildS2Card(){
+  vocabCur = vocabQueue.shift() || null;
+  vocabUpdateBar();
+  const root = $("s2-card");
+  if(!vocabCur){
+    root.innerHTML = `<div class="donePanel"><span class="savedTag" style="font-size:1.1rem">✓ All words mastered!</span>
+      <div class="masteredList">${vocabItems.map(v=>`<span class="chip-done">${escapeHtml(v.en)}</span>`).join("")}</div></div>`;
+    unlock("s3");
+    markDone("s2");
+    buildS3Card();
+    const cont = $("s2-continue");
+    cont.disabled = false;
+    cont.onclick = () => setActive("s3");
+    return;
+  }
+  const opts = shuffle([vocabCur.en, ...distractorsFor(vocabCur)]);
+  root.innerHTML = `
+    <div class="flash">
+      <div class="word">${escapeHtml(vocabCur.correct)}</div>
+    </div>
+    <div class="opts">${opts.map(o=>`<button class="opt" data-v="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("")}</div>
+  `;
+  root.querySelectorAll(".opt").forEach(btn=>{
+    btn.onclick = () => {
+      root.querySelectorAll(".opt").forEach(b=> b.disabled = true);
+      const right = btn.dataset.v === vocabCur.en;
+      if(right){
+        btn.classList.add("correct");
+        if(!vocabCur.attempted){
+          vocabCur.mastered = true; // correct on the very first try — graduate now
+        } else {
+          vocabCur.streak++;
+          if(vocabCur.streak >= 2) vocabCur.mastered = true;
+        }
+      } else {
+        btn.classList.add("wrong");
+        vocabCur.attempted = true;
+        vocabCur.streak = 0;
+        root.querySelectorAll(".opt").forEach(b=>{ if(b.dataset.v===vocabCur.en) b.classList.add("correct"); });
+      }
+      const delay = right ? 700 : 3000;
+      setTimeout(()=>{
+        if(!vocabCur.mastered) vocabQueue.splice(Math.min(2, vocabQueue.length), 0, vocabCur);
+        buildS2Card();
+      }, delay);
+    };
+  });
+}
+
+/* ================= SECTION 3 : REORDER ================= */
+const reorderItems = learnSet.map(s => ({ id:s.id, attempted:false, streak:0, mastered:false }));
+let reorderQueue = shuffle(reorderItems.slice());
+let reorderCur = null, reorderPoolTokens = [], reorderUsed = [], reorderAnswerIdx = [], reorderChecked = false;
+$("s3-total").textContent = reorderItems.length;
+
+function reorderUpdateBar(){ $("s3-done").textContent = reorderItems.filter(v=>v.mastered).length; }
+function buildS3Card(){
+  reorderCur = reorderQueue.shift() || null;
+  reorderUpdateBar();
+  const root = $("s3-card");
+  if(!reorderCur){
+    root.innerHTML = `<div class="donePanel"><span class="savedTag" style="font-size:1.1rem">✓ All sentences cleared!</span></div>`;
+    unlock("s4");
+    markDone("s3");
+    buildS4();
+    const cont = $("s3-continue");
+    cont.disabled = false;
+    cont.onclick = () => setActive("s4");
+    return;
+  }
+  const s = SENTENCE_BANK[reorderCur.id];
+  reorderPoolTokens = shuffle(tokenize(s.en).map(stripTrailingPunct)); // shuffled ONCE per sentence — positions stay fixed after this
+  reorderUsed = reorderPoolTokens.map(()=>false);
+  reorderAnswerIdx = [];
+  reorderChecked = false;
+  renderS3();
+}
+function renderS3(){
+  const s = SENTENCE_BANK[reorderCur.id];
+  const root = $("s3-card");
+  root.innerHTML = `
+    <div class="vi">${escapeHtml(s.vi)}</div>
+    <div class="strip" id="r-strip"></div>
+    <div class="pool" id="r-pool"></div>
+    <div class="row">
+      <button class="btn" id="r-clear">Clear</button>
+      <button class="btn primary" id="r-check">Check order</button>
+      <button class="btn" id="r-next" disabled>Next →</button>
+    </div>
+    <div class="feedback" id="r-fb" style="margin-top:10px"></div>
+  `;
+  drawPools();
+  $("r-clear").onclick = () => {
+    if(reorderChecked) return;
+    reorderUsed = reorderPoolTokens.map(()=>false);
+    reorderAnswerIdx = [];
+    drawPools();
+  };
+  $("r-check").onclick = checkS3;
+  $("r-next").onclick = buildS3Card;
+}
+function drawPools(){
+  $("r-pool").innerHTML = reorderPoolTokens.map((w,i)=>
+    `<button class="tok${reorderUsed[i] ? " used" : ""}" data-i="${i}" ${reorderUsed[i] ? "disabled" : ""}>${escapeHtml(w)}</button>`
+  ).join("");
+  $("r-strip").innerHTML = reorderAnswerIdx.map((idx,pos)=>
+    `<button class="tok" data-pos="${pos}">${escapeHtml(reorderPoolTokens[idx])}</button>`
+  ).join("");
+  $("r-pool").querySelectorAll(".tok:not(.used)").forEach(b=>{
+    b.onclick = () => {
+      const i = Number(b.dataset.i);
+      reorderUsed[i] = true;
+      reorderAnswerIdx.push(i);
+      drawPools();
+    };
+  });
+  $("r-strip").querySelectorAll(".tok").forEach(b=>{
+    b.onclick = () => {
+      const pos = Number(b.dataset.pos);
+      const idx = reorderAnswerIdx[pos];
+      reorderUsed[idx] = false;
+      reorderAnswerIdx.splice(pos,1);
+      drawPools();
+    };
+  });
+}
+function checkS3(){
+  if(reorderAnswerIdx.length < reorderPoolTokens.length){
+    $("r-fb").innerHTML = `<span class="pill">place all the words first</span>`;
+    return;
+  }
+  reorderChecked = true;
+  const s = SENTENCE_BANK[reorderCur.id];
+  const correctToks = tokenize(s.en);
+  const strip = $("r-strip");
+  let allRight = true;
+  strip.querySelectorAll(".tok").forEach((b,pos)=>{
+    const word = reorderPoolTokens[reorderAnswerIdx[pos]];
+    const ok = normWord(word) === normWord(correctToks[pos]);
+    b.classList.add(ok ? "correct" : "wrong");
+    b.disabled = true;
+    if(!ok) allRight = false;
+  });
+  $("r-check").disabled = true;
+  $("r-clear").disabled = true;
+  $("r-next").disabled = false;
+  if(allRight){
+    if(!reorderCur.attempted){
+      reorderCur.mastered = true; // correct on the very first try — cleared now
+      $("r-fb").innerHTML = `<span class="savedTag">✓ correct on the first try — cleared!</span>`;
+    } else {
+      reorderCur.streak++;
+      if(reorderCur.streak >= 2){
+        reorderCur.mastered = true;
+        $("r-fb").innerHTML = `<span class="savedTag">✓ correct — cleared!</span>`;
+      } else {
+        $("r-fb").innerHTML = `<span class="savedTag">✓ correct — once more in a row to clear</span>`;
+      }
+    }
+  } else {
+    reorderCur.attempted = true;
+    reorderCur.streak = 0;
+    $("r-fb").innerHTML = `<span class="pill" style="color:var(--bad); border-color:var(--bad)">not quite — red words are out of place. It'll come back around.</span>`;
+  }
+  if(!reorderCur.mastered) reorderQueue.splice(Math.min(2, reorderQueue.length), 0, reorderCur);
+}
+
+/* ================= SECTION 4 : COMPARE ================= */
+function buildS4(){
+  const root = $("s4-list");
+  root.innerHTML = testSet.map(s => `
+    <div class="qitem">
+      <div class="vi">${escapeHtml(s.vi)}</div>
+      <textarea class="answer" id="s4-in-${s.id}" placeholder="Translate it again…"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="btn primary btn-compare" data-id="${s.id}">Compare to my Section 1 answer</button>
+      </div>
+      <div id="s4-out-${s.id}"></div>
+    </div>`).join("");
+  root.querySelectorAll(".btn-compare").forEach(btn=>{
+    btn.onclick = () => {
+      const id = Number(btn.dataset.id);
+      const before = (baselineAnswers[id] || "").trim();
+      const after = $("s4-in-"+id).value.trim();
+      const s = SENTENCE_BANK[id];
+      const out = $("s4-out-"+id);
+      if(!after){ out.innerHTML = `<div class="pill">type your translation above first</div>`; return; }
+      const beforeToks = before ? tokenize(before) : [];
+      const afterToks = tokenize(after);
+      const ops = alignWords(beforeToks, afterToks);
+      out.innerHTML = `
+        <div class="diffblock"><span class="lbl">before</span>${before ? escapeHtml(before) : '<span class="pill">left blank in Section 1</span>'}</div>
+        <div class="diffblock"><span class="lbl">after</span>${renderDiff(ops)}</div>
+        <div class="fb-note" style="font-size:0.85rem;color:var(--ink2);margin-top:4px">green = new/changed words · struck-through red = dropped from your first attempt</div>
+        <div class="refBox"><b>Reference:</b> ${escapeHtml(s.en)}</div>
+      `;
+    };
+  });
+}
+</script>
+</body>
+</html>
