@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Structure level test — sắp xếp câu</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #17202a;
+    --muted: #6b7684;
+    --line: #dde1e7;
+    --accent: #2f6fed;
+    --ok: #17915b;
+    --ok-bg: #e6f6ee;
+    --bad: #c0392b;
+    --bad-bg: #fdecea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input[type=email] {
+    width: 100%; padding: 10px 12px; font-size: 16px;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: inherit;
+  }
+  button {
+    font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink); padding: 10px 16px;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .bar {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; color: var(--muted); margin-bottom: 12px;
+  }
+  .timer { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); }
+  .timer.low { color: var(--bad); }
+  .timebar {
+    height: 4px; border-radius: 999px; background: var(--line);
+    overflow: hidden; margin-bottom: 16px;
+  }
+  .timebar > i {
+    display: block; height: 100%; width: 100%; background: var(--accent);
+    transition: width .2s linear;
+  }
+  .timebar.low > i { background: var(--bad); }
+  .vn { font-size: 19px; font-weight: 600; margin: 0 0 16px; }
+  .slot {
+    min-height: 62px; border: 1px dashed var(--line); border-radius: 10px;
+    padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-content: flex-start;
+    background: #fbfcfd; margin-bottom: 14px;
+  }
+  .slot.ok  { border-color: var(--ok);  border-style: solid; background: var(--ok-bg); }
+  .slot.bad { border-color: var(--bad); border-style: solid; background: var(--bad-bg); }
+  .pool { display: flex; gap: 8px; flex-wrap: wrap; min-height: 40px; }
+  .chip {
+    padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+    background: #fff; cursor: pointer; font-size: 16px;
+  }
+  .chip:hover { border-color: var(--accent); }
+  .chip.used { visibility: hidden; }
+  .chip .vn-hint { display: block; font-size: 11px; color: var(--muted); line-height: 1.2; }
+  .verdict { font-weight: 600; min-height: 24px; margin-bottom: 8px; }
+  .verdict.ok  { color: var(--ok); }
+  .verdict.bad { color: var(--bad); }
+  .answer { font-size: 14px; color: var(--muted); }
+  .msg { color: var(--muted); font-size: 14px; }
+  .msg.err { color: var(--bad); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Structure level test — sắp xếp câu</h1>
+
+  <!-- Step 1: email, remembered in a cookie so a tester types it once. -->
+  <div class="card" id="login">
+    <label for="email">Email</label>
+    <div class="row">
+      <input type="email" id="email" placeholder="ban@example.com" style="flex:1 1 240px">
+      <button class="primary" id="start">Bắt đầu</button>
+      <button id="forget" hidden>Đổi email</button>
+    </div>
+    <p class="msg" id="loginMsg"></p>
+  </div>
+
+  <!-- Step 2: the exercise -->
+  <div class="card" id="game" hidden>
+    <div class="bar">
+      <span id="progress"></span>
+      <span class="timer" id="timer"></span>
+      <span id="tally"></span>
+    </div>
+    <div class="timebar" id="timebar"><i id="timefill"></i></div>
+    <p class="vn" id="vn"></p>
+    <div class="slot" id="slot"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="pool" id="pool"></div>
+    <div class="row" style="margin-top:16px">
+      <button id="undo">Xoá từ cuối</button>
+      <button id="clear">Xoá hết</button>
+      <button id="skip">Bỏ qua</button>
+    </div>
+  </div>
+
+  <!-- Step 3: summary -->
+  <div class="card" id="done" hidden>
+    <p id="summary" style="font-weight:600"></p>
+    <button class="primary" id="again">Làm lại</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var COOKIE = "slt_email";
+  var REVEAL_MS = 1000;           // how long the correct/incorrect signal shows
+  var SECONDS_PER_OPTION = 2;     // countdown per sentence = 2s x number of options
+  // Absolute host so the page also works opened straight from disk; the API
+  // allows cross-origin calls on /api/*.
+  var HOST = "https://engine-ca.blueriver-5203a765.eastus.azurecontainerapps.io";
+  var API = {
+    get: HOST + "/api/structure-level-test/get-sentence",
+    log: HOST + "/api/structure-level-test/log"
+  };
+
+  var el = function (id) { return document.getElementById(id); };
+
+  // ---- cookie helpers -----------------------------------------------------
+  function setCookie(name, value, days) {
+    var exp = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) +
+      "; expires=" + exp + "; path=/; SameSite=Lax";
+  }
+  function getCookie(name) {
+    var hit = document.cookie.split("; ").find(function (c) {
+      return c.indexOf(name + "=") === 0;
+    });
+    return hit ? decodeURIComponent(hit.slice(name.length + 1)) : "";
+  }
+
+  // ---- state --------------------------------------------------------------
+  var email = "";
+  var items = [];        // exercises from the API
+  var index = 0;         // which exercise we are on
+  var placed = [];       // chip indexes the tester has laid down, in order
+  var locked = false;    // true while the verdict is showing
+  var right = 0, wrong = 0;
+  var limitMs = 0;       // this sentence's allowance
+  var deadline = 0;      // wall-clock ms when the sentence runs out
+  var ticker = null;     // interval repainting the countdown
+
+  // ---- answer handling ----------------------------------------------------
+  // `answer` arrives nested ([[["he","declared",...]]]) and may hold several
+  // accepted orderings. Collect every array whose entries are all strings.
+  function acceptedOrderings(answer) {
+    var out = [];
+    (function walk(node) {
+      if (!Array.isArray(node)) return;
+      if (node.length && node.every(function (x) { return typeof x === "string"; })) {
+        out.push(node);
+        return;
+      }
+      node.forEach(walk);
+    })(answer);
+    return out;
+  }
+  // Chips may hold several words ("the whole population"), so compare on the
+  // joined sentence rather than token-by-token; punctuation/case are ignored.
+  function normalise(text) {
+    return String(text).toLowerCase().replace(/[^\p{L}\p{N}\s']/gu, " ")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  function shuffled(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // ---- countdown ----------------------------------------------------------
+  // Each sentence gets 2 seconds per option, so longer sentences get more time.
+  // Running out counts as a wrong answer and is logged like any other attempt.
+  function startTimer() {
+    stopTimer();
+    limitMs = current().chips.length * SECONDS_PER_OPTION * 1000;
+    deadline = Date.now() + limitMs;
+    paintTimer();
+    ticker = setInterval(function () {
+      paintTimer();
+      if (Date.now() >= deadline) { stopTimer(); check(true); }
+    }, 100);
+  }
+
+  function stopTimer() {
+    if (ticker) { clearInterval(ticker); ticker = null; }
+  }
+
+  function paintTimer() {
+    var leftMs = Math.max(0, deadline - Date.now());
+    var leftSec = Math.ceil(leftMs / 1000);
+    var low = leftMs <= 3000;
+    el("timer").textContent = "⏱ " + leftSec + "s";
+    el("timer").className = "timer" + (low ? " low" : "");
+    el("timebar").className = "timebar" + (low ? " low" : "");
+    el("timefill").style.width = (limitMs ? (leftMs / limitMs) * 100 : 0) + "%";
+  }
+
+  // ---- rendering ----------------------------------------------------------
+  function current() { return items[index]; }
+
+  function sentenceSoFar() {
+    return placed.map(function (i) { return current().chips[i].en; }).join(" ");
+  }
+
+  function render() {
+    var item = current();
+    el("progress").textContent = "Câu " + (index + 1) + " / " + items.length;
+    el("tally").textContent = "Đúng " + right + " · Sai " + wrong;
+    el("vn").textContent = item.vn_sen || "";
+
+    var slot = el("slot");
+    slot.className = "slot";
+    slot.innerHTML = "";
+    placed.forEach(function (chipIndex, pos) {
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.textContent = item.chips[chipIndex].en;
+      b.onclick = function () { if (!locked) { placed.splice(pos, 1); render(); } };
+      slot.appendChild(b);
+    });
+
+    var pool = el("pool");
+    pool.innerHTML = "";
+    item.chips.forEach(function (chip, chipIndex) {
+      var b = document.createElement("button");
+      b.className = "chip" + (placed.indexOf(chipIndex) >= 0 ? " used" : "");
+      b.innerHTML = "";
+      b.appendChild(document.createTextNode(chip.en));
+      if (chip.vn) {
+        var hint = document.createElement("span");
+        hint.className = "vn-hint";
+        hint.textContent = chip.vn;
+        b.appendChild(hint);
+      }
+      b.onclick = function () {
+        if (locked || placed.indexOf(chipIndex) >= 0) return;
+        placed.push(chipIndex);
+        if (placed.length === item.chips.length) { check(); } else { render(); }
+      };
+      pool.appendChild(b);
+    });
+
+    var canEdit = !locked && placed.length > 0;
+    el("undo").disabled = !canEdit;
+    el("clear").disabled = !canEdit;
+    el("skip").disabled = locked;
+  }
+
+  // ---- one attempt --------------------------------------------------------
+  function check(timedOut) {
+    if (locked) return;   // the clock and the last chip can land together
+    var item = current();
+    var attempt = sentenceSoFar();
+    // Out of time is always wrong, whatever is on the board.
+    var isCorrect = !timedOut && item.accepted.some(function (tokens) {
+      return normalise(tokens.join(" ")) === normalise(attempt);
+    });
+
+    stopTimer();
+    locked = true;
+    render();
+    el("slot").className = "slot " + (isCorrect ? "ok" : "bad");
+    var verdict = el("verdict");
+    verdict.className = "verdict " + (isCorrect ? "ok" : "bad");
+    verdict.textContent = isCorrect
+      ? "✓ Chính xác"
+      : (timedOut ? "⏱ Hết giờ — " : "✗ Chưa đúng — ")
+        + (item.accepted[0] || []).join(" ");
+    if (isCorrect) { right++; } else { wrong++; }
+
+    log(item, attempt, isCorrect);             // fire-and-forget
+    setTimeout(next, REVEAL_MS);                // auto-advance after 1s
+  }
+
+  function next() {
+    el("verdict").textContent = "";
+    el("verdict").className = "verdict";
+    placed = [];
+    locked = false;
+    index++;
+    if (index >= items.length) { finish(); return; }
+    render();
+    startTimer();
+  }
+
+  function finish() {
+    stopTimer();
+    el("game").hidden = true;
+    el("done").hidden = false;
+    el("summary").textContent =
+      "Xong " + items.length + " câu — đúng " + right + ", sai " + wrong + ".";
+  }
+
+  function log(item, sentenceUser, isCorrect) {
+    fetch(API.log, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        sentence_id: String(item.sentenceid),
+        structure_id: item.structureid === undefined || item.structureid === null
+          ? null : String(item.structureid),
+        sentence_user: sentenceUser,
+        is_correct: isCorrect
+      })
+    }).catch(function () { /* logging must never block the tester */ });
+  }
+
+  // ---- loading ------------------------------------------------------------
+  function start() {
+    var typed = el("email").value.trim();
+    if (!typed) { message("Nhập email trước đã.", true); return; }
+    email = typed;
+    stopTimer();
+    setCookie(COOKIE, email, 365);
+    message("Đang tải…", false);
+    el("start").disabled = true;
+
+    fetch(API.get, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (body) {
+        el("start").disabled = false;
+        if (body.code !== 200) { message("Lỗi: " + body.message, true); return; }
+        var raw = Array.isArray(body.data) ? body.data : (body.data && body.data.sen_data) || [];
+        items = raw.map(function (row) {
+          return {
+            sentenceid: row.sentenceid,
+            structureid: row.structureid,
+            vn_sen: row.vn_sen,
+            chips: shuffled(row.options || []),
+            accepted: acceptedOrderings(row.answer)
+          };
+        }).filter(function (row) { return row.chips.length && row.accepted.length; });
+        if (!items.length) { message("Không có câu nào cho email này.", true); return; }
+        index = 0; placed = []; locked = false; right = 0; wrong = 0;
+        message("", false);
+        el("done").hidden = true;
+        el("game").hidden = false;
+        render();
+        startTimer();
+      })
+      .catch(function (err) {
+        el("start").disabled = false;
+        message("Không gọi được API: " + err, true);
+      });
+  }
+
+  function message(text, isError) {
+    var node = el("loginMsg");
+    node.textContent = text;
+    node.className = "msg" + (isError ? " err" : "");
+  }
+
+  // ---- wiring -------------------------------------------------------------
+  el("start").onclick = start;
+  el("again").onclick = start;
+  el("email").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") start();
+  });
+  el("undo").onclick = function () { if (!locked) { placed.pop(); render(); } };
+  el("clear").onclick = function () { if (!locked) { placed = []; render(); } };
+  el("skip").onclick = function () {
+    if (locked) return;
+    stopTimer();
+    log(current(), sentenceSoFar(), false);
+    wrong++;
+    next();
+  };
+  el("forget").onclick = function () {
+    setCookie(COOKIE, "", -1);
+    el("email").value = "";
+    el("forget").hidden = true;
+    el("email").focus();
+  };
+
+  var remembered = getCookie(COOKIE);
+  if (remembered) {
+    el("email").value = remembered;
+    el("forget").hidden = false;
+  }
+})();
+</script>
+</body>
+</html>
